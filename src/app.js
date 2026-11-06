@@ -763,14 +763,14 @@ $('bReset').onclick=()=>{ bInit(); bRender(); };
 $('bDone').onclick=()=>bResult();
 $('bExit').onclick=()=>exitBuilder();
 function setFutureVisible(v){ DIO[7].pieces.forEach((p,k)=>{ if(k>0) p.obj.visible=v; }); }
-function enterBuilder(code){
+function enterBuilderOld(code){
   if(building) return; if(vrMode) exitVR(); stopFollow(); building=true; document.body.classList.add('building'); hideStory();
   if(zoneIdx!==7){ fx=snapT=restX=stopX(7); phase='rest'; zoneIdx=7; arrived=true; }
   setFutureVisible(false); B.cells.forEach(c=>c.visible=true);
   B.visitor=!!code&&!unlocked(); if(!B.grid.length||code) bInit(code);
   bRender(); whoosh(); if(!code) setTimeout(()=>toast('Every block here is one you earned. The lake is my gift.'),900);
 }
-function exitBuilder(){ if(!building) return; building=false; document.body.classList.remove('building'); $('bres').classList.remove('show'); B.cells.forEach(c=>c.visible=false); if(!cityBuilt()) setFutureVisible(true); if(arrived&&zoneIdx===7) showStory(7); }
+function exitBuilderOld(){ if(!building) return; building=false; document.body.classList.remove('building'); $('bres').classList.remove('show'); B.cells.forEach(c=>c.visible=false); if(!cityBuilt()) setFutureVisible(true); if(arrived&&zoneIdx===7) showStory(7); }
 function bTap(k){ const v=B.grid[k], t=TOOLS[B.tool];
   if(v==='c'){ tone(200,.03,.12); return; }
   if(v){ B.grid[k]=''; B.placed--; tone(300,.04,.12); }
@@ -865,7 +865,7 @@ function initTimelineLenis(){ const Len=window.Lenis; if(tlLenis||!Len) return;
   syncLenis(); }
 addEventListener('keydown',e=>{ if(!started||obBusy()||BODY.classList.contains('assist')) return;
   if(e.key==='Escape'){ if($('panel').classList.contains('open')) $('panel').classList.remove('open'); else if(vrMode) exitVR(); else if(lensMode) closeChapter(); else if($('bres').classList.contains('show')) $('bres').classList.remove('show'); else if(building) exitBuilder(); return; }
-  if(lensMode||building||vrMode||BODY.classList.contains('lamp')) return;
+  if(lensMode||building||vrMode||BODY.classList.contains('lamp')||BODY.classList.contains('bld2')) return;
   const cur=arrived?zoneIdx:(fx<0?-1:nearest(fx));
   if(e.key==='ArrowRight'){ stopFollow(); goTo(Math.min(N-1,cur+1)); } else if(e.key==='ArrowLeft'){ stopFollow(); goTo(Math.max(0,cur-1)); }
   else if((e.key==='ArrowDown'||e.key==='Enter')&&arrived&&!e.target.closest('button,input')){ e.preventDefault(); openChapter(); }
@@ -922,6 +922,7 @@ function cursorLabel(){
 function jump(i){ startExperience(true); markDragged(); fx=snapT=dragT=stopX(i); camLook.x=fx; restX=START; phase='snap'; }
 function handleHash(){ const h=decodeURIComponent(location.hash.slice(1));
   let m=h.match(/^stop-(\d{4})$/); if(m){ const i=ZONES.findIndex(z=>z.year===+m[1]); if(i>=0){ jump(i); return true; } }
+  { const mb=h.match(/^build-((?:[0-9a-o][0-6]){1,7})$/); if(mb){ startExperience(true); enterBuilder(mb[1]); return true; } }
   m=h.match(/^city-([0-9]{42})$/); if(m){ startExperience(true); markDragged(); fx=snapT=dragT=restX=stopX(7); camLook.x=fx; phase='rest'; zoneIdx=7; arrived=true; const code=m[1]; enterBuilder(code); setTimeout(()=>bResult(true),900); return true; }
   return false; }
 addEventListener('hashchange',()=>{ const h=location.hash; if(h.startsWith('#stop-')&&zoneIdx>=0&&ZONES[zoneIdx].year===+h.slice(6)) return; if(h.startsWith('#city-')&&building) return; closeChapter(()=>handleHash()); });
@@ -1067,6 +1068,7 @@ function bindBar(form){ const inp=form.querySelector('input'), btn=form.querySel
     window.dispatchEvent(new CustomEvent('lantern:ask',{detail:{text:t}})); });
   sync(); return {sync}; }
 const aBar=bindBar($('aBar'));
+/*BUILD2*/
 
 /* ================= MR. LAMP (Figma "Pop up" 48:5268) =================
    Opens by itself once: the first time the frame reaches 1760 coming from 1537. Never again after that
@@ -1261,7 +1263,7 @@ function stepFrame(rdt){
   const gr=glassRect();
   heroMode(full&&!OB.static,clayK===0&&phase==='rest',camLook.x);
   if(!full){ renderWorld('full-colour',gr,0); return; }
-  if(gr.b<0||gr.t>H||OB.static||obBusy()||atStart){ renderer.setRenderTarget(null); renderer.setScissorTest(false); renderer.setViewport(0,0,W,H); renderer.setClearColor(0x000000,0); renderer.clear(); return; }
+  if(gr.b<0||gr.t>H||OB.static||obBusy()||atStart||BODY.classList.contains('bld2')){ renderer.setRenderTarget(null); renderer.setScissorTest(false); renderer.setViewport(0,0,W,H); renderer.setClearColor(0x000000,0); renderer.clear(); return; }
   renderWorld(clayK>0?'full':'card',gr,clayK);
 }
 let lensOpenedAt=0; new MutationObserver(()=>{ if(lo.classList.contains('open')) lensOpenedAt=performance.now(); }).observe(lo,{attributes:true,attributeFilter:['class']});
@@ -1274,7 +1276,7 @@ const GRAIN='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.
   /* original Figma artwork */
   $('ldBg').src=FIG.landing; $('slotImg').src=FIG['metro-color']; $('stTower').src=FIG['watchtower-352']; $('obGrayG').src=RENDERS.fort; $('obGrayC').src=FIG['metro-color']; $('mLamp').src=FIG['lantern-688']; $('launcherImg').src=FIG['lantern-688'];
   document.documentElement.style.setProperty('--grain',`url("${ASSETS.noise}")`); Object.assign($('noise').style,{opacity:'1',mixBlendMode:'overlay',backgroundSize:'240px 240px'});
-  const hashed=/^#(stop|city)-/.test(location.hash); if(!hashed) obLanding();
+  const hashed=/^#(stop|city|build)-/.test(location.hash); if(!hashed) obLanding();
   const fontP=Promise.race([Promise.all([document.fonts.load('500 120px "Gloock"'),document.fonts.load('italic 400 28px Inter'),document.fonts.load('600 14px "Noto Sans"')]),new Promise(r=>setTimeout(r,2500))]).catch(()=>{});
   /* the Watchtower and the stamps, rendered from the 3D models */
   try{ MASCOT=ASSETS.mascot||iconOf(watchtower(1),188,{yaw:.5,pitch:.16,pad:1.02}); }catch(e){ console.warn(e); }

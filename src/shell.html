@@ -533,6 +533,68 @@ body:not(.lamp) #artL *{pointer-events:none!important}
 #lBar.search .afield input::placeholder{font-weight:400}
 @media (prefers-reduced-motion:reduce){ #artL{transition:none} }
 
+/* ---------- build your own Bengaluru (2037 L2): page colour, grain, one isometric ground, a stamp tray ---------- */
+#bld{outline:none;position:fixed;inset:0;z-index:58;background:var(--bg);opacity:0;transition:opacity .5s var(--out);overflow:hidden;touch-action:none}
+#bld[hidden]{display:none}
+#bld.on{opacity:1}
+.bld-grain{position:absolute;inset:0;background-image:var(--grain);background-size:180px 180px;mix-blend-mode:overlay;opacity:.32;pointer-events:none}
+.bld-art{position:absolute;left:50%;top:50%;width:1440px;height:900px;transform:translate(-50%,-50%) scale(var(--bs,1));transform-origin:50% 50%}
+.bld-back{position:absolute;left:60px;top:28px;height:48px;padding:0 22px;border-radius:999px;font-size:16px;font-weight:500;color:var(--ink);cursor:pointer}
+.bld-back:hover,.bld-back:focus-visible{background:var(--ink);color:#fff}
+.bld-copy{position:absolute;left:60px;top:140px;width:460px}
+.bld-copy .kick{color:var(--muted);margin:0}
+.bld-copy h2{margin:14px 0 0;font-family:var(--display);font-weight:500;font-size:48px;line-height:56px;color:var(--ink);letter-spacing:-.3px}
+.bld-lede{margin:20px 0 0;width:420px;font-style:italic;font-size:20px;line-height:30px;color:var(--ink)}
+.bld-count{margin-top:32px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.bld-n{font-family:var(--display);font-weight:500;font-size:72px;line-height:72px;color:var(--ink);min-width:44px}
+.bld-of{font-family:var(--display);font-weight:500;font-size:32px;line-height:32px;color:var(--muted)}
+.bld-lab{flex-basis:100%;margin-top:6px!important}
+.bld-dots{display:flex;gap:10px;margin-top:16px}
+.bld-dots i{width:12px;height:12px;border-radius:999px;box-shadow:inset 0 0 0 1.5px #bebec0;transition:background .3s,box-shadow .3s}
+.bld-dots i.on{background:var(--ink);box-shadow:none}
+.bld-hint{margin:16px 0 0;font-size:14px;line-height:20px;color:var(--muted);min-height:20px}
+.bld-acts{display:flex;gap:12px;margin-top:24px}
+.bld-clear{height:56px;padding:0 28px;border-radius:999px;font-size:16px;font-weight:500;color:var(--ink);cursor:pointer}
+.bld-clear:hover,.bld-clear:focus-visible{background:var(--ink);color:#fff}
+#bld .glass{box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 6px 18px rgba(0,0,0,.06)}   /* no long drop shadows on this calm page */
+#bld .bld-tray.glass{box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 18px 40px rgba(0,0,0,.08)}
+.bld-share{height:56px;padding:0 28px;border-radius:999px;border:0;background:#000;color:#fff;font-size:16px;font-weight:600;cursor:pointer;transition:background .25s}
+.bld-share:hover,.bld-share:focus-visible{background:#333}
+.bld-share[disabled],.bld-clear[disabled]{opacity:.35;cursor:default;pointer-events:none}
+.bld-stage{position:absolute;left:560px;top:120px;width:800px;height:560px}
+.bld-plate{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.bld-plate .t{fill:#f4f3ef;stroke:rgba(30,30,30,.09);stroke-width:1}
+.bld-plate .t.alt{fill:#efeee9}
+.bld-plate .t.hot{fill:#e2e1db;stroke:var(--ink);stroke-width:1.5}
+.bld-plate .t.busy{fill:#f4f3ef}
+.bld-plate .sl{fill:#dddbd5}.bld-plate .sr{fill:#cfcdc7}
+.bld-items{position:absolute;inset:0}
+.bs{position:absolute;left:0;top:0;padding:0;border:0;background:none;cursor:grab;transform-origin:50% 76%;outline:none;-webkit-tap-highlight-color:transparent}
+.bs img{display:block;width:100%;height:100%;pointer-events:none;filter:drop-shadow(0 10px 10px rgba(0,0,0,.10))}
+.bs:hover img,.bs:focus-visible img{filter:drop-shadow(0 14px 14px rgba(0,0,0,.16))}
+.bs:focus-visible::after{content:"";position:absolute;left:12%;right:12%;bottom:10%;height:26%;border-radius:50%;box-shadow:0 0 0 2px var(--ink)}
+.bs.drop{animation:bsDrop .55s cubic-bezier(.2,1.4,.4,1)}
+.bs.lifting{opacity:.25}
+@keyframes bsDrop{0%{transform:var(--p) translateY(-36px) scale(1.06);opacity:0}60%{opacity:1}100%{transform:var(--p)}}
+.bld-tray{position:absolute;left:960px;top:756px;transform:translateX(-50%);height:112px;padding:0 24px;border-radius:999px;display:flex;align-items:center;gap:14px}
+.bt{width:96px;height:96px;border-radius:24px;border:0;background:none;padding:0;cursor:grab;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;touch-action:none;transition:opacity .25s,transform .25s var(--out)}
+.bt img{width:72px;height:72px;display:block;pointer-events:none;transition:transform .25s var(--out)}
+.bt span{margin-top:2px;font-family:var(--kicker);font-weight:600;font-size:10px;line-height:14px;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink);white-space:nowrap}
+.bt:hover img,.bt:focus-visible img{transform:translateY(-4px) scale(1.06)}
+.bt:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.bt.held img{transform:scale(.9);opacity:.5}
+#bld.full .bt{opacity:.35;cursor:not-allowed}
+#bld.full .bt img{filter:grayscale(1)}
+#bld.visitor .bt,#bld.visitor .bld-clear{display:none}
+.bld-ghost{position:fixed;left:0;top:0;pointer-events:none;z-index:2;display:none;will-change:transform}
+.bld-ghost img{display:block;width:100%;height:100%;filter:drop-shadow(0 24px 18px rgba(0,0,0,.18))}
+.bld-ghost-tip{position:absolute;left:50%;top:-10px;transform:translate(-50%,-100%);white-space:nowrap;padding:6px 12px;border-radius:999px;background:var(--ink);color:#fff;font-size:12px;font-weight:500;opacity:0;transition:opacity .15s}
+.bld-ghost.out img{opacity:.45}
+.bld-ghost.out .bld-ghost-tip{opacity:1}
+body.bld2 .cur,body.bld2 .ring{display:none}
+body.bld2 #launcher{display:none}
+@media (prefers-reduced-motion:reduce){ #bld{transition:none} .bs.drop{animation:none} .bt,.bt img{transition:none} }
+
 /* 09 · drag to start (inside the existing frame) */
 .obc{display:none}
 body.ob-mission .obc,body.ob-drag .obc{display:block}
@@ -722,6 +784,30 @@ body.has-launcher #launcher{display:block}
   </div>
   <button class="mstart ui" id="lGo" type="button">Continue your journey</button>
 </div>
+
+<!-- ================= BUILD YOUR OWN BENGALURU (2037, L2) =================
+     A calm, plain isometric ground. Drag any of the 7 stamps onto it, as often as you like, up to 7 in all. -->
+<section id="bld" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="bldTitle" aria-describedby="bldLede" hidden>
+  <div class="bld-grain" aria-hidden="true"></div>
+  <div class="bld-art" id="bldArt">
+    <button class="bld-back glass ui" id="bldBack" type="button">← Back to the timeline</button>
+    <div class="bld-copy">
+      <p class="kick" id="bldKick">Chapter 08 · You build it</p>
+      <h2 id="bldTitle">Build the Bengaluru<br>you envision.</h2>
+      <p class="bld-lede" id="bldLede">Yay, you have collected all the stamps! Drag the stamp you want and place it over the grid to build the Bangalore you envision. Use the same stamp as often as you like, up to 7 stamps in all.</p>
+      <div class="bld-count" aria-live="polite"><span class="bld-n" id="bldN">0</span><span class="bld-of">/ 7</span><span class="kick bld-lab">stamps on the ground</span></div>
+      <div class="bld-dots" id="bldDots" aria-hidden="true"></div>
+      <p class="bld-hint" id="bldHint">Tip: drag a stamp off the ground to remove it.</p>
+      <div class="bld-acts"><button class="bld-clear glass ui" id="bldClear" type="button">Clear</button><button class="bld-share ui" id="bldShare" type="button">✦ Share my Bengaluru</button></div>
+    </div>
+    <div class="bld-stage" id="bldStage">
+      <svg class="bld-plate" id="bldPlate" aria-hidden="true"></svg>
+      <div class="bld-items" id="bldItems" aria-label="Your Bengaluru" role="group"></div>
+    </div>
+    <div class="bld-tray glass ui" id="bldTray" role="toolbar" aria-label="Your stamps. Drag one onto the ground, or press Enter to place it."></div>
+  </div>
+  <div class="bld-ghost" id="bldGhost" aria-hidden="true"><img alt=""><span class="bld-ghost-tip">Release to remove</span></div>
+</section>
 
 <dialog class="help" id="helpDlg" aria-labelledby="helpT">
   <div class="kick">Help</div>
