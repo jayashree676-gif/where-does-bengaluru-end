@@ -1025,7 +1025,9 @@ $('wtSkip').addEventListener('click',e=>{ e.preventDefault(); e.stopPropagation(
 ['wheel','touchmove'].forEach(t=>$('coach').addEventListener(t,e=>{ e.preventDefault(); e.stopPropagation(); },{passive:false}));
 addEventListener('resize',()=>{ wt.last=''; wtLayout(); });
 /* after the tour: the existing first-visit flow (mission → drag to begin), or straight in for returning visitors */
-function wtAfter(){ if(LS.get(OB_KEY)==='1'){ revealState(); endStatic(); showStory(0); startExperience(true); } else obMission(); }
+/* after the tour (or straight after Lets Begin on later visits): land on the Watchtower start screen before 1537 */
+function landStart(){ LS.set(OB_KEY,'1'); hideStory(); endStatic(); startExperience(true); killSnap(); arrived=false; zoneIdx=-1; fx=snapT=dragT=restX=START; vx=0; camLook.x=START; phase='rest'; syncLenis(); updatePassport(); }
+function wtAfter(){ landStart(); }
 /* 08 · mission (drag screen underneath) */
 function obMission(){ bc('ob-mission',true); bc('has-launcher',true); setTimeout(()=>$('mStart').focus(),60); }
 $('mStart').onclick=()=>{ if(!BODY.classList.contains('ob-mission')) return; bc('ob-mission',false); bc('ob-drag',true); obDragVis(0); };
@@ -1158,7 +1160,7 @@ const GRAIN='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.
 (async function boot(){
   const t0=performance.now(); layout(); resize();
   /* original Figma artwork */
-  $('ldBg').src=FIG.landing; $('slotImg').src=FIG['metro-color']; $('stTower').src=FIG['watchtower-352']; $('obGrayG').src=FIG['metro-gray']; $('obGrayC').src=FIG['metro-color']; $('mLamp').src=FIG['lantern-688']; $('launcherImg').src=FIG['lantern-688'];
+  $('ldBg').src=FIG.landing; $('slotImg').src=FIG['metro-color']; $('stTower').src=FIG['watchtower-352']; $('obGrayG').src=RENDERS.fort; $('obGrayC').src=FIG['metro-color']; $('mLamp').src=FIG['lantern-688']; $('launcherImg').src=FIG['lantern-688'];
   document.documentElement.style.setProperty('--grain',`url("${ASSETS.noise}")`); Object.assign($('noise').style,{opacity:'1',mixBlendMode:'overlay',backgroundSize:'240px 240px'});
   const hashed=/^#(stop|city)-/.test(location.hash); if(!hashed) obLanding();
   const fontP=Promise.race([Promise.all([document.fonts.load('500 120px "Gloock"'),document.fonts.load('italic 400 28px Inter'),document.fonts.load('600 14px "Noto Sans"')]),new Promise(r=>setTimeout(r,2500))]).catch(()=>{});
