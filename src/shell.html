@@ -87,7 +87,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .read{width:292px;height:48px;flex:none;border-radius:16px;padding:12px 20px;background:#000;color:#fff;font-weight:600;font-size:14px;line-height:17px;display:flex;align-items:center;justify-content:center;white-space:pre;
   transform:translate(calc(var(--magnetic-x,0) * 1px),calc(var(--magnetic-y,0) * 1px));transition:background .25s}
 .read:hover,.vr:hover{background:#333}
-.handle{position:absolute;top:292px;width:40px;height:100px;border-radius:999px;display:grid;place-items:center;--bw:2px;transform:translateX(var(--dx));touch-action:none;cursor:grab}
+.handle{position:absolute;top:292px;width:40px;height:100px;border-radius:999px;display:grid;place-items:center;--bw:2px;transform:translateX(var(--dx));touch-action:none;cursor:pointer}
 .handle svg{width:40px;height:40px;display:block}
 #hL{left:0}#hL svg{transform:scaleX(-1)}
 #hR{left:448px}
@@ -291,10 +291,15 @@ body:not(.vrmode) #vrBar *{pointer-events:none!important}
 .toast{position:fixed;z-index:58;left:50%;top:calc(50% - 450px * var(--s) + 30px * var(--s));transform:translate(-50%,-10px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:24px;font-size:13px;line-height:18px;font-weight:500;opacity:0;transition:.35s;pointer-events:none;max-width:min(290px,90vw);text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .cur,.ring{position:fixed;left:0;top:0;z-index:80;pointer-events:none}
-.cur{width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:var(--ink)}
-.ring{width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;border:1px solid rgba(30,30,30,.3);display:grid;place-items:center;transition:width .4s var(--out),height .4s var(--out),margin .4s var(--out),background .3s,border-color .3s}
-.ring span{font-size:12px;font-weight:600;color:#fff;opacity:0;transition:opacity .2s;white-space:nowrap}
-.ring.lab{width:76px;height:76px;margin:-38px 0 0 -38px;background:var(--ink);border-color:transparent}.ring.lab span{opacity:1}
+/* cursor: a small outline ring around a small filled dot, sized to the screen */
+.cur,.ring{opacity:0;transition:opacity .15s}
+body.cur-custom .cur,body.cur-custom .ring{opacity:1}
+body.cur-custom,body.cur-custom *{cursor:none!important}
+.cur{--d:clamp(4px,.33vw,6px);width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;background:var(--ink)}
+.ring{--d:clamp(16px,1.45vw,24px);width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;border:1px solid rgba(30,30,30,.45);box-sizing:border-box}
+.ring span{display:none}
+body.vrmode .cur{background:#fff}
+body.vrmode .ring{border-color:rgba(255,255,255,.7)}
 @media (hover:none){.cur,.ring{display:none}}
 
 /* loader, intro, mission, fallback */

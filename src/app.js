@@ -910,12 +910,19 @@ function hint(){ if(!started||lensMode) return;
 
 /* cursor */
 const cur=$('cur'), ring=$('ring'); let rx=-100, ry=-100, hoverPiece=null;
-addEventListener('pointermove',e=>{ mx=e.clientX; my=e.clientY; cur.style.transform=`translate(${mx}px,${my}px)`; });
+/* two concentric circles (outline ring + small filled dot) on open ground; the normal hand near the
+   frame, its arrows and anything clickable; the normal cursor inside overlays */
+function cursorMode(t){
+  const overlay=BODY.classList.contains('bld2')||BODY.classList.contains('lamp')||!!lensMode||obBusy();
+  const clickable=t&&t.closest&&t.closest('button,a,input,textarea,select,label,[role="button"],[tabindex="0"],.handle');
+  let near=false; if(!vrMode&&!overlay){ const r=cardRect(), m=28*r.w/384; near=mx>r.l-m&&mx<r.r+m&&my>r.t-m&&my<r.b+m; }
+  bc('cur-custom',!overlay&&!clickable&&!near); canvas.style.cursor=near?'pointer':''; }
+addEventListener('pointermove',e=>{ mx=e.clientX; my=e.clientY; const tr=`translate(${mx}px,${my}px)`; cur.style.transform=tr; ring.style.transform=tr; rx=mx; ry=my; cursorMode(e.target); },{passive:true});
 function cursorLabel(){
   const el=document.elementFromPoint(mx,my); let lab='';
   if(el&&el!==canvas){ const t=el.closest&&el.closest('[data-cursor]'); lab=t?t.dataset.cursor:''; hoverPiece=null; }
   else if(started&&!lensMode){ if(vrMode) lab='Look'; else if(building){ const h=pick(mx,my,B.cells); lab=h?'Place':''; } else { const h=pick(mx,my,dioMeshes()); const j=h?h.object.userData.dio:null; hoverPiece=j!=null?j:null; lab=j!=null?((arrived&&j===zoneIdx)?'Read':'Go'):(phase==='drag'?'':'Drag'); } }
-  ring.classList.toggle('lab',!!lab); $('ringT').textContent=lab; canvas.style.cursor=hoverPiece!=null?'pointer':(building?'crosshair':'grab');
+  /* no text labels on the cursor any more */
 }
 
 /* ================= DEEP LINKS ================= */
@@ -1255,7 +1262,7 @@ function stepFrame(rdt){
     tmpO.position.set(p.x,p.y,p.z); tmpO.rotation.set(p.r+time*2,p.r,0); tmpO.scale.setScalar(p.life>0?p.s*Math.min(1,p.life*2):0); tmpO.updateMatrix(); burst.setMatrixAt(j,tmpO.matrix); });
   burst.instanceMatrix.needsUpdate=true;
   if(frameN%3===0&&pointerOnCanvas) cursorLabel();
-  rx+=(mx-rx)*L(.2,dt); ry+=(my-ry)*L(.2,dt); ring.style.transform=`translate(${rx.toFixed(1)}px,${ry.toFixed(1)}px)`;
+  if(frameN%6===0) cursorMode(document.elementFromPoint(mx,my));   /* the frame moves under a still pointer too */
   /* render: grey timeline in the band while moving, colour inside the glass card */
   const wantK=(started&&full&&!NARROW&&phase!=='rest')?.92:0; clayK+=(wantK-clayK)*L(wantK>clayK?.12:.06,dt); if(clayK<.004) clayK=0;
   if(SKIPR||(lensMode&&lo.classList.contains('open')&&performance.now()-lensOpenedAt>1200)) return;
