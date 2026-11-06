@@ -54,7 +54,7 @@ function renderWorld(mode,gr,clayKv){
   if(mode!=='full-colour') renderHeroMask(R);
   const U=postMat.uniforms; U.tex.value=comp.readBuffer.texture; U.texel.value.set(1/(R.w*comp._pixelRatio),1/(R.h*comp._pixelRatio)); U.blurK.value=mode==='full-colour'?.35:1; U.focus.value=.46;
   U.region.value.set(R.l*pr,(H-R.t-R.h)*pr,R.w*pr,R.h*pr);
-  U.card.value.set(gr.l*pr,(H-gr.b)*pr,gr.r*pr,(H-gr.t)*pr); U.radius.value=30*gr.w/380*pr;
+  U.card.value.set(gr.l*pr,(H-gr.b)*pr,gr.r*pr,(H-gr.t)*pr); U.radius.value=40*gr.w/384*pr;
   const b=bandRect(); U.band.value.set((H-b.b)*pr,(H-b.t)*pr);
   U.clayK.value=clayKv; U.full.value=mode==='full-colour'?1:0;
   U.maskT.value=maskRT.texture; U.muteK.value=mode==='full-colour'?0:1; U.fadeK.value=mode==='full-colour'?0:1-clayKv; U.fadePx.value=64*gr.w/384*pr;
