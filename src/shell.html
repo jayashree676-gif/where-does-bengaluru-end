@@ -476,6 +476,55 @@ body.assist .mstart{display:none}
 .abar.search .abub{display:none}
 .abar.text .afield .i-search{display:none}
 
+/* ---------- Mr. Lamp (Figma "Pop up" 48:5268): same glass panel and dimmed, blurred page as the mission ---------- */
+body.lamp #obDim{opacity:1;pointer-events:auto}
+#artL{z-index:56;opacity:0;transition:opacity .5s var(--out)}
+body.lamp #artL{opacity:1}
+body:not(.lamp) #artL *{pointer-events:none!important}
+#artL .lv{display:none}
+#lPanel[data-state="mission"] .lv-mission,#lPanel[data-state="search"] .lv-mission{display:block}
+#lPanel[data-state="result"] .lv-lamp,#lPanel[data-state="chat"] .lv-lamp{display:block}
+.lclose{position:absolute;left:1004px;top:32px;width:36px;height:36px;padding:0;border:0;background:none;cursor:pointer;display:grid;place-items:center;border-radius:999px}
+.lclose:focus-visible,#lGo:focus-visible{outline:2px solid #000;outline-offset:4px}
+.lscroll{position:absolute;left:224px;top:40px;width:824px;height:520px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;
+  -webkit-mask-image:linear-gradient(180deg,#000 59.74%,rgba(0,0,0,.1) 100%);mask-image:linear-gradient(180deg,#000 59.74%,rgba(0,0,0,.1) 100%);padding-bottom:200px;box-sizing:border-box;outline:none}
+.lscroll::-webkit-scrollbar{display:none}
+.lk{margin:0;height:24px;display:flex;align-items:center;font-family:var(--kicker);font-weight:600;font-size:16px;line-height:21.6px;letter-spacing:1.92px;text-transform:uppercase;color:#000}
+.lt{margin:12px 0 0;font-family:var(--display);font-weight:500;font-size:56px;line-height:71px;color:var(--ink);white-space:nowrap}
+.lbody{margin:10px 0 0;width:776px;font-family:var(--sans);font-style:italic;font-weight:400;font-size:24px;line-height:29px;color:var(--ink)}
+.lhr{margin:24px 0 0;width:824px;height:1px;border:0;background:rgba(255,255,255,.5)}
+.lk2{margin-top:23px}
+.lbody2{margin-top:12px}
+.lrow{display:grid;grid-template-columns:repeat(3,200px);column-gap:112px;margin-top:23px}
+.lscroll .lrow:first-of-type{margin-top:53px}
+.lrow.r3{grid-template-columns:repeat(2,200px);column-gap:90px}
+.ltile img{display:block;width:200px;height:200px}
+.ltl{margin:8px 0 0;height:24px;display:flex;align-items:center;justify-content:center;font-family:var(--kicker);font-weight:600;font-size:16px;line-height:21.6px;letter-spacing:1.92px;text-transform:uppercase;color:#000;text-align:center}
+.lty{margin:12px 0 0;height:61px;font-family:var(--display);font-weight:500;font-size:48px;line-height:61px;color:var(--ink);text-align:center}
+.ltop{position:absolute;left:24px;top:24px;height:60px;display:flex;align-items:center}
+.lav{width:60px;height:60px;border-radius:999px;background:rgba(0,0,0,.2);box-shadow:inset 0 0 0 2px rgba(0,0,0,.2);display:grid;place-items:center;flex:none}
+.lav img{width:40px;height:40px;display:block}
+.lkick{position:absolute;left:69px;top:19px;margin:0;height:22px;white-space:nowrap;font-family:var(--kicker);font-weight:600;font-size:16px;line-height:22px;letter-spacing:1.92px;text-transform:uppercase;color:#000}
+.lline{position:absolute;left:24px;top:100px;width:1024px;height:1px;background:rgba(255,255,255,.5)}
+.lmsgs{position:absolute;left:24px;top:112px;width:1024px;height:304px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;display:flex;flex-direction:column;gap:34px}
+.lmsgs::-webkit-scrollbar{display:none}
+.lmsgs>:first-child{margin-top:auto}
+.lmsgs .lb,.lmsgs .ub{flex:none;box-sizing:border-box;padding:24px;display:flex;flex-direction:column}
+.lb{width:496px;gap:16px;background:#000;border-radius:0 32px 32px 32px;box-shadow:inset 0 0 0 2px rgba(0,0,0,.05)}
+.lb .lh{display:flex;justify-content:space-between;align-items:center;height:32px}
+.lb .ln{font-family:var(--sans);font-weight:600;font-size:24px;line-height:29px;color:#fff}
+.lmsgs time{font-family:var(--sans);font-weight:400;font-size:20px;line-height:24px;color:#68676d;white-space:nowrap}
+.lb .lx{margin:0;font-family:var(--sans);font-weight:400;font-size:20px;line-height:24px;color:rgba(255,255,255,.6)}
+.ub{align-self:flex-end;width:512px;gap:8px;background:#fff;border-radius:32px 32px 0 32px;box-shadow:inset 0 0 0 2px rgba(0,0,0,.05)}
+.ub time{align-self:flex-end;height:24px}
+.ub .ux{margin:0;font-family:var(--sans);font-weight:400;font-size:20px;line-height:24px;color:#000;overflow-wrap:anywhere}
+#lBar .afield .i-searchf{display:none;flex:none;margin-left:18.64px}
+#lPanel[data-state="result"] #lBar .afield .i-search{display:none}
+#lPanel[data-state="result"] #lBar .afield .i-searchf{display:block}
+#lBar.search .afield input{font-weight:500}
+#lBar.search .afield input::placeholder{font-weight:400}
+@media (prefers-reduced-motion:reduce){ #artL{transition:none} }
+
 /* 09 · drag to start (inside the existing frame) */
 .obc{display:none}
 body.ob-mission .obc,body.ob-drag .obc{display:block}
@@ -634,6 +683,36 @@ body.has-launcher #launcher{display:block}
     </form>
   </div>
   <button class="mstart ui" id="mStart">✦ Start the journey ✦</button>
+</div>
+
+<!-- Mr. Lamp: mission → search active → search result → conversation (Figma "Pop up" 48:5268). Opens once, the first time the frame reaches 1760 from 1537. -->
+<div class="ob-art" id="artL" role="dialog" aria-modal="true" aria-labelledby="lHeadMission">
+  <div class="mpanel ui" id="lPanel" data-state="mission" tabindex="-1" style="outline:none">
+    <div class="mglass"></div>
+    <section class="lv lv-mission">
+      <img class="mlamp" id="lLamp" alt="">
+      <div class="lscroll" tabindex="0" aria-label="Mission details">
+        <p class="lk">Your mission</p>
+        <h2 class="lt" id="lHeadMission">Bring 7 memories back,<br>Unlock the future.</h2>
+        <p class="lbody">Each year on my timeline shows one thing remember. Slide the frame over it and the whole memory comes back together around it. Every memory you restore earns a stamp. With all 7, you build 2037</p>
+        <hr class="lhr lhr1">
+        <p class="lk lk2">Mission stamps (7)</p>
+        <p class="lbody lbody2">Collect all 7 stamps as you go through the journey. Thora aur likh do yahan pe</p>
+        <div class="lrow"><div class="ltile"><img data-lstamp="heritage" alt=""><p class="ltl">Heritage</p><p class="lty">1537</p></div><div class="ltile"><img data-lstamp="tree" alt=""><p class="ltl">trees</p><p class="lty">1760</p></div><div class="ltile"><img data-lstamp="heritage" alt=""><p class="ltl">Clean power</p><p class="lty">1905</p></div></div><hr class="lhr"><div class="lrow"><div class="ltile"><img data-lstamp="lab" alt=""><p class="ltl">labs</p><p class="lty">1909</p></div><div class="ltile"><img data-lstamp="transit" alt=""><p class="ltl">transit</p><p class="lty">1940</p></div><div class="ltile"><img data-lstamp="techpark" alt=""><p class="ltl">tech park</p><p class="lty">1985</p></div></div><hr class="lhr"><div class="lrow r3"><div class="ltile"><img data-lstamp="startup" alt=""><p class="ltl">startup street</p><p class="lty">2007</p></div><div class="ltile"><img data-lstamp="build" alt=""><p class="ltl">build your own</p><p class="lty">2037</p></div></div>
+      </div>
+    </section>
+    <section class="lv lv-lamp">
+      <div class="ltop"><span class="lav"><img id="lAv" alt=""></span><p class="lkick" id="lHead">Mr. Lamp</p></div>
+      <div class="lline" aria-hidden="true"></div>
+      <div class="lmsgs" id="lMsgs" role="log" aria-live="polite" aria-label="Conversation with Mr. Lamp"></div>
+    </section>
+    <form class="abar text" id="lBar" autocomplete="off">
+      <label class="afield"><span class="sr">Ask Mr. Lamp about the stories</span><input id="lInput" type="text" placeholder="Ask me anything..." enterkeyhint="send"><svg class="i-search" width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M18.7243 5.85596C11.5974 5.85596 5.80762 11.6457 5.80762 18.7726C5.80762 25.8995 11.5974 31.6893 18.7243 31.6893C25.8512 31.6893 31.6409 25.8995 31.6409 18.7726C31.6409 11.6457 25.8512 5.85596 18.7243 5.85596ZM3.30762 18.7726C3.30762 10.265 10.2167 3.35596 18.7243 3.35596C27.2319 3.35596 34.1409 10.265 34.1409 18.7726C34.1409 27.2803 27.2319 34.1893 18.7243 34.1893C10.2167 34.1893 3.30762 27.2803 3.30762 18.7726Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M28.3329 28.3332C28.8211 27.8451 29.6125 27.8451 30.1007 28.3332L35.884 34.1166C36.3722 34.6047 36.3722 35.3962 35.884 35.8843C35.3958 36.3725 34.6044 36.3725 34.1162 35.8843L28.3329 30.101C27.8447 29.6128 27.8447 28.8214 28.3329 28.3332Z" fill="currentColor"/></svg><svg class="i-searchf" width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M18.7243 5.8562C11.5974 5.8562 5.80762 11.646 5.80762 18.7729C5.80762 25.8998 11.5974 31.6895 18.7243 31.6895C25.8512 31.6895 31.6409 25.8998 31.6409 18.7729C31.6409 11.646 25.8512 5.8562 18.7243 5.8562ZM3.30762 18.7729C3.30762 10.2652 10.2167 3.3562 18.7243 3.3562C27.2319 3.3562 34.1409 10.2652 34.1409 18.7729C34.1409 27.2805 27.2319 34.1895 18.7243 34.1895C10.2167 34.1895 3.30762 27.2805 3.30762 18.7729Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M28.3329 28.3335C28.8211 27.8453 29.6125 27.8453 30.1007 28.3335L35.884 34.1168C36.3722 34.605 36.3722 35.3964 35.884 35.8846C35.3958 36.3727 34.6044 36.3727 34.1162 35.8846L28.3329 30.1012C27.8447 29.6131 27.8447 28.8216 28.3329 28.3335Z" fill="white"/><circle cx="19" cy="19" r="10" fill="white"/></svg></label>
+      <button class="abub" id="lSend" type="submit" aria-label="Search"><svg class="i-search" width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M18.7243 5.85596C11.5974 5.85596 5.80762 11.6457 5.80762 18.7726C5.80762 25.8995 11.5974 31.6893 18.7243 31.6893C25.8512 31.6893 31.6409 25.8995 31.6409 18.7726C31.6409 11.6457 25.8512 5.85596 18.7243 5.85596ZM3.30762 18.7726C3.30762 10.265 10.2167 3.35596 18.7243 3.35596C27.2319 3.35596 34.1409 10.265 34.1409 18.7726C34.1409 27.2803 27.2319 34.1893 18.7243 34.1893C10.2167 34.1893 3.30762 27.2803 3.30762 18.7726Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M28.3329 28.3332C28.8211 27.8451 29.6125 27.8451 30.1007 28.3332L35.884 34.1166C36.3722 34.6047 36.3722 35.3962 35.884 35.8843C35.3958 36.3725 34.6044 36.3725 34.1162 35.8843L28.3329 30.101C27.8447 29.6128 27.8447 28.8214 28.3329 28.3332Z" fill="currentColor"/></svg><svg class="i-send" width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M15.6036 29.1852L20.7947 26.8024C25.1486 24.8039 28.1533 23.4176 30.1027 22.157C32.0954 20.8685 32.1664 20.2277 32.1663 19.978C32.1661 19.7282 32.0944 19.0875 30.1003 17.8013C28.1494 16.5428 25.1431 15.16 20.787 13.1664L15.4084 10.7049C12.6964 9.46373 10.8523 8.62371 9.47558 8.16633C8.26786 7.76508 7.88499 7.82921 7.84604 7.83649C7.5818 7.96284 7.36032 8.16381 7.20896 8.41457C7.19795 8.45264 7.09703 8.82749 7.37941 10.0684C7.70129 11.4829 8.35872 13.3998 9.33134 16.2192C9.35461 16.2867 9.37776 16.3536 9.40073 16.42C9.74237 17.4073 10.0442 18.2794 10.1257 19.2047C10.1633 19.6304 10.1643 20.0586 10.1289 20.4845C10.052 21.4102 9.75358 22.2868 9.41554 23.2797C9.39274 23.3467 9.36977 23.4142 9.34667 23.4822C8.34266 26.4407 7.6637 28.4534 7.34095 29.9339C7.06052 31.2203 7.17343 31.6067 7.18886 31.6515C7.32892 31.8629 7.52031 32.0354 7.74514 32.1528C7.7919 32.164 8.18527 32.2366 9.42721 31.8289C10.8584 31.3589 12.7788 30.4818 15.6036 29.1852ZM34.6663 19.9766C34.6645 16.7681 30.3854 14.8098 21.8273 10.8931L16.4488 8.43164C11.1369 6.00063 8.48091 4.78513 6.80839 5.56183C6.07205 5.90379 5.45719 6.46171 5.04552 7.16147C4.11046 8.75089 5.06297 11.5121 6.96801 17.0345C7.377 18.2201 7.5815 18.8129 7.63538 19.4242C7.6604 19.7081 7.66112 19.9935 7.63752 20.2774C7.58669 20.889 7.38422 21.4856 6.97928 22.6788C5.01261 28.4739 4.02927 31.3714 5.0816 32.9969C5.46413 33.5878 5.9958 34.0673 6.62293 34.3869C8.34818 35.2663 11.1143 33.9966 16.6465 31.4572L21.8376 29.0744C30.3913 25.1482 34.6681 23.185 34.6663 19.9766Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M7.91662 19.9999C7.91662 19.3095 8.47627 18.7499 9.16662 18.7499H19.1666C19.857 18.7499 20.4166 19.3095 20.4166 19.9999C20.4166 20.6903 19.857 21.2499 19.1666 21.2499H9.16662C8.47627 21.2499 7.91662 20.6903 7.91662 19.9999Z" fill="currentColor"/></svg><svg class="i-sendf" width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M6.80817 6.71211C8.4807 5.99741 11.1371 7.11631 16.4488 9.35371L21.8267 11.6193C30.3848 15.2242 34.6638 17.0266 34.6656 19.9797C34.6672 22.9326 30.3907 24.7392 21.8375 28.3527L16.6461 30.5461C11.1139 32.8833 8.34787 34.0517 6.62263 33.2424C5.99552 32.9482 5.46412 32.5069 5.08161 31.9631C4.02933 30.467 5.01247 27.8006 6.97907 22.467C7.16424 21.9648 7.30536 21.5766 7.41071 21.2502H16.6666C17.3567 21.25 17.9164 20.6903 17.9166 20.0002C17.9166 19.31 17.3568 18.7504 16.6666 18.7502H7.48884C7.37885 18.3704 7.2089 17.9162 6.96735 17.2717C5.06234 12.1889 4.11044 9.64767 5.04548 8.18477C5.45715 7.54071 6.07183 7.02685 6.80817 6.71211Z" fill="currentColor"/></svg></button>
+    </form>
+    <button class="lclose" id="lClose" type="button" aria-label="Close and continue your journey"><svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.20462 7.82071C8.64396 7.38137 9.35627 7.38138 9.79561 7.82072L27.7956 25.8208C28.2349 26.2602 28.2349 26.9725 27.7956 27.4118C27.3563 27.8512 26.644 27.8512 26.2046 27.4118L8.20462 9.4117C7.76528 8.97236 7.76528 8.26005 8.20462 7.82071Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M27.7956 7.82072C28.2349 8.26006 28.2349 8.97237 27.7956 9.41171L9.79549 27.4117C9.35615 27.851 8.64384 27.851 8.2045 27.4117C7.76516 26.9724 7.76517 26.26 8.20451 25.8207L26.2046 7.82071C26.644 7.38137 27.3563 7.38138 27.7956 7.82072Z" fill="black"/></svg></button>
+  </div>
+  <button class="mstart ui" id="lGo" type="button">Continue your journey</button>
 </div>
 
 <dialog class="help" id="helpDlg" aria-labelledby="helpT">

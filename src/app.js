@@ -513,7 +513,7 @@ function projRect(x0,x1,y0,y1,z){ let l=1e9,r=-1e9,t=1e9,b=-1e9; for(const [x,y]
 /* the Figma artboard (1440 x 900) is centred and scaled down to fit; below 1100px the page reflows. The glass card is the frame. */
 const LAY={s:1}; let cardDX=0; const NARROWQ=matchMedia('(max-width:1099px)'); let NARROW=NARROWQ.matches;
 function layout(){ NARROW=NARROWQ.matches; const s=NARROW?1:Math.min(innerWidth/1440,innerHeight/900,1); LAY.s=s; const R=document.documentElement.style; R.setProperty('--s',s);
-  R.setProperty('--obs',NARROW?Math.min(innerWidth/560,innerHeight/900):Math.min(innerWidth/1440,innerHeight/900)); $('artM').style.setProperty('--obs',NARROW?Math.min(innerWidth/1120,innerHeight/900):s); }
+  R.setProperty('--obs',NARROW?Math.min(innerWidth/560,innerHeight/900):Math.min(innerWidth/1440,innerHeight/900)); $('artM').style.setProperty('--obs',NARROW?Math.min(innerWidth/1120,innerHeight/900):s); const al=$('artL'); al&&al.style.setProperty('--obs',NARROW?Math.min(innerWidth/1120,innerHeight/900):s); }
 const rectOf=el=>{ const r=el.getBoundingClientRect(); return {l:r.left,t:r.top,r:r.right,b:r.bottom,w:r.width,h:r.height}; };
 const cardRect=()=>rectOf($('cardF'));
 const homeRect=()=>rectOf($('cardHome'));
@@ -560,12 +560,14 @@ $('navP').onclick=()=>{ if(!started) return; if(zoneIdx>0) goTo(zoneIdx-1); else
 /* ================= ARRIVE / LEAVE ================= */
 let pendingStamp=-1, pillUntil=0;
 function onArrive(i){
+  const prevZone=lastZone; lastZone=i;
   arrived=true; zoneIdx=i; const first=!seen.has(i); seen.add(i);
   const earn=i<7&&!starred.has(i); pendingStamp=earn?i:-1; updatePassport();
   showStory(i); tone(660,.06,.3); setTimeout(()=>tone(990,.035,.25),70);
   if(earn) setTimeout(()=>celebrate(i),1000);
   if(first&&i===7&&unlocked()) setTimeout(()=>say("This is the stop I couldn't see. With your 7 stamps, it's yours.",[['Start building',()=>enterBuilder()]]),1400);
   if(follow) scheduleFollow();
+  lampOnArrive(i,prevZone);
 }
 function onLeave(){ hideStory(); arrived=false; pendingStamp=-1; }
 function celebrate(i){
@@ -798,7 +800,7 @@ function bResult(fromLink){
 /* ================= INPUT ================= */
 let down=null, camDist=30;
 const ppu=()=>innerHeight/(2*camDist*Math.tan(camera.fov*Math.PI/360));
-function startDown(e,src){ if(!started||lensMode||obBusy()) return; if(e.button&&e.button!==0) return; down={x:e.clientX,y:e.clientY,lx:e.clientX,ly:e.clientY,fx0:fx,drag:false,src}; try{ e.currentTarget.setPointerCapture(e.pointerId); }catch(_){} }
+function startDown(e,src){ if(!started||lensMode||obBusy()||BODY.classList.contains('lamp')) return; if(e.button&&e.button!==0) return; down={x:e.clientX,y:e.clientY,lx:e.clientX,ly:e.clientY,fx0:fx,drag:false,src}; try{ e.currentTarget.setPointerCapture(e.pointerId); }catch(_){} }
 canvas.addEventListener('pointerdown',e=>startDown(e,'world'));
 $('cardF').addEventListener('pointerdown',e=>{ if(!NARROW||e.target.closest('button')) return; startDown(e,'world'); });
 $('hL').addEventListener('pointerdown',e=>{ e.stopPropagation(); startDown(e,'hL'); });
@@ -863,7 +865,7 @@ function initTimelineLenis(){ const Len=window.Lenis; if(tlLenis||!Len) return;
   syncLenis(); }
 addEventListener('keydown',e=>{ if(!started||obBusy()||BODY.classList.contains('assist')) return;
   if(e.key==='Escape'){ if($('panel').classList.contains('open')) $('panel').classList.remove('open'); else if(vrMode) exitVR(); else if(lensMode) closeChapter(); else if($('bres').classList.contains('show')) $('bres').classList.remove('show'); else if(building) exitBuilder(); return; }
-  if(lensMode||building||vrMode) return;
+  if(lensMode||building||vrMode||BODY.classList.contains('lamp')) return;
   const cur=arrived?zoneIdx:(fx<0?-1:nearest(fx));
   if(e.key==='ArrowRight'){ stopFollow(); goTo(Math.min(N-1,cur+1)); } else if(e.key==='ArrowLeft'){ stopFollow(); goTo(Math.max(0,cur-1)); }
   else if((e.key==='ArrowDown'||e.key==='Enter')&&arrived&&!e.target.closest('button,input')){ e.preventDefault(); openChapter(); }
@@ -1054,7 +1056,7 @@ addEventListener('keydown',e=>{
 /* lantern assistant: the selected lantern panel and its input bar (no conversation designs exist yet) */
 function openAssist(){ if(obBusy()) return; bc('assist',true); setTimeout(()=>$('aInput').focus(),60); }
 function closeAssist(){ bc('assist',false); $('aInput').blur(); }
-$('launcher').onclick=()=>{ if(!BODY.classList.contains('ob-mission')) openAssist(); };
+$('launcher').onclick=()=>{ if(BODY.classList.contains('ob-mission')) return; if(typeof openLamp==='function') openLamp(); else openAssist(); };
 $('obDim').addEventListener('click',()=>{ if(BODY.classList.contains('assist')) closeAssist(); });
 function bindBar(form){ const inp=form.querySelector('input'), btn=form.querySelector('.abub');
   const sync=()=>{ const has=inp.value.trim().length>0, foc=document.activeElement===inp; form.classList.toggle('has-text',has); form.classList.toggle('is-focus',foc); if(btn) btn.setAttribute('aria-label',has||foc?'Send':'Search'); };
@@ -1065,6 +1067,80 @@ function bindBar(form){ const inp=form.querySelector('input'), btn=form.querySel
     window.dispatchEvent(new CustomEvent('lantern:ask',{detail:{text:t}})); });
   sync(); return {sync}; }
 const aBar=bindBar($('aBar'));
+
+/* ================= MR. LAMP (Figma "Pop up" 48:5268) =================
+   Opens by itself once: the first time the frame reaches 1760 coming from 1537. Never again after that
+   (remembered in the browser, untouched by Begin Again). The lantern launcher can reopen it at any time.
+   States: mission → search (input focused) → result (first answer) → chat (follow-up messages).
+   Answers come only from the stories already on this site (ZONES); nothing is fetched or made up. */
+const LAMP_KEY='wdbe.lamp.seen';
+const lamp={ open:false, state:'mission', hist:[], timer:0, lastFocus:null };
+let lastZone=-1;
+const lampTime=()=>new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function lampSet(st){ lamp.state=st; $('lPanel').dataset.state=st; const bar=$('lBar');
+  bar.classList.toggle('search',st==='search'||st==='result'); bar.classList.toggle('text',st==='mission'||st==='chat');
+  $('lHead').textContent=st==='result'?'Mr. Lamp • search result':'Mr. Lamp';
+  $('artL').setAttribute('aria-labelledby',st==='mission'||st==='search'?'lHeadMission':'lHead'); lBar.sync(); }
+function lampRender(){ const m=$('lMsgs');
+  const items=lamp.state==='result'?lamp.hist.filter(h=>h.who==='lamp').slice(-1):lamp.hist;
+  m.innerHTML=items.map(h=>h.who==='lamp'
+    ?`<div class="lb"><div class="lh"><span class="ln">Lamp</span><time>${h.t}</time></div><p class="lx">${esc(h.text)}</p></div>`
+    :`<div class="ub"><time>${h.t}</time><p class="ux">${esc(h.text)}</p></div>`).join('');
+  m.scrollTop=m.scrollHeight; }
+function openLamp(){ if(lamp.open||obBusy()||building||vrMode||lensMode) return;
+  lamp.open=true; lamp.lastFocus=document.activeElement; lamp.hist=[]; $('lInput').value=''; lampSet('mission'); lampRender(); $('lPanel').querySelector('.lscroll').scrollTop=0;
+  closeAssist(); stopFollow(); bc('lamp',true); setTimeout(()=>$('lPanel').focus({preventScroll:true}),80); }
+function closeLamp(){ if(!lamp.open) return; lamp.open=false; bc('lamp',false); $('lInput').blur(); const f=lamp.lastFocus; lamp.lastFocus=null; if(f&&f.focus&&document.contains(f)) f.focus({preventScroll:true}); }
+/* first 1537 → 1760 arrival only */
+function lampOnArrive(i,prev){ if(i!==1||prev!==0||LS.get(LAMP_KEY)==='1'||lamp.timer) return; LS.set(LAMP_KEY,'1');
+  lamp.timer=setTimeout(()=>{ lamp.timer=0; if(arrived&&zoneIdx===1) openLamp(); },1500); }
+$('lClose').onclick=closeLamp; $('lGo').onclick=closeLamp;
+$('obDim').addEventListener('click',()=>{ if(lamp.open) closeLamp(); });
+$('lPanel').querySelectorAll('[data-lstamp]').forEach(im=>{ im.src=LAMP_STAMPS[im.dataset.lstamp]; });
+$('lLamp').src=FIG['lantern-688']; $('lAv').src=FIG['lantern-688'];
+const lBar=bindBar($('lBar'));
+$('lInput').addEventListener('focus',()=>{ if(lamp.state==='mission') lampSet('search'); else if(lamp.state==='result'){ $('lInput').value=''; lampSet('chat'); lampRender(); } });
+$('lInput').addEventListener('blur',()=>setTimeout(()=>{ if(lamp.open&&lamp.state==='search'&&!$('lInput').value.trim()&&document.activeElement!==$('lInput')) lampSet('mission'); },0));
+$('lBar').addEventListener('submit',e=>{ e.preventDefault(); e.stopImmediatePropagation(); const q=$('lInput').value.trim(); if(!q){ $('lInput').focus(); return; }
+  const t=lampTime(); lamp.hist.push({who:'you',text:q,t},{who:'lamp',text:lampAnswer(q),t});
+  if(lamp.state==='chat'){ $('lInput').value=''; lampRender(); lBar.sync(); }
+  else { lampSet('result'); lampRender(); $('lInput').blur(); } },true);
+/* keyboard: Escape closes, Tab stays inside the panel */
+addEventListener('keydown',e=>{ if(!lamp.open) return;
+  if(e.key==='Escape'){ e.preventDefault(); e.stopPropagation(); closeLamp(); return; }
+  if(e.key==='Tab'){ const f=[...$('artL').querySelectorAll('button,input,[tabindex="0"]')].filter(el=>el.offsetParent!==null&&!el.disabled); if(!f.length) return;
+    const a=f[0], z=f[f.length-1]; if(e.shiftKey&&document.activeElement===a){ e.preventDefault(); z.focus(); } else if(!e.shiftKey&&document.activeElement===z){ e.preventDefault(); a.focus(); } return; }
+  if(!e.target.closest||!e.target.closest('#artL')) e.stopPropagation(); },true);
+
+/* answers from the site's own stories */
+const LAMP_STOP=new Set('a an the and or of to in on at is are was were be been do does did i me my you your we it its this that what who whom which when where why how tell about please can could would will just more some any there their them with for from by as into than then so lamp mr hi hello hey give know show explain story stories happened happen'.split(' '));
+const LAMP_TAGS=[
+  'kempegowda kempe gowda fort mud founding founder pete market markets watchtower watchtowers tower towers yelahanka chieftain 1537 heritage wall',
+  'lalbagh lal bagh garden gardens hyder ali tipu sultan glass house glasshouse botanical tree trees plants green 1760',
+  'electricity electric power lights light lamps lamp street shivanasamudra waterfall falls kerosene 1905 clean switch',
+  'iisc indian institute science scientific tata jamsetji vivekananda lab labs research ship 1909 students',
+  'hal hindustan aircraft aeronautics aeroplane aeroplanes airplane plane planes walchand hirachand cobra cobras termite airfield aerodrome 1940 transit factory factories',
+  'texas instruments ti satellite dish bullock cart software technology park tech silicon valley 1985 1991 mnc',
+  'flipkart sachin binny bansal startup startups koramangala motorcycle books servers 2007 street',
+  '2037 future lake lakes build builder 500 water bodies choices'
+].map(s=>new Set(s.split(' ')));
+const lampWords=t=>String(t).toLowerCase().replace(/[^a-z0-9 ]+/g,' ').split(/\s+/).filter(w=>w&&!LAMP_STOP.has(w)).map(w=>w.length>4&&w.endsWith('s')&&!/ss$/.test(w)?w.slice(0,-1):w);
+function lampAnswer(q){ const ql=q.toLowerCase().trim(), words=lampWords(q);
+  if(!words.length||/^(hi|hii+|hello+|hey|namaste|hola)\b[\s!.,]*(lamp|mr\.? lamp)?[\s!.]*$/.test(ql))
+    return "Hello! I'm Mr. Lamp. Ask me about any memory on this timeline, from Kempegowda's mud fort in 1537 to the city you build in 2037.";
+  if(/\b(stamp|stamps|mission|unlock|how (do|to) (i )?(play|start|use))\b/.test(ql)&&!/\b(1537|1760|1905|1909|1940|1985|2007|2037)\b/.test(ql))
+    return 'Each year on the timeline shows one memory. Slide the frame over it and the memory comes back together. Every memory you restore earns a stamp. With all 7 stamps, you build 2037.';
+  const scored=ZONES.map((z,i)=>{ const tags=LAMP_TAGS[i], body=lampWords([z.chapter,z.title,z.block,z.summary,...z.story,z.done,z.edge,z.tease].join(' '));
+    let s=0; words.forEach(w=>{ if(tags.has(w)) s+=3; if(body.includes(w)) s+=1; }); if(ql.includes(String(z.year))) s+=8; return {i,s}; }).sort((a,b)=>b.s-a.s);
+  if(!scored[0].s) return "I only know the memories on this timeline. Try asking about Kempegowda's fort, Lalbagh, the 1905 street lights, IISc, HAL, the satellite dish on a bullock cart, Flipkart or 2037.";
+  const z=ZONES[scored[0].i];
+  /* the two sentences of that chapter that match the question best, in story order */
+  const when=/\b(when|year|date)\b/.test(ql);
+  const sents=[...z.story.join(' ').split(/(?<=[.!?])\s+(?=[A-Z0-9"'])/),...(z.done?[z.done]:[])].map((t,k)=>{ const w=lampWords(t); let s=0; words.forEach(x=>{ if(w.includes(x)) s+=1; }); if(t.includes(String(z.year))) s+=.5; if(when&&/\b(1[5-9]\d\d|20\d\d)\b/.test(t)) s+=2; return {t,k,s}; });
+  const best=[...sents].sort((a,b)=>b.s-a.s||a.k-b.k).slice(0,2).sort((a,b)=>a.k-b.k).map(x=>x.t).join(' ');
+  return `${z.year}, ${z.chapter}: ${best}`; }
+
 
 /* ================= LOOP ================= */
 const clock=new THREE.Clock(); let time=0, frameN=0, clayK=0, offX=0, offY=0, vrModeWas=false;
