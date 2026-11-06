@@ -35,8 +35,8 @@ const postMat=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,transpa
       float lm=dot(c,vec3(.2126,.7152,.0722)); vec3 m=mix(vec3(lm),c,.2); m=mix(vec3(.7),m,.5); m=mix(m,BG,.4);
       c=mix(c,mix(m,c,hm*inCard),muteK);
       /* and dissolves into the page colour towards the frame's edges, most of all at the sky */
-      float ef=1.-smoothstep(0.,fadePx,-sd), tf=smoothstep(.6,.97,cu.y), bf=smoothstep(.16,0.,cu.y)*.85;
-      c=mix(c,BG,clamp(max(ef,max(tf,bf)),0.,1.)*fadeK*muteK); }
+      float tf=smoothstep(.6,.97,cu.y);   /* sky only: no white ring along the frame's edges */
+      c=mix(c,BG,tf*fadeK*muteK); }
     c+=(fract(sin(dot(fc+uT*60.,vec2(12.9898,78.233)))*43758.5453)-.5)*.016;
     float inBand=step(band.x,fc.y)*step(fc.y,band.y);
     float g=dot(c,vec3(.299,.587,.114)); vec3 gc=mix(vec3(g),vec3(.8),.3);
