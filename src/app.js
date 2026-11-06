@@ -1143,10 +1143,11 @@ function stepFrame(rdt){
   /* render: grey timeline in the band while moving, colour inside the glass card */
   const wantK=(started&&full&&!NARROW&&phase!=='rest')?.92:0; clayK+=(wantK-clayK)*L(wantK>clayK?.12:.06,dt); if(clayK<.004) clayK=0;
   if(SKIPR||(lensMode&&lo.classList.contains('open')&&performance.now()-lensOpenedAt>1200)) return;
+  const atStart=started&&full&&!lensMode&&!obBusy()&&phase==='rest'&&fx<-SP*.35; if(atStart!==BODY.classList.contains('at-start')) bc('at-start',atStart);
   const gr=glassRect();
   heroMode(full&&!OB.static,clayK===0&&phase==='rest',camLook.x);
   if(!full){ renderWorld('full-colour',gr,0); return; }
-  if(gr.b<0||gr.t>H||OB.static||obBusy()){ renderer.setRenderTarget(null); renderer.setScissorTest(false); renderer.setViewport(0,0,W,H); renderer.setClearColor(0x000000,0); renderer.clear(); return; }
+  if(gr.b<0||gr.t>H||OB.static||obBusy()||atStart){ renderer.setRenderTarget(null); renderer.setScissorTest(false); renderer.setViewport(0,0,W,H); renderer.setClearColor(0x000000,0); renderer.clear(); return; }
   renderWorld(clayK>0?'full':'card',gr,clayK);
 }
 let lensOpenedAt=0; new MutationObserver(()=>{ if(lo.classList.contains('open')) lensOpenedAt=performance.now(); }).observe(lo,{attributes:true,attributeFilter:['class']});
@@ -1157,7 +1158,7 @@ const GRAIN='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.
 (async function boot(){
   const t0=performance.now(); layout(); resize();
   /* original Figma artwork */
-  $('ldBg').src=FIG.landing; $('slotImg').src=FIG['metro-color']; $('mLamp').src=FIG['lantern-688']; $('launcherImg').src=FIG['lantern-688'];
+  $('ldBg').src=FIG.landing; $('slotImg').src=FIG['metro-color']; $('stTower').src=FIG['watchtower-352']; $('obGrayG').src=FIG['metro-gray']; $('obGrayC').src=FIG['metro-color']; $('mLamp').src=FIG['lantern-688']; $('launcherImg').src=FIG['lantern-688'];
   document.documentElement.style.setProperty('--grain',`url("${ASSETS.noise}")`); Object.assign($('noise').style,{opacity:'1',mixBlendMode:'overlay',backgroundSize:'240px 240px'});
   const hashed=/^#(stop|city)-/.test(location.hash); if(!hashed) obLanding();
   const fontP=Promise.race([Promise.all([document.fonts.load('500 120px "Gloock"'),document.fonts.load('italic 400 28px Inter'),document.fonts.load('600 14px "Noto Sans"')]),new Promise(r=>setTimeout(r,2500))]).catch(()=>{});
