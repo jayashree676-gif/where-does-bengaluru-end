@@ -171,6 +171,10 @@ body.vrmode #artF>*:not(#vrBar),body.vrmode #cardB,body.building #cardB,body.bui
 body.vrmode #vrBar{opacity:1;pointer-events:auto}
 #vrBar .pill{width:auto;padding:12px 20px}
 #vrBar .tip{font-size:14px;color:var(--muted)}
+/* VR view: every label, line of text and arrow on top of the scene is white */
+body.vrmode #vrBar .tip,body.vrmode #vrExit,body.vrmode .nav .txt .kick,body.vrmode .nav .txt span:not(.kick){color:#fff}
+body.vrmode .nav .arrow svg use,body.vrmode .nav .arrow svg path{fill:#fff}
+body.vrmode .nav .arrow{color:#fff}
 
 /* Lenis */
 html.lenis,html.lenis body{height:auto}
@@ -654,7 +658,7 @@ body.has-launcher #launcher{display:block}
   <div id="vrBar"><span class="tip">Drag to look around · scroll to zoom</span><button class="pill glass gbtn ui" id="vrExit">Exit VR view ✕</button></div>
 </main>
 
-<svg width="0" height="0" style="position:absolute"><defs><g id="arrowF"><path fill-rule="evenodd" clip-rule="evenodd" d="M11.4306 18.4881C11.161 18.1736 11.1974 17.7001 11.5119 17.4306L17.8476 12L11.5119 6.56946C11.1974 6.29989 11.161 5.82641 11.4306 5.51192C11.7001 5.19743 12.1736 5.161 12.4881 5.43057L19.0452 11.0509C19.6272 11.5498 19.6272 12.4502 19.0452 12.9491L12.4881 18.5695C12.1736 18.839 11.7001 18.8026 11.4306 18.4881Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M18.75 12C18.75 12.4142 18.4142 12.75 18 12.75L5 12.75C4.58579 12.75 4.25 12.4142 4.25 12C4.25 11.5858 4.58579 11.25 5 11.25L18 11.25C18.4142 11.25 18.75 11.5858 18.75 12Z" fill="black"/></g></defs></svg>
+<svg width="0" height="0" style="position:absolute"><defs><g id="arrowF"><path fill-rule="evenodd" clip-rule="evenodd" d="M11.4306 18.4881C11.161 18.1736 11.1974 17.7001 11.5119 17.4306L17.8476 12L11.5119 6.56946C11.1974 6.29989 11.161 5.82641 11.4306 5.51192C11.7001 5.19743 12.1736 5.161 12.4881 5.43057L19.0452 11.0509C19.6272 11.5498 19.6272 12.4502 19.0452 12.9491L12.4881 18.5695C12.1736 18.839 11.7001 18.8026 11.4306 18.4881Z"/><path fill-rule="evenodd" clip-rule="evenodd" d="M18.75 12C18.75 12.4142 18.4142 12.75 18 12.75L5 12.75C4.58579 12.75 4.25 12.4142 4.25 12C4.25 11.5858 4.58579 11.25 5 11.25L18 11.25C18.4142 11.25 18.75 11.5858 18.75 12Z"/></g></defs></svg>
 
 
 <!-- ================= ONBOARDING ================= -->
@@ -2523,8 +2527,7 @@ const postMat=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,transpa
       float lm=dot(c,vec3(.2126,.7152,.0722)); vec3 m=mix(vec3(lm),c,.2); m=mix(vec3(.7),m,.5); m=mix(m,BG,.4);
       c=mix(c,mix(m,c,hm*inCard),muteK);
       /* and dissolves into the page colour towards the frame's edges, most of all at the sky */
-      float tf=smoothstep(.6,.97,cu.y);   /* sky only: no white ring along the frame's edges */
-      c=mix(c,BG,tf*fadeK*muteK); }
+      }
     c+=(fract(sin(dot(fc+uT*60.,vec2(12.9898,78.233)))*43758.5453)-.5)*.016;
     float inBand=step(band.x,fc.y)*step(fc.y,band.y);
     float g=dot(c,vec3(.299,.587,.114)); vec3 gc=mix(vec3(g),vec3(.8),.3);
