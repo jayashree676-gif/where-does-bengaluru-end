@@ -14,23 +14,27 @@ Open `index.html` in a modern browser. Everything is in that one file. It loads 
 
 **Opening and onboarding**
 - Landing screen with a slow background zoom and the title rising in
-- Six-step guided tour that spotlights each control (first visit only; click or Enter to continue, Esc to skip)
+- First-visit walkthrough with 4 coach marks: Brief story, Timeline stamps, Read full story, VR. An 80% black mask with cutouts and dashed connectors, built to the Figma. Tap anywhere to continue, Skip or Esc to close. It never changes progress
 - Mission panel with the lantern guide
-- Drag-to-start: drag the frame right and the 1537 scene comes into the frame in colour
+- Plain start frame: "Drag me to begin the journey". Drag it right and the 1537 world fades in
 
 **The sliding frame**
-- Drag the glass frame along the timeline, or use the side handles, arrow keys or previous/next buttons
-- The frame is a lens: grey archive outside, full colour inside
+- Drag, flick or scroll the glass frame along the timeline. It always settles on the next year in the direction you moved (GSAP snap tweens, Lenis wheel and trackpad smoothing)
+- Side handles, arrow keys and previous/next buttons step one year at a time
+- Begin Again clears the stamps and returns to the start frame
 
-**Living 3D memories**
-- 8 hand-built 3D scenes from 1537 to 2037 in a golden-hour miniature style
-- Each scene assembles when the frame lands on it, then comes alive (trains, traffic, DNA, bubbling flasks, flags, swaying trees)
+**An endless 3D world**
+- One continuous procedural landscape to the horizon: hills, lakes, farmland, golden-hour sky and fog
+- The city grows by era, from huts and mud walls to colonial blocks, factories, towers, a metro and wind turbines
+- Traffic for each era, people, birds, chimney smoke, lamps and swaying trees
+- Default view: each stop's main 3D asset sits centred in full colour with extra surface detail. The rest of the world is muted and fades into the page
+- VR view fills the screen in full colour
 
 **Story and game**
 - Chapter text and the Watchtower's narration for every stop
 - "Read Full Story" opens a scrolling chapter page (Lenis smooth scroll, GSAP ScrollTrigger)
-- Stamp passport: 7 stamps unlock 2037, where you build your own city and share it by link
-- VR view, Follow View (guided tour), Share, Help
+- Stamp passport with the 7 Figma stamps. All 7 unlock 2037, where you build your own city and share it by link
+- How it works and Share
 
 **Lantern assistant (UI ready)**
 - Launcher and "Ask me anything" bar with all designed states (empty, focused, typing)

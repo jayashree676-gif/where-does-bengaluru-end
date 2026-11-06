@@ -62,7 +62,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .pill{height:48px;width:132px;border-radius:999px;padding:12px 16px;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:16px;line-height:20px;color:var(--ink);white-space:nowrap;
   transform:translate(calc(var(--magnetic-x,0) * 1px),calc(var(--magnetic-y,0) * 1px))}
 .pill.q{width:48px;padding:0}
-.rule{position:absolute;left:60px;width:1320px;height:2px;background:var(--rule)}
+.rule{position:absolute;left:0;width:1440px;height:2px;background:var(--rule)}
 
 /* ---------- the slider card (the frame) ---------- */
 .stage{position:absolute;left:476px;top:132px;width:488px;height:664px}
@@ -73,10 +73,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   -webkit-backdrop-filter:blur(4.28px);backdrop-filter:blur(4.28px)}
 #cardB::after{opacity:.3}
 #cardF{pointer-events:none}
+#cardF::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:2px;pointer-events:none;z-index:3;background:linear-gradient(180deg,#fff 0%,#808080 36%,#fff 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+#cardF::after{content:"";position:absolute;inset:2px;border-radius:30px;pointer-events:none;z-index:2;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 0 0 1px rgba(255,255,255,.12)}
 .slot{position:absolute;left:16px;top:167px;width:352px;height:331px;pointer-events:none}
 .crow{position:absolute;left:16px;top:600px;width:352px;height:48px;display:flex;gap:12px;justify-content:space-between;align-items:center;pointer-events:auto}
 .vr{width:48px;height:48px;flex:none;border-radius:20px;padding:8px;background:#000;display:grid;place-items:center;transform:translate(calc(var(--magnetic-x,0) * 1px),calc(var(--magnetic-y,0) * 1px));transition:background .25s}
 .vr svg{width:32px;height:32px;display:block}
+.crow .read[hidden]{display:none}
 .read{width:292px;height:48px;flex:none;border-radius:16px;padding:12px 20px;background:#000;color:#fff;font-weight:600;font-size:14px;line-height:17px;display:flex;align-items:center;justify-content:center;white-space:pre;
   transform:translate(calc(var(--magnetic-x,0) * 1px),calc(var(--magnetic-y,0) * 1px));transition:background .25s}
 .read:hover,.vr:hover{background:#333}
@@ -400,10 +404,36 @@ body.ob-landing #landing{display:block}
 @keyframes ldZoom{from{transform:translate(-50%,-50%) scale(1)}to{transform:translate(-50%,-50%) scale(1.04)}}
 
 /* 02-07 · coach marks: black 70% scrim with spotlight holes (Figma "Exclude" boolean) */
-#coach{position:fixed;inset:0;z-index:60;display:none;cursor:pointer}
+/* ---------- first-time walkthrough (Figma 79:3307): 80% black mask with cutouts, dashed connectors, centred text ---------- */
+#coach{position:fixed;inset:0;z-index:60;display:none;cursor:pointer;touch-action:none;overscroll-behavior:contain;opacity:0;transition:opacity .3s var(--out);outline:none;-webkit-tap-highlight-color:transparent}
 body.ob-coach #coach{display:block}
-#coach svg{position:absolute;inset:0;width:100%;height:100%}
-#coach path{fill:rgba(0,0,0,.7);fill-rule:evenodd;transition:d .45s var(--out)}
+body.ob-coach.wt-on #coach{opacity:1}
+body.wt-closing #coach{opacity:0;pointer-events:none}
+#wtSvg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#coachPath{fill:rgba(0,0,0,.8);fill-rule:evenodd}
+body:not(.wt-narrow) #coachPath{transition:d .45s var(--out)}
+#wtRing{fill:#e4e4e4;fill-rule:evenodd}
+#wtLines{transition:opacity .25s var(--out)}
+#wtLines path{fill:none;stroke:#fff;stroke-linejoin:round;stroke-linecap:butt}
+#wtLines .mk{fill:#fff;stroke:none}
+#wtText{position:absolute;left:0;top:0;width:493px;transform-origin:0 0;text-align:center;color:#fff;transition:opacity .25s var(--out)}
+#coach.swap #wtText,#coach.swap #wtLines{opacity:0}
+.wt-h{margin:0;height:24px;padding-top:1.2px;font-family:var(--kicker);font-weight:600;font-size:16px;line-height:21.6px;letter-spacing:.12em;text-transform:uppercase;color:#fff;white-space:nowrap}
+.wt-rule{display:block;width:48px;height:2px;border-radius:2px;background:#fff;margin:16px auto 0}
+.wt-d{margin:16px auto 0;width:460px;min-height:60px;font-family:var(--sans);font-style:italic;font-weight:400;font-size:24px;line-height:30px;letter-spacing:0;color:#fff}
+.wt-skip{display:block;margin:61px auto 0;height:29px;padding:0 16px;background:none;border:0;font-family:var(--sans);font-weight:400;font-size:24px;line-height:29px;color:rgba(255,255,255,.6);cursor:pointer;border-radius:8px;transition:color .2s}
+.wt-skip:hover{color:rgba(255,255,255,.85)}
+.wt-skip:focus-visible{outline:2px solid rgba(255,255,255,.7);outline-offset:4px}
+body.wt-narrow .wt-h{white-space:normal;height:auto}
+body.wt-narrow .wt-d{width:auto;max-width:460px;font-size:20px;line-height:26px;min-height:0}
+body.wt-narrow .wt-skip{margin-top:36px}
+@media (prefers-reduced-motion:reduce){ #coach,#wtText,#wtLines,body:not(.wt-narrow) #coachPath{transition:none} }
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* tour presentation states (never touch progress): intro = the plain start frame, chapter = the 1537 chapter */
+body.wt-intro .obc{display:block}
+body.wt-intro #blkL,body.wt-intro #blkR,body.wt-intro .crow{display:none}
+body.wt-intro .slotImg{opacity:0;transition:none}
+body.wt-intro #hL{opacity:0}
 
 /* 08 · mission (backdrop + lantern panel + Start the journey) */
 #obDim{position:fixed;inset:0;z-index:55;background:linear-gradient(rgba(234,234,234,.2),rgba(234,234,234,.2)),rgba(0,0,0,.17);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:opacity .5s var(--out)}
@@ -450,7 +480,9 @@ body.assist .mstart{display:none}
 .obc{display:none}
 body.ob-mission .obc,body.ob-drag .obc{display:block}
 body.ob-mission #blkL,body.ob-drag #blkL,body.ob-mission #blkR,body.ob-drag #blkR,body.ob-mission .crow,body.ob-drag .crow{display:none}
-.ob-tower{position:absolute;left:16px;top:32px;width:352px;height:352px;pointer-events:none}
+.ob-plain{position:absolute;left:0;top:248px;width:384px;margin:0;font-family:var(--display);font-weight:500;font-size:42px;line-height:54px;letter-spacing:-.2px;color:#000;text-align:center;pointer-events:none;will-change:transform,opacity}
+.ob-cue[hidden]{display:none}
+body.ob-drag #hL,body.ob-mission #hL{opacity:0;pointer-events:none}
 .ob-say{position:absolute;left:25px;top:389px;width:334px;margin:0;font-style:italic;font-weight:400;font-size:20px;line-height:24px;color:var(--ink);text-align:center;pointer-events:none}
 .ob-cue{position:absolute;left:59px;top:591px;width:267px;height:28px;display:flex;align-items:center;gap:16px;pointer-events:none}
 .ob-cue span{width:187px;text-align:center;font-family:var(--kicker);font-weight:600;font-size:14px;line-height:18.9px;letter-spacing:1.68px;text-transform:uppercase;color:#000}
@@ -474,7 +506,6 @@ body.ob-mission .slotImg,body.ob-drag .slotImg{opacity:0;transition:none}
 #launcher{position:absolute;left:60px;top:664px;width:96px;height:96px;border-radius:999px;display:none;--bw:1.36px;background:rgba(255,255,255,.2);
   -webkit-backdrop-filter:blur(1.4px);backdrop-filter:blur(1.4px);box-shadow:0 14.59px 11.67px rgba(0,0,0,.1),0 60px 93.22px rgba(0,0,0,.2),inset 0 1px 1px rgba(255,255,255,.7)}
 body.has-launcher #launcher{display:block}
-body.ob-coach #launcher{display:none}
 #launcher img{position:absolute;left:16px;top:16px;width:64px;height:64px;z-index:1}
 #launcher .badge{position:absolute;left:68px;top:0;width:28px;height:28px;border-radius:50%;background:#000;display:grid;place-items:center;z-index:2}
 #launcher .badge svg{width:16px;height:16px}
@@ -489,11 +520,11 @@ body.ob-coach #launcher{display:none}
   <h1 class="title">Where does Bengaluru Ends? </h1>
   <p class="sub">500 years in 5.8 m · told by the Watchtower</p>
   <nav class="hudb" aria-label="Experience controls">
-    <button class="pill glass gbtn ui" string="magnetic" string-strength="0.25" id="btnFollow" aria-pressed="false" data-cursor="Tour">Follow View</button>
+    <button class="pill glass gbtn ui" string="magnetic" string-strength="0.25" id="btnBegin" data-cursor="Restart">✦ Begin Again</button>
     <button class="pill glass gbtn ui" string="magnetic" string-strength="0.25" id="btnNotes" aria-controls="panel">How it works</button>
     <button class="pill glass gbtn ui" string="magnetic" string-strength="0.25" id="btnShare">Share</button>
-    <button class="pill q glass gbtn ui" string="magnetic" string-strength="0.25" id="btnHelp" aria-haspopup="dialog" aria-label="Help">?</button>
   </nav>
+  <div style="display:none" aria-hidden="true"><button id="btnFollow" tabindex="-1"></button><button id="btnHelp" tabindex="-1"></button></div>
   <div class="rule" id="rule1" style="top:142px" role="presentation"></div>
 
   <section class="left blk" id="blkL" aria-live="polite">
@@ -510,7 +541,7 @@ body.ob-coach #launcher{display:none}
       <div class="card" id="cardF">
         <div class="cscale">
         <div class="slot" id="slot" aria-hidden="true"><img class="slotImg" id="slotImg" alt=""></div>
-        <div class="obc" id="obCard"><img class="ob-tower" id="obTower" alt="The Watchtower"><p class="ob-say">Each year on my timeline shows one thing I remember. Drag the frame onto 1537 and watch the memory come back together. </p><div class="ob-cue"><span>Drag right to start</span><svg width="64" height="28" viewBox="0 0 64 28" fill="none" aria-hidden="true"><path d="M54.5824 25.1396C53.0598 26.938 50.8217 27.9737 48.4653 27.9703L40.9661 27.9595L52.7645 14.0203L40.9253 0.0324356L48.3866 0.0107857C50.7437 0.00394635 52.9839 1.03692 54.5091 2.83399L64 14.0162L54.5824 25.1396Z" fill="black"/><path d="M13.6448 25.147C12.1294 26.9389 9.90348 27.975 7.55663 27.9809L0 28L11.8392 14.0203L0 0.0324356L7.46132 0.0107937C9.82076 0.00394997 12.0629 1.039 13.5882 2.83916L23.0584 14.0162L13.6448 25.147Z" fill="black" fill-opacity="0.2"/><path d="M34.0595 25.174C32.5369 26.9591 30.3075 27.9859 27.9612 27.9825L20.4443 27.9716L32.3651 14.0203L20.4443 0.0648626L27.9154 0.0350553C30.2669 0.0256735 32.5034 1.05135 34.0306 2.83949L43.5762 14.0162L34.0595 25.174Z" fill="black" fill-opacity="0.6"/></svg></div></div>
+        <div class="obc" id="obCard"><p class="ob-plain">Drag me<br>to begin<br>the journey</p><div class="ob-cue" hidden><span>Drag right to start</span><svg width="64" height="28" viewBox="0 0 64 28" fill="none" aria-hidden="true"><path d="M54.5824 25.1396C53.0598 26.938 50.8217 27.9737 48.4653 27.9703L40.9661 27.9595L52.7645 14.0203L40.9253 0.0324356L48.3866 0.0107857C50.7437 0.00394635 52.9839 1.03692 54.5091 2.83399L64 14.0162L54.5824 25.1396Z" fill="black"/><path d="M13.6448 25.147C12.1294 26.9389 9.90348 27.975 7.55663 27.9809L0 28L11.8392 14.0203L0 0.0324356L7.46132 0.0107937C9.82076 0.00394997 12.0629 1.039 13.5882 2.83916L23.0584 14.0162L13.6448 25.147Z" fill="black" fill-opacity="0.2"/><path d="M34.0595 25.174C32.5369 26.9591 30.3075 27.9859 27.9612 27.9825L20.4443 27.9716L32.3651 14.0203L20.4443 0.0648626L27.9154 0.0350553C30.2669 0.0256735 32.5034 1.05135 34.0306 2.83949L43.5762 14.0162L34.0595 25.174Z" fill="black" fill-opacity="0.6"/></svg></div></div>
         </div>
         <div class="crow">
           <button class="vr ui" string="magnetic" string-strength="0.2" id="btnVR" aria-label="VR view: look around this diorama" data-cursor="VR"><svg viewBox="0 0 32 32" fill="none"><path d="M28.4225 14.0258C28.0409 13.0468 27.3828 12.3039 26.5394 11.7075C26.0929 9.08812 25.3339 7.30001 22.613 6.71318C18.2027 5.76182 13.7454 5.75768 9.33514 6.72837C6.6309 7.32348 5.91336 9.11159 5.46127 11.7033C4.74512 12.2377 4.09671 12.8328 3.72757 13.6958C2.33121 16.9641 2.30909 20.6853 3.68471 23.9701C4.30409 25.4503 5.63409 26.4307 7.16871 26.7607C8.14616 26.9706 9.04205 27.1556 10.0333 27.2909C11.5361 27.4967 13.0362 26.8656 13.8726 25.616C14.1505 25.2004 14.3731 24.7972 14.6994 24.4396C15.3132 23.7672 16.2796 23.5973 17.029 24.1994C17.358 24.4631 17.6456 24.7848 17.8364 25.1535C18.5995 26.6295 20.1576 27.5146 21.8485 27.302C22.9393 27.1653 23.9817 26.9554 25.0477 26.7013C26.7247 26.2995 27.9593 25.0886 28.5275 23.4855C29.6211 20.3981 29.6156 17.0814 28.4238 14.0258H28.4225ZM9.7347 9.32147C13.845 8.37149 18.1032 8.37287 22.2149 9.30766C22.5799 9.39051 22.8508 9.51892 23.1356 9.71637C23.3485 10.0326 23.5366 10.2908 23.6264 10.7575C18.5581 9.77989 13.451 9.78817 8.36598 10.7533C8.58166 9.92211 8.919 9.51063 9.73331 9.32285L9.7347 9.32147ZM26.0873 22.5673C25.8081 23.3571 25.2246 23.9895 24.3951 24.1855C23.4508 24.4079 22.5259 24.5901 21.5595 24.7213C21.0826 24.7862 20.5213 24.5418 20.2931 24.1579C19.942 23.5683 19.6102 23.0947 19.1207 22.5783C17.5156 20.8813 14.8556 20.7695 13.1496 22.3298C12.5537 22.8738 12.1223 23.462 11.7159 24.1538C11.4795 24.557 10.9278 24.7738 10.4536 24.713C9.46234 24.5887 8.51945 24.4092 7.5572 24.169C6.78713 23.977 6.22443 23.4068 5.95207 22.6639C5.01195 20.0984 5.03269 17.2706 6.10554 14.7548C6.35024 14.179 6.89358 13.7828 7.46457 13.6309C8.62037 13.3243 9.71811 13.149 10.9071 12.9833C14.3095 12.5069 17.6981 12.5042 21.1005 12.9833C22.3379 13.1587 23.502 13.3271 24.6965 13.682C25.3007 13.8615 25.7777 14.4041 26.0058 14.9896C26.957 17.4377 26.9625 20.0957 26.0901 22.5645L26.0873 22.5673Z" fill="white"/><rect x="8" y="16" width="4" height="1.33333" rx="0.666667" fill="white"/></svg></button>
@@ -531,8 +562,6 @@ body.ob-coach #launcher{display:none}
     </div>
   </section>
 
-  <div class="obc" id="obChap"><p class="kick">Chapter 01 - The FOUNDING</p><div class="yearbox"><p class="year">1537</p></div></div>
-  <div class="obc" id="obGray" aria-hidden="true"><img class="g" id="obGrayG" alt=""><img class="c" id="obGrayC" alt=""></div>
   <button class="glass ui" id="launcher" aria-label="Ask the lantern" data-cursor="Ask"><img id="launcherImg" alt=""><span class="badge"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true"><path d="M6.58097 0.327609C6.74144 -0.109134 7.35914 -0.109136 7.51962 0.327608L7.92355 1.42696C8.73323 3.63059 10.47 5.36736 12.6736 6.17704L13.773 6.58097C14.2097 6.74144 14.2097 7.35914 13.773 7.51962L12.6736 7.92355C10.47 8.73323 8.73323 10.47 7.92355 12.6736L7.51962 13.773C7.35914 14.2097 6.74144 14.2097 6.58097 13.773L6.17704 12.6736C5.36736 10.47 3.6306 8.73323 1.42696 7.92355L0.327609 7.51962C-0.109134 7.35914 -0.109136 6.74144 0.327608 6.58097L1.42696 6.17704C3.63059 5.36736 5.36736 3.6306 6.17704 1.42696L6.58097 0.327609Z" fill="#D9D9D9"/></svg></span></button>
   <div class="rule" id="rule2" style="top:784px" role="presentation"></div>
   <nav class="pass ui" id="pass" aria-label="Timeline">
@@ -576,7 +605,11 @@ body.ob-coach #launcher{display:none}
     <button class="ld-cta ld-fade ui" id="ldCta">✦ Lets Begin ✦</button>
   </div>
 </section>
-<div id="coach" role="dialog" aria-modal="true" aria-label="Guided tour. Click or press Enter to continue, Escape to skip."><svg aria-hidden="true"><path id="coachPath" d=""/></svg></div>
+<div id="coach" role="dialog" aria-modal="true" aria-labelledby="wtHead" aria-describedby="wtDesc wtHint" tabindex="-1">
+  <svg id="wtSvg" aria-hidden="true"><path id="coachPath" d=""/><path id="wtRing" d=""/><g id="wtLines"></g></svg>
+  <div id="wtText"><p class="wt-h" id="wtHead"></p><span class="wt-rule" aria-hidden="true"></span><p class="wt-d" id="wtDesc"></p><button class="wt-skip" id="wtSkip" type="button">Skip</button></div>
+  <p class="sr-only" id="wtHint">Tap anywhere or press Enter to continue. Press Escape to skip.</p>
+</div>
 <div id="obDim"></div>
 <div class="ob-art" id="artM" role="dialog" aria-modal="true" aria-labelledby="mTitle">
   <div class="mpanel ui" id="mPanel">
@@ -601,7 +634,7 @@ body.ob-coach #launcher{display:none}
     <li><b>Watch it build:</b> each year shows one object. When the frame lands on it, the whole scene assembles and starts to move.</li>
     <li><b>Earn stamps:</b> every scene you restore adds a stamp to the timeline. 7 stamps open 2037.</li>
     <li><b>Read Full Story</b> opens the chapter. <b>VR</b> lets you look around the scene.</li>
-    <li><b>Follow View</b> plays a guided tour.</li>
+    <li><b>Begin Again</b> starts the journey from the first frame.</li>
   </ul>
   <div class="row"><button class="cta" id="helpClose">Got it</button></div>
 </dialog>
@@ -620,18 +653,15 @@ body.ob-coach #launcher{display:none}
   <h3>Where does Bengaluru end? Told by the Watchtower.</h3>
   <p>A 5.8 m wall with a screen on rails, built here as a 3D world. The glass card is the frame. Outside it the timeline is a grey archive. Inside it, the past comes back in colour.</p>
   <h4 class="kick">The interaction</h4>
-  <ul><li><b>Drag the frame.</b> Drag anywhere, or grab the side handles. Tap a handle to step one year.</li><li><b>One object per year.</b> Each stop shows a single hero piece. Slide the frame over it and the rest of the memory flies in and builds itself.</li><li><b>Earn stamps.</b> Every restored memory earns a stamp in the passport. 7 stamps unlock 2037, where you build the city you want.</li><li><b>Read the full story.</b> The frame opens into a scrolling chapter with rendered views of the diorama.</li><li><b>VR view.</b> Step inside the diorama and look around.</li><li><b>Follow View.</b> The Watchtower takes you through every stop on its own.</li></ul>
+  <ul><li><b>Drag the frame.</b> Drag, flick or scroll. The frame always settles on the next year in the direction you moved. Tap a handle to step one year.</li><li><b>One object per year.</b> Each stop shows a single hero piece. Slide the frame over it and the rest of the memory flies in and builds itself.</li><li><b>Earn stamps.</b> Every restored memory earns a stamp in the passport. 7 stamps unlock 2037, where you build the city you want.</li><li><b>VR view.</b> Step inside the diorama and look around.</li><li><b>Begin Again.</b> Clears your stamps and starts from the first frame.</li></ul>
   <h4 class="kick">Built with</h4>
-  <ul><li>Three.js for the 3D world, with a two-pass render for the grey and colour lens.</li><li>StringTune for smooth scrolling and magnetic buttons.</li></ul>
+  <ul><li>Three.js for the 3D world, with a two-pass render for the grey and colour lens.</li><li>GSAP for the frame snap tweens and Lenis for smooth wheel and trackpad scrolling along the timeline.</li><li>StringTune for the magnetic buttons.</li></ul>
   <h4 class="kick">Reviewer shortcut</h4>
   <p>Want to see the ending without visiting all 7 memories?</p>
   <button class="cta" id="btnUnlockAll">✦  Give me all 7 stamps</button>
 </aside>
 <div class="toast" id="toast"></div>
 
-  <div class="stamps" id="misRow"></div>
-  <div class="row"><button class="cta" string="magnetic" id="btnGo">✦  Start the journey</button></div>
-</div></div>
 
 
 <div id="nogl"><div><h2>This needs WebGL</h2><p>Your browser couldn’t start the 3D world. Try a recent Chrome, Edge, Safari or Firefox.</p></div></div>
