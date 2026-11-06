@@ -647,9 +647,9 @@ function chapterHTML(i,imgs){
   const z=ZONES[i], nx=ZONES[i+1];
   const num=s=>`${s.raw?s.n:s.n.toLocaleString()}${s.s?`<small>${s.s}</small>`:''}`;
   let end;
-  if(z.future) end= unlocked()? `<div class="kick lo-label">Your turn</div><h2>Build the Bengaluru you want.</h2><div class="row"><button class="cta" string="magnetic" id="loBuild">✦  Start building</button><button class="ghost glass" string="magnetic" id="loBack">Back to the timeline</button></div>`
+  if(z.future) end= unlocked()? `<div class="kick lo-label">Your turn</div><h2>Build the Bengaluru you want.</h2><div class="row"><button class="cta" id="loBuild">✦  Start building</button><button class="ghost glass" id="loBack">Back to the timeline</button></div>`
     : `<div class="kick lo-label">Locked, for now</div><h2>Bring me all 7 stamps.</h2><p style="font-size:18px;color:#555">You have ${stampCount()} of 7.</p><div class="row">${[0,1,2,3,4,5,6].filter(k=>!starred.has(k)).map(k=>`<button class="ghost glass" data-go="${k}">${ZONES[k].year} · ${ZONES[k].block} →</button>`).join('')}</div>`;
-  else end=`<div class="kick lo-label">Memory restored</div><h2>The ${z.block} block is yours for 2037.</h2><div class="row"><button class="cta" string="magnetic" id="loBack">✦  Back to the timeline</button></div>`;
+  else end=`<div class="kick lo-label">Memory restored</div><h2>The ${z.block} block is yours for 2037.</h2><div class="row"><button class="cta" id="loBack">✦  Back to the timeline</button></div>`;
   return `<section class="lo-hero"><img src="${imgs[0]}" alt="${z.year} diorama">
     <div class="lo-hero-txt"><div class="kick">Chapter ${pad(i+1)} - ${z.chapter}</div><div class="lo-year">${z.year}</div><h1 class="lo-title" data-split="word">${z.title}</h1></div><div class="lo-scrollcue kick">Scroll to read ↓</div></section>
   <section class="lo-narr"><div class="kick lo-label">The watch tower remembers</div>${z.story.map(p=>`<p class="scrub" data-split="word">${p}</p>`).join('')}</section>
@@ -788,7 +788,7 @@ function bResult(fromLink){
   B.objs.forEach(o=>{ if(o){ o.userData.pop=1; o.scale.setScalar(1); } });
   const X=stopX(7), img=snapshot(new THREE.Vector3(X+6,8.6,10.5),new THREE.Vector3(X,1.3,0),32);
   $('resIn').innerHTML=`<img src="${img}" alt="Your 2037 Bengaluru, rendered"><div><span class="kick">Bengaluru · 2037 · built by ${B.visitor?'a visitor':'you'}</span><h5>${name}</h5><p>“${line}”</p><div class="facts">${facts||'A quiet city.'}<br>Green ${s.g} · Liveable ${s.l} · Innovation ${s.i}</div>
-    <div class="row">${B.visitor?`<button class="cta" string="magnetic" id="rOwn">✦  Build your own</button>`:`<button class="ghost glass" string="magnetic" id="rEdit">Keep building</button><button class="cta" string="magnetic" id="rShare">✦  Share my city</button>`}<button class="ghost glass" string="magnetic" id="rBack">Back to the timeline</button></div></div>`;
+    <div class="row">${B.visitor?`<button class="cta" id="rOwn">✦  Build your own</button>`:`<button class="ghost glass" id="rEdit">Keep building</button><button class="cta" id="rShare">✦  Share my city</button>`}<button class="ghost glass" id="rBack">Back to the timeline</button></div></div>`;
   $('bres').classList.add('show'); chord(); spawnBurst(X,2.5,0,90,150,2.5);
   const q=id=>$(id); q('rEdit')&&(q('rEdit').onclick=()=>$('bres').classList.remove('show'));
   q('rShare')&&(q('rShare').onclick=()=>{ try{ location.hash='city-'+bCode(); }catch(e){} toast('Your city now has its own link. Copy this page’s link to share it.'); });

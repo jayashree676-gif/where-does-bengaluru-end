@@ -652,9 +652,9 @@ body.has-launcher #launcher{display:block}
   <h1 class="title">Where does Bengaluru Ends? </h1>
   <p class="sub">500 years in 5.8 m · told by the Watchtower</p>
   <nav class="hudb" aria-label="Experience controls">
-    <button class="pill glass gbtn ui" string="magnetic" string-strength="0.25" id="btnBegin" data-cursor="Restart">✦ Begin Again</button>
-    <button class="pill glass gbtn ui" string="magnetic" string-strength="0.25" id="btnNotes" aria-controls="panel">How it works</button>
-    <button class="pill glass gbtn ui" string="magnetic" string-strength="0.25" id="btnShare">Share</button>
+    <button class="pill glass gbtn ui" id="btnBegin" data-cursor="Restart">✦ Begin Again</button>
+    <button class="pill glass gbtn ui" id="btnNotes" aria-controls="panel">How it works</button>
+    <button class="pill glass gbtn ui" id="btnShare">Share</button>
   </nav>
   <div style="display:none" aria-hidden="true"><button id="btnFollow" tabindex="-1"></button><button id="btnHelp" tabindex="-1"></button></div>
   <div class="rule" id="rule1" style="top:142px" role="presentation"></div>
@@ -676,8 +676,8 @@ body.has-launcher #launcher{display:block}
         <div class="obc" id="obCard"><p class="ob-plain">Drag me<br>to begin<br>the journey</p><div class="ob-cue" hidden><span>Drag right to start</span><svg width="64" height="28" viewBox="0 0 64 28" fill="none" aria-hidden="true"><path d="M54.5824 25.1396C53.0598 26.938 50.8217 27.9737 48.4653 27.9703L40.9661 27.9595L52.7645 14.0203L40.9253 0.0324356L48.3866 0.0107857C50.7437 0.00394635 52.9839 1.03692 54.5091 2.83399L64 14.0162L54.5824 25.1396Z" fill="black"/><path d="M13.6448 25.147C12.1294 26.9389 9.90348 27.975 7.55663 27.9809L0 28L11.8392 14.0203L0 0.0324356L7.46132 0.0107937C9.82076 0.00394997 12.0629 1.039 13.5882 2.83916L23.0584 14.0162L13.6448 25.147Z" fill="black" fill-opacity="0.2"/><path d="M34.0595 25.174C32.5369 26.9591 30.3075 27.9859 27.9612 27.9825L20.4443 27.9716L32.3651 14.0203L20.4443 0.0648626L27.9154 0.0350553C30.2669 0.0256735 32.5034 1.05135 34.0306 2.83949L43.5762 14.0162L34.0595 25.174Z" fill="black" fill-opacity="0.6"/></svg></div></div><div class="obc st" id="stCard"><img class="ob-tower" id="stTower" alt="The Watchtower"><p class="ob-say">Each year on my timeline shows one thing I remember. Drag the frame onto 1537 and watch the memory come back together. </p><div class="ob-cue"><span>Drag right to start</span><svg width="64" height="28" viewBox="0 0 64 28" fill="none" aria-hidden="true"><path d="M54.5824 25.1396C53.0598 26.938 50.8217 27.9737 48.4653 27.9703L40.9661 27.9595L52.7645 14.0203L40.9253 0.0324356L48.3866 0.0107857C50.7437 0.00394635 52.9839 1.03692 54.5091 2.83399L64 14.0162L54.5824 25.1396Z" fill="black"/><path d="M13.6448 25.147C12.1294 26.9389 9.90348 27.975 7.55663 27.9809L0 28L11.8392 14.0203L0 0.0324356L7.46132 0.0107937C9.82076 0.00394997 12.0629 1.039 13.5882 2.83916L23.0584 14.0162L13.6448 25.147Z" fill="black" fill-opacity="0.2"/><path d="M34.0595 25.174C32.5369 26.9591 30.3075 27.9859 27.9612 27.9825L20.4443 27.9716L32.3651 14.0203L20.4443 0.0648626L27.9154 0.0350553C30.2669 0.0256735 32.5034 1.05135 34.0306 2.83949L43.5762 14.0162L34.0595 25.174Z" fill="black" fill-opacity="0.6"/></svg></div></div>
         </div>
         <div class="crow">
-          <button class="vr ui" string="magnetic" string-strength="0.2" id="btnVR" aria-label="VR view: look around this diorama" data-cursor="VR"><svg viewBox="0 0 32 32" fill="none"><path d="M28.4225 14.0258C28.0409 13.0468 27.3828 12.3039 26.5394 11.7075C26.0929 9.08812 25.3339 7.30001 22.613 6.71318C18.2027 5.76182 13.7454 5.75768 9.33514 6.72837C6.6309 7.32348 5.91336 9.11159 5.46127 11.7033C4.74512 12.2377 4.09671 12.8328 3.72757 13.6958C2.33121 16.9641 2.30909 20.6853 3.68471 23.9701C4.30409 25.4503 5.63409 26.4307 7.16871 26.7607C8.14616 26.9706 9.04205 27.1556 10.0333 27.2909C11.5361 27.4967 13.0362 26.8656 13.8726 25.616C14.1505 25.2004 14.3731 24.7972 14.6994 24.4396C15.3132 23.7672 16.2796 23.5973 17.029 24.1994C17.358 24.4631 17.6456 24.7848 17.8364 25.1535C18.5995 26.6295 20.1576 27.5146 21.8485 27.302C22.9393 27.1653 23.9817 26.9554 25.0477 26.7013C26.7247 26.2995 27.9593 25.0886 28.5275 23.4855C29.6211 20.3981 29.6156 17.0814 28.4238 14.0258H28.4225ZM9.7347 9.32147C13.845 8.37149 18.1032 8.37287 22.2149 9.30766C22.5799 9.39051 22.8508 9.51892 23.1356 9.71637C23.3485 10.0326 23.5366 10.2908 23.6264 10.7575C18.5581 9.77989 13.451 9.78817 8.36598 10.7533C8.58166 9.92211 8.919 9.51063 9.73331 9.32285L9.7347 9.32147ZM26.0873 22.5673C25.8081 23.3571 25.2246 23.9895 24.3951 24.1855C23.4508 24.4079 22.5259 24.5901 21.5595 24.7213C21.0826 24.7862 20.5213 24.5418 20.2931 24.1579C19.942 23.5683 19.6102 23.0947 19.1207 22.5783C17.5156 20.8813 14.8556 20.7695 13.1496 22.3298C12.5537 22.8738 12.1223 23.462 11.7159 24.1538C11.4795 24.557 10.9278 24.7738 10.4536 24.713C9.46234 24.5887 8.51945 24.4092 7.5572 24.169C6.78713 23.977 6.22443 23.4068 5.95207 22.6639C5.01195 20.0984 5.03269 17.2706 6.10554 14.7548C6.35024 14.179 6.89358 13.7828 7.46457 13.6309C8.62037 13.3243 9.71811 13.149 10.9071 12.9833C14.3095 12.5069 17.6981 12.5042 21.1005 12.9833C22.3379 13.1587 23.502 13.3271 24.6965 13.682C25.3007 13.8615 25.7777 14.4041 26.0058 14.9896C26.957 17.4377 26.9625 20.0957 26.0901 22.5645L26.0873 22.5673Z" fill="white"/><rect x="8" y="16" width="4" height="1.33333" rx="0.666667" fill="white"/></svg></button>
-          <button class="read ui" string="magnetic" string-strength="0.15" id="btnRead" data-cursor="Read">✦  Read Full Story</button>
+          <button class="vr ui" id="btnVR" aria-label="VR view: look around this diorama" data-cursor="VR"><svg viewBox="0 0 32 32" fill="none"><path d="M28.4225 14.0258C28.0409 13.0468 27.3828 12.3039 26.5394 11.7075C26.0929 9.08812 25.3339 7.30001 22.613 6.71318C18.2027 5.76182 13.7454 5.75768 9.33514 6.72837C6.6309 7.32348 5.91336 9.11159 5.46127 11.7033C4.74512 12.2377 4.09671 12.8328 3.72757 13.6958C2.33121 16.9641 2.30909 20.6853 3.68471 23.9701C4.30409 25.4503 5.63409 26.4307 7.16871 26.7607C8.14616 26.9706 9.04205 27.1556 10.0333 27.2909C11.5361 27.4967 13.0362 26.8656 13.8726 25.616C14.1505 25.2004 14.3731 24.7972 14.6994 24.4396C15.3132 23.7672 16.2796 23.5973 17.029 24.1994C17.358 24.4631 17.6456 24.7848 17.8364 25.1535C18.5995 26.6295 20.1576 27.5146 21.8485 27.302C22.9393 27.1653 23.9817 26.9554 25.0477 26.7013C26.7247 26.2995 27.9593 25.0886 28.5275 23.4855C29.6211 20.3981 29.6156 17.0814 28.4238 14.0258H28.4225ZM9.7347 9.32147C13.845 8.37149 18.1032 8.37287 22.2149 9.30766C22.5799 9.39051 22.8508 9.51892 23.1356 9.71637C23.3485 10.0326 23.5366 10.2908 23.6264 10.7575C18.5581 9.77989 13.451 9.78817 8.36598 10.7533C8.58166 9.92211 8.919 9.51063 9.73331 9.32285L9.7347 9.32147ZM26.0873 22.5673C25.8081 23.3571 25.2246 23.9895 24.3951 24.1855C23.4508 24.4079 22.5259 24.5901 21.5595 24.7213C21.0826 24.7862 20.5213 24.5418 20.2931 24.1579C19.942 23.5683 19.6102 23.0947 19.1207 22.5783C17.5156 20.8813 14.8556 20.7695 13.1496 22.3298C12.5537 22.8738 12.1223 23.462 11.7159 24.1538C11.4795 24.557 10.9278 24.7738 10.4536 24.713C9.46234 24.5887 8.51945 24.4092 7.5572 24.169C6.78713 23.977 6.22443 23.4068 5.95207 22.6639C5.01195 20.0984 5.03269 17.2706 6.10554 14.7548C6.35024 14.179 6.89358 13.7828 7.46457 13.6309C8.62037 13.3243 9.71811 13.149 10.9071 12.9833C14.3095 12.5069 17.6981 12.5042 21.1005 12.9833C22.3379 13.1587 23.502 13.3271 24.6965 13.682C25.3007 13.8615 25.7777 14.4041 26.0058 14.9896C26.957 17.4377 26.9625 20.0957 26.0901 22.5645L26.0873 22.5673Z" fill="white"/><rect x="8" y="16" width="4" height="1.33333" rx="0.666667" fill="white"/></svg></button>
+          <button class="read ui" id="btnRead" data-cursor="Read">✦  Read Full Story</button>
         </div>
       </div>
     </div>
@@ -704,12 +704,12 @@ body.has-launcher #launcher{display:block}
   </nav>
   <nav class="navrow" aria-label="Step navigation">
     <button class="nav ui blk" id="navP" data-cursor="Back">
-      <span class="arrow glass" string="magnetic" string-strength="0.2"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="#arrowF" fill="black"/></svg></span>
+      <span class="arrow glass"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="#arrowF" fill="black"/></svg></span>
       <span class="txt fade" style="--base:.6s"><span class="kick">Previous step</span><span id="pT">A sultan plants a garden</span></span>
     </button>
     <button class="nav ui blk" id="navN" data-cursor="Next">
       <span class="txt fade" style="--base:.6s"><span class="kick">Next STOP</span><span id="nT">A sultan plants a garden</span></span>
-      <span class="arrow glass" string="magnetic" string-strength="0.2"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="#arrowF" fill="black"/></svg></span>
+      <span class="arrow glass"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="#arrowF" fill="black"/></svg></span>
     </button>
   </nav>
 
@@ -719,8 +719,8 @@ body.has-launcher #launcher{display:block}
     <p>Every block was unlocked by a stamp you earned. The lake is my gift. Grey blocks are today’s concrete. Pick a block, then tap the plot.</p>
     <div class="meters"><div class="meter"><span>Green <em id="mg"></em></span><i><b id="bg"></b></i></div><div class="meter"><span>Liveable <em id="ml"></em></span><i><b id="bl"></b></i></div><div class="meter"><span>Innovation <em id="mi"></em></span><i><b id="bi"></b></i></div></div>
     <div class="palette" id="bpal"></div>
-    <div class="bfoot"><div class="budget" id="bbud"></div><button class="ghost glass" string="magnetic" id="bReset">Reset</button><button class="cta" string="magnetic" id="bDone">✦  Name my city</button></div>
-    <div class="bfoot" style="margin-top:10px"><button class="ghost glass" string="magnetic" id="bExit">← Back to the timeline</button></div>
+    <div class="bfoot"><div class="budget" id="bbud"></div><button class="ghost glass" id="bReset">Reset</button><button class="cta" id="bDone">✦  Name my city</button></div>
+    <div class="bfoot" style="margin-top:10px"><button class="ghost glass" id="bExit">← Back to the timeline</button></div>
   </div>
 
   <div id="vrBar"><span class="tip">Drag to look around · scroll to zoom</span><button class="pill glass gbtn ui" id="vrExit">Exit VR view ✕</button></div>
@@ -832,7 +832,7 @@ body.has-launcher #launcher{display:block}
 <div class="lo" id="lensOpen">
   <div class="lo-progress"><i id="loProg"></i></div>
   <div class="lo-scroll" id="loScroll"><div class="lo-inner" id="loInner"></div></div>
-  <button class="lo-close glass" string="magnetic" id="loClose">Back to the timeline ✕</button>
+  <button class="lo-close glass" id="loClose">Back to the timeline ✕</button>
 </div>
 
 <aside class="panel" id="panel">
