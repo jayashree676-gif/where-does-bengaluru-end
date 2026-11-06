@@ -1106,6 +1106,8 @@ function closeLamp(){ if(!lamp.open) return; lamp.open=false; bc('lamp',false); 
 function lampOnArrive(i,prev){ if(i!==1||prev!==0||LS.get(LAMP_KEY)==='1'||lamp.timer) return; LS.set(LAMP_KEY,'1');
   lamp.timer=setTimeout(()=>{ lamp.timer=0; if(arrived&&zoneIdx===1) openLamp(); },1500); }
 $('lClose').onclick=closeLamp; $('lGo').onclick=closeLamp;
+/* let the mission text and the messages scroll natively: keep the page's smooth-scroll handlers from swallowing the wheel */
+$('lPanel').querySelectorAll('.lscroll,.lmsgs').forEach(el=>['wheel','touchmove'].forEach(t=>el.addEventListener(t,e=>e.stopPropagation(),{passive:true})));
 $('obDim').addEventListener('click',()=>{ if(lamp.open) closeLamp(); });
 $('lPanel').querySelectorAll('[data-lstamp]').forEach(im=>{ im.src=LAMP_STAMPS[im.dataset.lstamp]; });
 $('lLamp').src=FIG['lantern-688']; $('lAv').src=FIG['lantern-688'];
@@ -1115,7 +1117,7 @@ $('lInput').addEventListener('blur',()=>setTimeout(()=>{ if(lamp.open&&lamp.stat
 $('lBar').addEventListener('submit',e=>{ e.preventDefault(); e.stopImmediatePropagation(); const q=$('lInput').value.trim(); if(!q){ $('lInput').focus(); return; }
   const t=lampTime(); lamp.hist.push({who:'you',text:q,t},{who:'lamp',text:lampAnswer(q),t});
   if(lamp.state==='chat'){ $('lInput').value=''; lampRender(); lBar.sync(); }
-  else { lampSet('result'); lampRender(); $('lInput').blur(); } },true);
+  else { $('lInput').value=''; lampSet('result'); lampRender(); $('lInput').blur(); } },true);
 /* keyboard: Escape closes, Tab stays inside the panel */
 addEventListener('keydown',e=>{ if(!lamp.open) return;
   if(e.key==='Escape'){ e.preventDefault(); e.stopPropagation(); closeLamp(); return; }
