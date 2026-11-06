@@ -1083,11 +1083,12 @@ function lampSet(st){ lamp.state=st; $('lPanel').dataset.state=st; const bar=$('
   $('lHead').textContent=st==='result'?'Mr. Lamp • search result':'Mr. Lamp';
   $('artL').setAttribute('aria-labelledby',st==='mission'||st==='search'?'lHeadMission':'lHead'); lBar.sync(); }
 function lampRender(){ const m=$('lMsgs');
-  const items=lamp.state==='result'?lamp.hist.filter(h=>h.who==='lamp').slice(-1):lamp.hist;
+  const items=lamp.state==='result'?lamp.hist.slice(-2):lamp.hist;   /* question first, its answer below */
   m.innerHTML=items.map(h=>h.who==='lamp'
     ?`<div class="lb"><div class="lh"><span class="ln">Lamp</span><time>${h.t}</time></div><p class="lx">${esc(h.text)}</p></div>`
     :`<div class="ub"><time>${h.t}</time><p class="ux">${esc(h.text)}</p></div>`).join('');
-  m.scrollTop=m.scrollHeight; }
+  /* keep the latest question in view with its answer right below it */
+  const lastQ=[...m.querySelectorAll('.ub')].pop(); m.scrollTop=lastQ?lastQ.offsetTop-m.offsetTop*0-(lastQ.offsetParent===m?0:m.offsetTop):m.scrollHeight; }
 function openLamp(){ if(lamp.open||obBusy()||building||vrMode||lensMode) return;
   lamp.open=true; lamp.lastFocus=document.activeElement; lamp.hist=[]; $('lInput').value=''; lampSet('mission'); lampRender(); $('lPanel').querySelector('.lscroll').scrollTop=0;
   closeAssist(); stopFollow(); bc('lamp',true); setTimeout(()=>$('lPanel').focus({preventScroll:true}),80); }
@@ -1113,33 +1114,68 @@ addEventListener('keydown',e=>{ if(!lamp.open) return;
     const a=f[0], z=f[f.length-1]; if(e.shiftKey&&document.activeElement===a){ e.preventDefault(); z.focus(); } else if(!e.shiftKey&&document.activeElement===z){ e.preventDefault(); a.focus(); } return; }
   if(!e.target.closest||!e.target.closest('#artL')) e.stopPropagation(); },true);
 
-/* answers from the site's own stories */
-const LAMP_STOP=new Set('a an the and or of to in on at is are was were be been do does did i me my you your we it its this that what who whom which when where why how tell about please can could would will just more some any there their them with for from by as into than then so lamp mr hi hello hey give know show explain story stories happened happen'.split(' '));
+/* answers come only from Jayashree's knowledge document ("bengaluru_chatbot_knowledge", Google Drive),
+   compiled into LAMP_KB at build time by kb_build.py. Anything the document does not cover gets
+   "I am not aware of it." Details the document marks [VERIFY] are left out. */
+const LAMP_STOP=new Set('a an the and or of to in on at is are was were be been do does did i me my you your we it its this that these those there their them they he she his her with for from by as into than then so lamp mr hi hello hey please can could would will shall should just more some any tell about give know show explain say said much many very also who when why how what where which whom whose'.split(' '));
+const LAMP_WEAK=new Set(['bengaluru','bangalore','city','cities','year','years','story','stories','happen','happened','start','started','first']);
+/* extra names people use for each stop (index = stop) */
 const LAMP_TAGS=[
-  'kempegowda kempe gowda fort mud founding founder pete market markets watchtower watchtowers tower towers yelahanka chieftain 1537 heritage wall',
-  'lalbagh lal bagh garden gardens hyder ali tipu sultan glass house glasshouse botanical tree trees plants green 1760',
-  'electricity electric power lights light lamps lamp street shivanasamudra waterfall falls kerosene 1905 clean switch',
-  'iisc indian institute science scientific tata jamsetji vivekananda lab labs research ship 1909 students',
-  'hal hindustan aircraft aeronautics aeroplane aeroplanes airplane plane planes walchand hirachand cobra cobras termite airfield aerodrome 1940 transit factory factories',
-  'texas instruments ti satellite dish bullock cart software technology park tech silicon valley 1985 1991 mnc',
-  'flipkart sachin binny bansal startup startups koramangala motorcycle books servers 2007 street',
-  '2037 future lake lakes build builder 500 water bodies choices'
+  'kempegowda kempe gowda fort mud founding founder founded pete petes market markets yelahanka chieftain heritage wall walls',
+  'lalbagh lal bagh garden gardens hyder ali tipu sultan glass house glasshouse botanical tree trees plants green rock',
+  'electricity electric power lights light lamps lamp street streetlights shivanasamudra waterfall falls kerosene cauvery',
+  'iisc indian institute science scientific tata jamsetji vivekananda lab labs research ship students',
+  'hal hindustan aircraft aeronautics aeroplane aeroplanes airplane plane planes walchand hirachand cobra cobras termite termites airfield aerodrome factory factories',
+  'texas instruments ti satellite dish bullock cart software technology park tech silicon valley plateau stpi',
+  'flipkart sachin binny bansal startup startups koramangala motorcycle books servers hero honda',
+  'future lake lakes water bodies 500 choices tanks'
 ].map(s=>new Set(s.split(' ')));
-const lampWords=t=>String(t).toLowerCase().replace(/[^a-z0-9 ]+/g,' ').split(/\s+/).filter(w=>w&&!LAMP_STOP.has(w)).map(w=>w.length>4&&w.endsWith('s')&&!/ss$/.test(w)?w.slice(0,-1):w);
-function lampAnswer(q){ const ql=q.toLowerCase().trim(), words=lampWords(q);
-  if(!words.length||/^(hi|hii+|hello+|hey|namaste|hola)\b[\s!.,]*(lamp|mr\.? lamp)?[\s!.]*$/.test(ql))
-    return "Hello! I'm Mr. Lamp. Ask me about any memory on this timeline, from Kempegowda's mud fort in 1537 to the city you build in 2037.";
-  if(/\b(stamp|stamps|mission|unlock|how (do|to) (i )?(play|start|use))\b/.test(ql)&&!/\b(1537|1760|1905|1909|1940|1985|2007|2037)\b/.test(ql))
-    return 'Each year on the timeline shows one memory. Slide the frame over it and the memory comes back together. Every memory you restore earns a stamp. With all 7 stamps, you build 2037.';
-  const scored=ZONES.map((z,i)=>{ const tags=LAMP_TAGS[i], body=lampWords([z.chapter,z.title,z.block,z.summary,...z.story,z.done,z.edge,z.tease].join(' '));
-    let s=0; words.forEach(w=>{ if(tags.has(w)) s+=3; if(body.includes(w)) s+=1; }); if(ql.includes(String(z.year))) s+=8; return {i,s}; }).sort((a,b)=>b.s-a.s);
-  if(!scored[0].s) return "I only know the memories on this timeline. Try asking about Kempegowda's fort, Lalbagh, the 1905 street lights, IISc, HAL, the satellite dish on a bullock cart, Flipkart or 2037.";
-  const z=ZONES[scored[0].i];
-  /* the two sentences of that chapter that match the question best, in story order */
-  const when=/\b(when|year|date)\b/.test(ql);
-  const sents=[...z.story.join(' ').split(/(?<=[.!?])\s+(?=[A-Z0-9"'])/),...(z.done?[z.done]:[])].map((t,k)=>{ const w=lampWords(t); let s=0; words.forEach(x=>{ if(w.includes(x)) s+=1; }); if(t.includes(String(z.year))) s+=.5; if(when&&/\b(1[5-9]\d\d|20\d\d)\b/.test(t)) s+=2; return {t,k,s}; });
-  const best=[...sents].sort((a,b)=>b.s-a.s||a.k-b.k).slice(0,2).sort((a,b)=>a.k-b.k).map(x=>x.t).join(' ');
-  return `${z.year}, ${z.chapter}: ${best}`; }
+const stem=w=>w.length>4&&w.endsWith('ies')?w.slice(0,-3)+'y':w.length>4&&w.endsWith('s')&&!/ss$/.test(w)?w.slice(0,-1):w;
+const LAMP_SYN={named:'name',naming:'name',sell:'sold',sells:'sold',selling:'sold',built:'build',building:'build',builds:'build',founded:'found',founder:'found',founds:'found',started:'start',starts:'start'};
+const lampTok=t=>String(t).toLowerCase().replace(/[’']/g,'').replace(/[^a-z0-9 ]+/g,' ').split(/\s+/).filter(w=>w&&!LAMP_STOP.has(w)).map(w=>LAMP_SYN[w]||w).map(stem);
+const whOf=t=>{ const m=String(t).toLowerCase().match(/\b(who|when|why|where|what|how many|how much|how big|how old|how)\b/); return m?m[1]:''; };
+const LAMP_UNITS=(()=>{ const U=[], add=(kind,q,text,ctx,stop)=>{ if(!text) return; U.push({kind,q:q||'',text,stop,askOnly:/boiled beans/.test(text),qs:new Set(lampTok(q||'')),ts:new Set(lampTok(text)),cs:new Set(lampTok(ctx)),wh:whOf(q)}); };
+  LAMP_KB.stops.forEach((st,i)=>{ const ctx=[st.year,st.chapter,st.headline,...(LAMP_TAGS[i]?[...LAMP_TAGS[i]]:[])].join(' ');
+    st.qa.forEach(x=>add('qa',x.q,x.a,ctx,i)); [...st.facts,...st.more,st.line,st.payoff].forEach(t=>add('fact','',t,ctx,i));
+    if(st.edge) add('fact','',`The edge in ${st.year}: ${st.edge}`,ctx+' edge',i);
+    if(st.careful) add('fact','',st.careful,ctx+' lake count number',i); });
+  const tctx='watchtower watchtowers tower towers narrator plaque kempegowda you yourself lalbagh rock';
+  LAMP_KB.tower.qa.forEach(x=>add('qa',x.q,x.a,tctx,-1)); [...LAMP_KB.tower.facts,...LAMP_KB.tower.more].forEach(t=>add('fact','',t,tctx,-1));
+  if(LAMP_KB.tower.plaque) add('fact','What does the plaque say?','The plaque says the towers mark '+LAMP_KB.tower.plaque.replace(/^the towers mark\s*/i,''),tctx+' plaque say',-1);
+  LAMP_KB.themes.forEach(th=>add('theme','',(th.intro?th.intro+' ':'')+th.text,th.name+' theme thread',-2));
+  return U; })();
+function lampAnswer(q){ const ql=q.toLowerCase().trim(), words=lampTok(q), strong=words.filter(w=>!LAMP_WEAK.has(w)), wh=whOf(ql);
+  const NA=LAMP_KB.fallback||'I am not aware of it.';
+  if(/^(hi+|hello+|hey+|namaste|hola|good (morning|afternoon|evening))\b[\s!.,]*(lamp|mr\.? lamp|watchtower)?[\s!.]*$/.test(ql)||/\bwho are you\b|\bwhat are you\b/.test(ql)) return LAMP_KB.hook;
+  if(/\b(name|named|called)\b/.test(ql)&&/\b(bengaluru|bangalore)\b/.test(ql)&&!/silicon|garden|tata|tech/.test(ql)){ const u=LAMP_UNITS.find(x=>x.askOnly); if(u) return u.text; }
+  if(/\b(summary|summarise|summarize|overview|all (the )?(stops|years)|whole (story|timeline)|the timeline)\b/.test(ql)) return LAMP_KB.cheat.join(' ');
+  if(!strong.length&&!/\b(1537|1760|1905|1909|1940|1985|2007|2037)\b/.test(ql)) return NA;
+  const yr=(ql.match(/\b(1537|1760|1905|1909|1940|1985|2007|2037)\b/)||[])[1];
+  const scored=LAMP_UNITS.map(u=>{ let s=0, hits=0;
+    words.forEach(w=>{ const weak=LAMP_WEAK.has(w)?.3:1; const inQ=u.qs.has(w), inT=u.ts.has(w), inC=u.cs.has(w);
+      s+=weak*((inQ?3:0)+(inT?2:0)+(inC?2.5:0)); if(!LAMP_WEAK.has(w)&&(inQ||inT||inC)) hits++; });
+    if(yr&&u.stop>=0&&String(LAMP_KB.stops[u.stop].year)===yr){ s+=4; hits++; }
+    if(u.kind==='qa'&&wh&&u.wh===wh) s+=1.5; else if(u.kind==='qa'&&wh&&u.wh&&u.wh!==wh) s-=1.5;
+    if(/^how (many|much)/.test(wh)&&/\d/.test(u.text)) s+=3;
+    if(u.askOnly&&!/\b(bean|beans|legend|name|named|called)\b/.test(ql)) s=-1;
+    if(u.kind==='theme'&&/\b(water|thread|theme|edge|identit)/.test(ql)&&!yr) s+=2;
+    return {u,s,hits}; }).sort((a,b)=>b.s-a.s);
+  const top=scored[0]; if(!top||top.hits===0) return NA;
+  /* every content word of the question has to appear somewhere in the document */
+  const unknown=strong.filter(w=>!LAMP_UNITS.some(u=>u.qs.has(w)||u.ts.has(w)||u.cs.has(w)));
+  if(unknown.length>(strong.length>3?1:0)) return NA;
+  const overlap=(a,b)=>{ const A=new Set(lampTok(a)), B=lampTok(b); return B.length?B.filter(w=>A.has(w)).length/B.length:1; };
+  /* only the topic matched (e.g. "tell me about labs"): give that stop's first two facts */
+  if(top.s<3){ const st=top.u.stop>=0?LAMP_KB.stops[top.u.stop]:top.u.stop===-1?LAMP_KB.tower:null; if(!st) return NA; return st.facts.slice(0,2).join(' '); }
+  /* "tell me about …": the stop's own first two facts read better than a single Q&A line */
+  if(!wh&&top.u.stop>=0&&/^(tell|talk|explain|what about|about|describe)\b/.test(ql)) return LAMP_KB.stops[top.u.stop].facts.slice(0,2).join(' ');
+  let ans=top.u.text;
+  const more=scored.find(x=>x!==top&&x.u.stop===top.u.stop&&x.u.kind!=='qa'&&x.hits>0&&(top.u.kind==='qa'||x.s>=top.s*.55)&&overlap(ans,x.u.text)<.5);
+  if(more&&more.s>0&&(top.u.kind!=='qa'||ans.length<40)) ans+=' '+more.u.text;
+  /* where the document says sources differ, say so */
+  const st=top.u.stop>=0?LAMP_KB.stops[top.u.stop]:top.u.stop===-1?LAMP_KB.tower:null;
+  if(st&&st.differ&&st.differ.length){ const d=st.differ[0], dw=lampTok(d); if(strong.some(w=>dw.includes(w))||(wh==='when'&&/date/.test(d))) ans+=' Sources differ on '+d; }
+  return ans.replace(/\s+/g,' ').trim(); }
 
 
 /* ================= LOOP ================= */
