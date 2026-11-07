@@ -1207,7 +1207,7 @@ function chapterHTML(i,imgs){
   let end;
   if(z.future) end= unlocked()? `<div class="kick lo-label">Your turn</div><h2>Build the Bengaluru you want.</h2><div class="row"><button class="cta" id="loBuild">✦  Start building</button><button class="ghost glass" id="loBack">Back to the timeline</button></div>`
     : `<div class="kick lo-label">Locked, for now</div><h2>Bring me all 7 stamps.</h2><p style="font-size:18px;color:#555">You have ${stampCount()} of 7.</p><div class="row">${[0,1,2,3,4,5,6].filter(k=>!starred.has(k)).map(k=>`<button class="ghost glass" data-go="${k}">${ZONES[k].year} · ${ZONES[k].block} →</button>`).join('')}</div>`;
-  else end=`<div class="kick lo-label">Memory restored</div><h2>The ${z.block} block is yours for 2037.</h2><div class="row"><button class="cta" id="loBack">✦  Back to the timeline</button></div>`;
+  else end=`<div class="kick lo-label">Memory restored</div><h2>The ${z.block} block is yours for 2037.</h2><div class="row"><button class="cta" id="loBack">✦  Back to the timeline</button><button class="ghost glass" id="loVR" data-cursor="VR">Open in VR</button></div>`;
   return `<section class="lo-hero"><img src="${imgs[0]}" alt="${z.year} diorama">
     <div class="lo-hero-txt"><div class="kick">Chapter ${pad(i+1)} - ${z.chapter}</div><div class="lo-year">${z.year}</div><h1 class="lo-title" data-split="word">${z.title}</h1></div><div class="lo-scrollcue kick">Scroll to read ↓</div></section>
   <section class="lo-narr"><div class="kick lo-label">The watch tower remembers</div>${z.story.map(p=>`<p class="scrub" data-split="word">${p}</p>`).join('')}</section>
@@ -1224,6 +1224,7 @@ function chapterHTML(i,imgs){
 function bindChapter(i){
   const q=s=>$('loInner').querySelector(s);
   q('#loBack')&&(q('#loBack').onclick=()=>closeChapter());
+  q('#loVR')&&(q('#loVR').onclick=()=>closeChapter(()=>{ if(zoneIdx!==i) goTo(i); setTimeout(enterVR, zoneIdx!==i?1200:0); }));   /* secondary CTA: straight into this year's diorama in VR */
   q('#loBuild')&&(q('#loBuild').onclick=()=>closeChapter(()=>enterBuilder()));
   q('#loNext')&&(q('#loNext').onclick=()=>closeChapter(()=>goTo(i+1)));
   $('loInner').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>closeChapter(()=>goTo(+b.dataset.go)));
