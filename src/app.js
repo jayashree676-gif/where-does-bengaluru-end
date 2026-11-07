@@ -1196,9 +1196,6 @@ function closeChapter(after){
   setTimeout(()=>{ killChapterScroll(); lo.classList.remove('show','anim'); $('loInner').innerHTML=''; if(arrived&&!after) showStory(zoneIdx); after&&after(); },1050);
 }
 $('loClose').onclick=()=>closeChapter();
-/* Back to the timeline: white over the dark hero image, black once the light page scrolls up under it */
-function loCloseTone(){ const b=$('loClose'), h=$('loInner').querySelector('.lo-hero'); if(!h) return b.classList.remove('on-light'); const r=b.getBoundingClientRect(); b.classList.toggle('on-light', h.getBoundingClientRect().bottom < r.top+r.height/2); }
-loScroll.addEventListener('scroll',loCloseTone,{passive:true});
 const CHAPTER_PAGE=true; /* the Read Full Story page */
 const RENDER_OF={0:RENDERS.fort,3:RENDERS.lab,7:RENDERS.metro};
 const ARROW=`<svg viewBox="0 0 24 24" fill="none"><use href="#arrowF" fill="currentColor"/></svg>`;   /* the shared arrow path has no fill of its own */
@@ -1241,12 +1238,12 @@ function countUp(sec){ const els=sec.querySelectorAll('[data-n]');
   els.forEach(el=>{ const n=+el.dataset.n, o={v:0}, fmt=v=>(el.dataset.raw==='1'?Math.round(v):(Number.isInteger(n)?Math.round(v).toLocaleString():v.toFixed(2)))+(el.dataset.s?`<small>${el.dataset.s}</small>`:'');
     if(!gsapReady||REDUCED){ el.innerHTML=fmt(n); return; } GS().to(o,{v:n,duration:1.4,ease:'power3.out',onUpdate:()=>el.innerHTML=fmt(o.v)}); }); }
 function chapterScroll(){
-  const inner=$('loInner'); loScroll.scrollTop=0; loCloseTone();
+  const inner=$('loInner'); loScroll.scrollTop=0;
   if(!initScrollLibs()||REDUCED){ /* no libraries or reduced motion: plain scroll, everything shown */
     inner.querySelectorAll('.scrub .-s-word').forEach(w=>w.classList.add('lit')); inner.querySelectorAll('.lo-nums').forEach(countUp);
     loScroll.onscroll=()=>{ const m=Math.max(1,loScroll.scrollHeight-loScroll.clientHeight); $('loProg').style.width=(loScroll.scrollTop/m*100)+'%'; }; return; }
   const gsap=GS(), ScrollTrigger=STR();
-  if(LEN()){ chLenis=new (LEN())({wrapper:loScroll,content:inner,lerp:.085,smoothWheel:true,wheelMultiplier:1,autoRaf:false}); chLenis.on('scroll',ScrollTrigger.update); chLenis.on('scroll',loCloseTone); }
+  if(LEN()){ chLenis=new (LEN())({wrapper:loScroll,content:inner,lerp:.085,smoothWheel:true,wheelMultiplier:1,autoRaf:false}); chLenis.on('scroll',ScrollTrigger.update); }
   chCtx=gsap.context(()=>{
     const sc={scroller:loScroll};
     gsap.fromTo($('loProg'),{width:'0%'},{width:'100%',ease:'none',scrollTrigger:{...sc,trigger:inner,start:'top top',end:'bottom bottom',scrub:true}});
