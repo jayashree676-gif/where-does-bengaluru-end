@@ -1954,7 +1954,7 @@ function ambassador(col=0xefeadb){ const K=kit(), pn={rough:.28,metal:.35}, ch={
   /* Miller's Road is the world's through street (STAGE_Z): this scene just stands on it */
   d.g.position.z=STAGE_Z-1.3*.95;
   /* office tower: concrete spandrels, tinted ribbon glazing, pilotis, rooftop plant */
-  { const g=new THREE.Group(), K=kit(), cx=1.12, cz=-1.35, W=1.3, D=1.05, y0=.56, fh=.58, NF=4, CC=0xd9cfbe, co={rough:.85,pat:{k:'stain',d:.35}}, gl={rough:.08,metal:.65};
+  { const g=new THREE.Group(), K=kit(), cx=1.12, cz=-1.35, W=1.3, D=1.05, y0=.56, fh=.58, NF=3, CC=0xd9cfbe, co={rough:.85,pat:{k:'stain',d:.35}}, gl={rough:.08,metal:.65};
     K.p({rough:.3,metal:.5},BX(W-.2,y0,D-.2),0x34414c,cx,y0/2,cz); for(const x of [-1,-.33,.33,1]) for(const z of [-1,1]) K.p(co,CY(.03,.03,y0,10),CC,cx+x*(W/2-.05),y0/2,cz+z*(D/2-.05));
     K.p(co,BX(.56,.03,.3),CC,cx,y0-.01,cz+D/2+.08); for(let k=0;k<3;k++) K.p(co,BX(.5-k*.05,.03,.08),0xcfc6b4,cx,.015+k*.03,cz+D/2+.27-k*.05);
     for(let f=0;f<NF;f++){ const y=y0+f*fh; K.p(co,BX(W,.075,D),CC,cx,y+.0375,cz); K.p(gl,BX(W-.04,fh-.075,D-.04),0x2a3a47,cx,y+.075+(fh-.075)/2,cz);
@@ -1977,6 +1977,7 @@ function ambassador(col=0xefeadb){ const K=kit(), pn={rough:.28,metal:.35}, ch={
     const vr=vm(BX(1.28,.016,.46),0xa64d30,{rough:.75,pat:{k:'tile',s:.032}}); vr.position.set(cx,.6,cz+.6); vr.rotation.x=.28; g.add(vr);
     piece(d,g,{key:true}); }
   /* the convoy: two Hallikar bullocks, a spoked cart, the dish lashed on, a driver (hero) */
+  const HERO_CART=1.3, CART_X=-.62;   /* the story is the cart: it is the biggest thing in the scene and stays centre stage */
   const mkConv=(sd,cA,cB)=>{ const conv=new THREE.Group(), wheels=[];
   { const K=kit(), wd={rough:.85,pat:{k:'wood',a:0,f:80}}, WD=0x7a5634, WD2=0x6a4a2c;
     for(let k=0;k<5;k++) K.p(wd,BX(.9,.022,.085),k%2?WD:WD2,0,.3,-.18+k*.09);
@@ -1989,15 +1990,16 @@ function ambassador(col=0xefeadb){ const K=kit(), pn={rough:.28,metal:.35}, ch={
       for(let k=0;k<12;k++){ const a=k/12*6.283; Kw.l(w,UCYL(.009,.007,6),WD,V3(0,0,0),V3(Math.cos(a)*.18,Math.sin(a)*.18,0)); }
       const wg=Kw.build(); wg.position.set(-.04,.2,s*.31); conv.add(wg); wheels.push(wg); }
     const bl=bullock(51+sd,cA), br=bullock(52+sd,cB); bl.position.set(1.18,0,-.13); br.position.set(1.18,0,.13); conv.add(bl,br);
-    if(sd===0){ const dish=dishG(); dish.position.set(-.04,.46,0); dish.rotation.set(.95,0,.12); conv.add(dish); }   /* only the hero cart carries the dish */
+    if(sd===0){ const dish=dishG(); dish.position.set(-.02,.5,0); dish.rotation.set(.95,0,.12); dish.scale.setScalar(1.3); conv.add(dish);
+      const Kc=kit(), cw={rough:.85,pat:{k:'wood',a:0,f:60}}; for(const [x,z,s] of [[-.33,-.12,.15],[-.33,.11,.13],[-.31,0,.11]]){ const y=.31+s/2+(s<.12?.15:0); Kc.p(cw,BX(s,s,s),0xa07a4c,x,y,z); Kc.p({rough:.7},BX(s+.004,.022,s+.004),0x3a2f25,x,y,z); } conv.add(Kc.build()); }   /* the hero cart carries the dish and its crates of equipment */   /* only the hero cart carries the dish */
     const Kr=kit(); for(const x of [-.2,.15]) Kr.raw({rough:.9},tubeG([[x,.45,-.25],[x-.02,.62,-.12],[x,.7,.05],[x+.02,.6,.2],[x,.45,.25]],.006,16,4),0xc9b48a); conv.add(Kr.build());
     conv.add(at(figure({h:.32/.72,pose:'sit',dress:'dhoti',head:'turban',top:0xf2ede2,accent:0xe1a12e,skin:SKINS[3],tool:'stick',seed:53+sd}),.4,.31,.0,Math.PI/2,0,0,1));
-    conv.position.set(-.35,.025,.78); conv.rotation.y=-.04; conv.scale.setScalar(.72); }
+    conv.position.set(-.35,.025,.78); conv.rotation.y=-.04; conv.scale.setScalar(sd===0?HERO_CART:.72); }
   return {conv,wheels,bulls:conv.children.filter(c=>c.userData.legs)}; };
-  const CV=[mkConv(0,0xc0392b,0x2e6db4),mkConv(10,0xe1a12e,0x7a5634),mkConv(20,0x2e6db4,0xc0392b)]; piece(d,CV[0].conv,{hero:true,lift:.5,dyn:true}); piece(d,CV[1].conv,{amp:.15,dyn:true}); piece(d,CV[2].conv,{amp:.15,dyn:true});
+  const CV=[mkConv(0,0xc0392b,0x2e6db4)]; piece(d,CV[0].conv,{hero:true,lift:.5,dyn:true});
   /* engineers on the footpath, an Ambassador and a Chetak, poles and wires, rain trees */
   piece(d,grp(at(figure({pose:'point',dress:'pants',head:'hair',top:0xbcd3e6,bottom:0x4a4f58,skin:SKINS[2],seed:54}),.55,.03,.42,-2.6),at(figure({pose:'stand',dress:'pants',head:'hair',top:0xf2efe6,bottom:0x6b5a46,skin:SKINS[0],seed:55}),.85,.03,.36,-2.9),at(figure({pose:'stand',dress:'sari',head:'bun',accent:0x7a3a6a,skin:SKINS[4],seed:56}),.3,.03,.34,-2.4)),{amp:.4});
-  piece(d,at(ambassador(0xf0ebdc),-1.42,.025,1.2,Math.PI,0,0,1.8),{key:true});
+  piece(d,at(ambassador(0xf0ebdc),-2.08,.025,1.25,Math.PI,0,0,1.8),{key:true});   /* parked well behind the cart, so it never covers it */
   { const K=kit(), sc={rough:.3,metal:.3}, SC=0x8fbfd2; K.p(sc,SPH(.06,14,10),SC,-.05,.1,0,0,0,0,1.5,.8,.9); K.p(sc,BX(.14,.018,.07),0x2a2a2a,.04,.055,0); K.p(sc,RB(.03,.16,.09,.012),SC,.11,.12,0,0,0,-.2);
     K.p({rough:.7},RB(.1,.025,.06,.01),0x1a1a1a,-.06,.16,0); K.l(sc,UCYL(.008),0x888c90,V3(.13,.2,0),V3(.11,.28,0)); K.p(sc,BX(.02,.012,.14),0x9aa0a6,.11,.28,0); K.p({rough:.4,em:0xfff2cc,ei:.4},CY(.02,.02,.015,12),0xfff6e0,.13,.25,0,0,0,Math.PI/2);
     for(const x of [.1,-.08]){ K.p({rough:.8},CY(.035,.035,.025,14),0x141414,x,.035,0,Math.PI/2); K.p({rough:.3,metal:.8},CY(.02,.02,.027,10),0xc9ccd0,x,.035,0,Math.PI/2); }
@@ -2011,7 +2013,7 @@ function ambassador(col=0xefeadb){ const K=kit(), pn={rough:.28,metal:.35}, ch={
   piece(d,at(htree(503,{h:1.3,w:.68,kind:'neem'}),-1.9,0,.18),{key:true});
   { const g=new THREE.Group(); for(let k=0;k<5;k++) g.add(at(shrub(510+k,{r:.12+R()*.06}),[-.62,-1.88,.3,1.95,-.6][k],0,[-.55,-.6,-.95,-.55,-.95][k])); piece(d,g,{amp:.25}); }
   const CONV_L=54, ZG=d.g.position.z;   /* a convoy of carts along a street that never ends: they enter and leave 26 to 35 units either side of the scene, far outside the view, and follow the street's curve at the junction */
-  d.update=(t,dt,k)=>{ CV.forEach((c,n)=>{ const x=((t*.2+19.65+n*18)%CONV_L+CONV_L)%CONV_L-20, run=x/.72, wx=stopX(5)+x*1.3, sl=stageZ(wx+.5)-stageZ(wx-.5);
+  d.update=(t,dt,k)=>{ CV.forEach((c,n)=>{ const x=CART_X, run=t*.2/HERO_CART, wx=stopX(5)+x*1.3, sl=stageZ(wx+.5)-stageZ(wx-.5);   /* walks in place: wheels turn, bullocks plod */
     c.conv.position.x=x; c.conv.position.z=(stageZ(wx)-ZG)/1.3-.17; c.conv.rotation.y=-Math.atan(sl); c.wheels.forEach(w=>{ w.rotation.z=-run/.185; }); c.bulls.forEach(b=>bullockWalk(b,run,.5)); }); };
   finalize(d,7.0); }
 
