@@ -23,9 +23,9 @@ const postMat=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,transpa
   void main(){ vec2 fc=gl_FragCoord.xy; vec2 uv=(fc-region.xy)/region.zw;
     if(uv.x<0.||uv.y<0.||uv.x>1.||uv.y>1.){ gl_FragColor=vec4(0.); return; }
     vec2 cu0=(fc-card.xy)/(card.zw-card.xy); float bl=blurK*(smoothstep(.1,.42,cu0.y-focus)*1.15+smoothstep(.16,.5,focus-cu0.y)*.8);
-    float hm=0.; if(muteK>0.){
-      /* the coloured window: a clean full-width rectangle at y 228 to 480 of the 384 x 664 frame (Figma 104:11692) */
-      float ch=card.w-card.y; hm=smoothstep(card.w-ch*(480./664.)-.5,card.w-ch*(480./664.)+.5,fc.y)*(1.-smoothstep(card.w-ch*(228./664.)-.5,card.w-ch*(228./664.)+.5,fc.y)); bl=mix(bl+.6*fadeK,0.,hm)*muteK+bl*(1.-muteK); }
+    float hm=0.; if(muteK>0.){ vec2 mo=texel*7.;
+      hm=(texture2D(maskT,uv).r*2.+texture2D(maskT,uv+vec2(mo.x,0.)).r+texture2D(maskT,uv-vec2(mo.x,0.)).r+texture2D(maskT,uv+vec2(0.,mo.y)).r+texture2D(maskT,uv-vec2(0.,mo.y)).r)/6.;
+      hm=smoothstep(.15,.85,hm); bl=mix(bl+.6*fadeK,0.,hm)*muteK+bl*(1.-muteK); }
     vec3 c=texture2D(tex,uv).rgb;
     if(bl>.02){ vec3 acc=c; float wsum=1.; for(int i=0;i<16;i++){ float a=float(i)*2.39996, r=sqrt(float(i)+.5)/4.; vec2 o=vec2(cos(a),sin(a))*r*bl*5.5*texel; acc+=texture2D(tex,uv+o).rgb; wsum+=1.; } c=acc/wsum; }
     c*=expo/.6;
@@ -38,7 +38,7 @@ const postMat=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,transpa
     vec2 cu=(fc-card.xy)/(card.zw-card.xy); c*=mix(.8,1.,smoothstep(1.,.3,length((cu-.5)*vec2(1.1,.85)))*(1.-.75*fadeK)+.75*fadeK);
     /* default state: the focal asset keeps its colour, everything else goes soft, grey and light */
     if(muteK>0.){
-      float lm=dot(c,vec3(.2126,.7152,.0722)); vec3 m=mix(vec3(lm),c,.2); m=mix(vec3(.7),m,.5); m=mix(m,BG,.4);   /* outside the coloured window the scene stays, greyed out */
+      float lm=dot(c,vec3(.2126,.7152,.0722)); vec3 m=mix(vec3(lm),c,.2); m=mix(vec3(.7),m,.5); m=mix(m,BG,.4);
       c=mix(c,mix(m,c,hm*inCard),muteK);
       /* and dissolves into the page colour towards the frame's edges, most of all at the sky */
       }
@@ -57,6 +57,7 @@ function renderWorld(mode,gr,clayKv){
   const ps=comp._pixelRatio||pr; pointsScale(H*ps/(2*Math.tan(camera.fov*Math.PI/360)));
   if(shadowDirty||(frameN&1)===0){ renderer.shadowMap.needsUpdate=true; shadowDirty=false; }
   comp.render();
+  if(mode!=='full-colour') renderHeroMask(R);
   const U=postMat.uniforms; U.tex.value=comp.readBuffer.texture; U.texel.value.set(1/(R.w*comp._pixelRatio),1/(R.h*comp._pixelRatio)); U.blurK.value=mode==='full-colour'?.35:1; U.focus.value=.46;
   U.region.value.set(R.l*pr,(H-R.t-R.h)*pr,R.w*pr,R.h*pr);
   U.card.value.set(gr.l*pr,(H-gr.b)*pr,gr.r*pr,(H-gr.t)*pr); U.radius.value=40*gr.w/384*pr;
