@@ -355,13 +355,13 @@ const bulbMat=new THREE.MeshStandardMaterial({color:0xfff1d0,emissive:0xffb35c,e
 /* ---- 2037 onwards: the elevated metro and wind turbines ----
    One viaduct from its terminal station (in front of scene 7) to the end of the world, on piers that stand on the ground. The train is part of the world, not of the scene, so it never floats
    when the scene is not assembled: it stands at the platform, pulls out east, goes out of sight, and comes back to the platform. Sizes are the scene's (x1.3). */
-const metroTrain=new THREE.Group(), turbines=[];
+const metroTrain=new THREE.Group(), turbines=[], VIA_PARTS=[];   /* the 2037 viaduct and train: set aside when your own 2037 city stands there */
 const METRO={X0:VIA_X0, Y:2.379, home:137.99, far:62.4, A:.78, V:3.12, dwell:24};
 METRO.ta=METRO.V/METRO.A; METRO.da=METRO.V*METRO.V/(2*METRO.A); METRO.tOut=METRO.ta+(METRO.far-METRO.da)/METRO.V; METRO.T=METRO.dwell+2*METRO.tOut;
 function metroS(t){ let u=((t%METRO.T)+METRO.T)%METRO.T; if(u<METRO.dwell) return 0; u-=METRO.dwell;
   const out=v=>v<METRO.ta?.5*METRO.A*v*v:METRO.da+(v-METRO.ta)*METRO.V; return u<METRO.tOut?out(u):out(2*METRO.tOut-u); }
 { const conc=mat(0xc8bcaa,{rough:.88}), conc2=mat(0xa99d8b,{rough:.9}), steel=mat(0x5a5c60,{metal:.6,rough:.4}), XA=METRO.X0, XB=X1-30, LEN=XB-XA, VZ=VIA_Z;
-  const add=(w,h,d,m,x,y,z)=>{ const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m); b.position.set(x,y,z); b.castShadow=b.receiveShadow=true; world.add(b); WORLD_COLOUR.push(b); return b; };
+  const add=(w,h,d,m,x,y,z)=>{ const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m); b.position.set(x,y,z); b.castShadow=b.receiveShadow=true; world.add(b); WORLD_COLOUR.push(b); VIA_PARTS.push(b); return b; };
   add(LEN,.208,1.3,conc,(XA+XB)/2,METRO.Y,VZ);
   for(const o of [-.611,.611]) add(LEN,.286,.104,conc2,(XA+XB)/2,2.6,VZ+o);
   for(const o of [-.26,.26]) add(LEN,.04,.052,steel,(XA+XB)/2,2.51,VZ+o);
@@ -371,7 +371,7 @@ function metroS(t){ let u=((t%METRO.T)+METRO.T)%METRO.T; if(u<METRO.dwell) retur
   const pg=new THREE.BoxGeometry(.52,1,.47).translate(0,.5,0), cg=new THREE.BoxGeometry(1.27,.312,.81), pim=new THREE.InstancedMesh(pg,conc,xs.length), cim=new THREE.InstancedMesh(cg,conc,xs.length), dm=new THREE.Object3D();
   xs.forEach((x,i)=>{ const g0=Math.min(hgt(x,VZ),hgt(x,VZ-.3),hgt(x,VZ+.3))-.12; dm.position.set(x,g0,VZ); dm.scale.set(1,2.05-g0,1); dm.updateMatrix(); pim.setMatrixAt(i,dm.matrix);
     dm.position.set(x,2.119,VZ); dm.scale.set(1,1,1); dm.updateMatrix(); cim.setMatrixAt(i,dm.matrix); });
-  [pim,cim].forEach(m=>{ m.castShadow=m.receiveShadow=true; m.frustumCulled=false; world.add(m); WORLD_COLOUR.push(m); });
+  [pim,cim].forEach(m=>{ m.castShadow=m.receiveShadow=true; m.frustumCulled=false; world.add(m); WORLD_COLOUR.push(m); VIA_PARTS.push(m); });
   const silver=mat(0xdfdcd6,{metal:.35,rough:.32}), purple=mat(0x7c4bb4,{rough:.35}), win=mat(0x2b3240,{rough:.12,metal:.2}), S=1.3;
   const car=(front)=>{ const g=new THREE.Group(), len=1.3*S, mb=(w,h,d,m,x,y,z)=>{ const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m); b.position.set(x,y,z); b.castShadow=true; g.add(b); return b; };
     mb(len,.5*S,.46*S,silver,0,0,0); mb((1.3-.14)*S,.15*S,.47*S,win,0,.08*S,0); mb((1.3-.06)*S,.04*S,.468*S,purple,0,-.13*S,0);
@@ -380,7 +380,7 @@ function metroS(t){ let u=((t%METRO.T)+METRO.T)%METRO.T; if(u<METRO.dwell) retur
       [-.13,.13].forEach(z=>{ const l=new THREE.Mesh(new THREE.SphereGeometry(.03*S,8,6),mat(0xffffff,{em:0xfff4d0,ei:1.5})); l.position.set(sx*(.65*S+.09*S),-.12*S,z*S); g.add(l); }); }
     return g; };
   [[-1.35,-1],[0,0],[1.35,1]].forEach(([x,f])=>{ const c=car(f); c.position.x=x*S; metroTrain.add(c); });   /* a cab at each end, so it can run either way */
-  metroTrain.position.set(METRO.home,2.86,VZ); world.add(metroTrain); metroTrain.traverse(o=>WORLD_COLOUR.push(o));
+  metroTrain.position.set(METRO.home,2.86,VZ); world.add(metroTrain); metroTrain.traverse(o=>WORLD_COLOUR.push(o)); VIA_PARTS.push(metroTrain);
   const tw=mat(0xf2f2f0,{rough:.4}); const R=rng(303);
   for(let i=0;i<16;i++){ const x=125+i*20+R()*10, z=-110-R()*120, y=hgt(x,z); if(lakeMask(x,z)>0) continue; const g=new THREE.Group();
     g.add(at(new THREE.Mesh(new THREE.CylinderGeometry(.18,.32,9,10).translate(0,4.5,0),tw),0,0,0)); g.add(at(new THREE.Mesh(new THREE.BoxGeometry(.5,.4,.9),tw),0,9.1,.1));

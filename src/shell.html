@@ -180,6 +180,8 @@ body:not(.vrmode) #vrExit{pointer-events:none!important}body.vrmode #vrExit{opac
 body.vrmode #blkR{opacity:0!important;pointer-events:none!important}   /* no Watchtower quote over the VR view */
 #vrBar .pill{width:auto;padding:12px 20px}
 #vrBar .tip{font-size:14px;color:var(--muted)}
+#vrBuild{display:none}body.at2037 #vrBuild{display:inline-flex}   /* 2037 VR: build your own Bangalore */
+#vrBuild.locked,#vrBuild.locked:hover{background:#d6d6d6;color:#8c8c8c;cursor:not-allowed}
 /* VR view: every label, line of text and arrow on top of the scene is white */
 body.vrmode #vrBar .tip,body.vrmode #vrExit,body.vrmode .nav .txt .kick,body.vrmode .nav .txt span:not(.kick){color:#fff}
 body.vrmode .nav .arrow svg use,body.vrmode .nav .arrow svg path{fill:#fff}
@@ -738,7 +740,7 @@ body.has-launcher #launcher{display:block}
     <div class="bfoot" style="margin-top:10px"><button class="ghost glass" id="bExit">← Back to the timeline</button></div>
   </div>
 
-  <div id="vrBar"><span class="tip">Drag to look around · scroll to zoom</span></div>
+  <div id="vrBar"><span class="tip">Drag to look around · scroll to zoom</span><button class="cta ui" id="vrBuild" type="button">✦ Build Your Own Bangalore ✦</button></div>
   <button class="pill glass gbtn ui" id="vrExit">Exit VR view ✕</button>
 </main>
 

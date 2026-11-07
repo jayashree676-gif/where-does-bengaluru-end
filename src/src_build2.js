@@ -59,7 +59,7 @@ function openBuilder(code){ if(BLD.open) return; if(lamp&&lamp.open) closeLamp()
   $('bldTitle').innerHTML=BLD.visitor?'Someone’s Bengaluru,<br>in 2037.':'Build the Bengaluru<br>you envision.';
   $('bldLede').textContent=BLD.visitor?'A visitor built this with their 7 stamps. Bring all 7 memories back on the timeline and you can build your own.':'Yay, you have collected all the stamps! Drag the stamp you want and place it over the grid to build the Bangalore you envision. Use the same stamp as often as you like, up to 7 stamps in all.';
   bc('bld2',true); requestAnimationFrame(()=>b.classList.add('on')); whoosh&&whoosh(); setTimeout(()=>b.focus({preventScroll:true}),60); }
-function closeBuilder(){ if(!BLD.open) return; BLD.open=false; const b=$('bld'); b.classList.remove('on'); bc('bld2',false); BLD.drag=null; bldGhost(false);
+function closeBuilder(){ if(!BLD.open) return; BLD.open=false; try{ city37Sync(); }catch(e){} const b=$('bld'); b.classList.remove('on'); bc('bld2',false); BLD.drag=null; bldGhost(false);
   setTimeout(()=>{ if(!BLD.open) b.hidden=true; },REDUCED?0:500); if(location.hash.startsWith('#build-')) history.replaceState(null,'',location.pathname+location.search); }
 function enterBuilder(code){ if(!started) startExperience(true); openBuilder(typeof code==='string'&&/^([0-9a-o][0-6]){0,7}$/.test(code)?code:null); }
 function exitBuilder(){ closeBuilder(); }
@@ -80,3 +80,47 @@ addEventListener('keydown',e=>{ if(!BLD.open) return; if(e.key==='Escape'){ e.pr
   if(e.key==='Tab'){ const f=[...$('bld').querySelectorAll('button:not([disabled])')].filter(x=>x.offsetParent!==null); if(!f.length) return; const a=f[0], z=f[f.length-1];
     if(e.shiftKey&&document.activeElement===a){ e.preventDefault(); z.focus(); } else if(!e.shiftKey&&document.activeElement===z){ e.preventDefault(); a.focus(); } } },true);
 addEventListener('resize',()=>{ if(BLD.open) bldLayout(); });
+
+/* ================= 2037 IN 3D: THE CITY YOU BUILT =================
+   Until you build, 2037 stays grey like the world around it (see greyK in the composite). Once your
+   own plan has stamps on it, the stop's default scene is switched off and your 5 x 5 plan is laid out
+   in 3D on the same plot, one model per stamp, in the same diamond as the builder. */
+const CITY37=new THREE.Group(); DIO[7].g.add(CITY37);
+CITY37.position.set(0,plot.T,-2.45); CITY37.rotation.y=Math.PI/4;
+function cityModel(key,seed){ const K=kit(), R=rng(seed), g=new THREE.Group(), T=.5, pave={rough:.9}, grass={rough:.95};
+  const tile=(col)=>K.p(pave,BX(T-.04,.03,T-.04),col,0,.015,0);
+  if(key==='tree'||key==='blossom'){ tile(0x7ea547); g.add(at(htree(seed,{h:key==='tree'?1.05:.95,w:.55,kind:key==='tree'?'rain':'bloom'}),0,.03,0)); }
+  if(key==='power'){ tile(0x8db04f);
+    K.p({rough:.4,metal:.5},CY(.022,.032,.9,8),0xf2f0ec,-.1,.48,-.08); K.p({rough:.4,metal:.4},BX(.1,.06,.07),0xf2f0ec,-.1,.93,-.08); K.p({rough:.4},SPH(.03,8,6),0xf2f0ec,-.1,.93,-.03);
+    for(let k=0;k<3;k++){ const a=k*2.094+.3; K.p({rough:.45},BX(.03,.34,.012),0xf7f6f2,-.1+Math.sin(a)*.17,.93+Math.cos(a)*.17,-.02,0,0,-a); }
+    for(const [x,z] of [[.1,.1],[.1,-.02]]){ K.p({rough:.5,metal:.4},CY(.008,.008,.12,6),0x55595c,x,.09,z); K.p({rough:.15,metal:.6},BX(.2,.012,.12),0x2c4f9e,x,.16,z,-.5,0,0); } }
+  if(key==='startup'){ tile(0xd9d2c4); const W=0x2b3a46;
+    for(let f=0;f<3;f++){ const y=.03+f*.2; K.p({rough:.8},BX(.36,.2,.32),[0xf0e7d6,0xe6dccb,0xf3ece0][f],0,y+.1,0); K.p({rough:.1,metal:.4},BX(.3,.1,.322),W,0,y+.11,0);
+      K.p(grass,BX(.38,.035,.06),0x4f8a32,0,y+.02,.18); for(let k=0;k<4;k++) K.p(grass,SPH(.03,6,5),[0x5c9a3a,0x6fab45,0x4f8a32][k%3],-.14+k*.095,y+.05,.19); }
+    K.p(grass,BX(.36,.02,.32),0x5c9a3a,0,.64,0); }
+  if(key==='techpark'){ tile(0xcfc8b8); const gl={rough:.06,metal:.7};
+    for(let f=0;f<7;f++) K.p(gl,BX(.3,.13,.26),f%2?0x4a8fbf:0x5aa4d4,Math.sin(f*.7)*.03,.03+.065+f*.135,0,0,f*.09,0);
+    for(let f=0;f<8;f++) K.p({rough:.5},BX(.32,.012,.28),0xe9e6df,Math.sin(f*.7)*.03,.03+f*.135,0,0,f*.09,0); }
+  if(key==='lab'){ tile(0xd9d2c4); K.p({rough:.8},BX(.38,.26,.3),0xf1ebe0,0,.16,0); K.p({rough:.1,metal:.4},BX(.34,.08,.302),0x2b3a46,0,.18,0);
+    K.p({rough:.35,metal:.3},new THREE.SphereGeometry(.13,16,10,0,Math.PI*2,0,Math.PI/2),0x3fbfb0,0,.29,0); K.p({rough:.5,metal:.4},CY(.01,.01,.1,6),0x55595c,.12,.34,.08); }
+  if(key==='build'){ tile(0xbfb39b); const cc={rough:.85};
+    for(let f=0;f<3;f++){ K.p(cc,BX(.34,.025,.3),0xb9b4aa,0,.06+f*.17,0); for(const [x,z] of [[-.15,-.13],[.15,-.13],[-.15,.13],[.15,.13]]) if(f<2||x<0) K.p(cc,BX(.03,.17,.03),0xa9a499,x,.06+f*.17+.085,z); }
+    K.p({rough:.5,metal:.4},BX(.03,1.0,.03),0xf2b230,.19,.53,-.17); K.p({rough:.5,metal:.4},BX(.6,.03,.03),0xf2b230,.05,1.02,-.17); K.p({rough:.6},BX(.07,.06,.06),0x55595c,-.22,.99,-.17);
+    K.l({rough:.5},UCYL(.003),0x333333,V3(-.18,1.0,-.17),V3(-.18,.62,-.17)); K.p({rough:.7},BX(.06,.04,.06),0x8a6a40,-.18,.6,-.17); }
+  g.add(K.build()); return g; }
+let city37Code=null;
+function city37Sync(){ const code=LS.get(BLD.KEY)||''; if(code===city37Code) return; city37Code=code;
+  while(CITY37.children.length) CITY37.remove(CITY37.children[0]);
+  const cells=Array(BLD.N*BLD.N).fill(-1); (code.match(/[0-9a-o][0-6]/g)||[]).slice(0,BLD.MAX).forEach(p=>{ const k=parseInt(p[0],36); if(k<cells.length) cells[k]=+p[1]; });
+  const T=.85, off=(BLD.N-1)/2; let n=0;
+  cells.forEach((v,k)=>{ if(v<0) return; n++; const r=(k/BLD.N)|0, c=k%BLD.N, m=cityModel(BLD_STAMPS[v][0],k*31+v*7+3);
+    m.position.set((c-off)*T,0,(r-off)*T); m.rotation.y=-Math.PI/4; m.scale.setScalar(1.75); CITY37.add(m); });
+  /* a light plaza under the plan, so the city reads as one place */
+  if(n){ const K=kit(); K.p({rough:.95},BX(BLD.N*T+.12,.02,BLD.N*T+.12),0xd8d1c1,0,.005,0); const base=K.build(); CITY37.add(base); }
+  CITY37.traverse(o=>{ o.layers.enable(2); if(o.isMesh){ o.castShadow=true; o.receiveShadow=true; } });
+  /* the stop's default 2037 scene steps aside while your city stands in its place */
+  const off37=o=>{ if(n){ o.layers.disable(0); o.layers.disable(2); } else { o.layers.enable(0); o.layers.enable(2); } };
+  DIO[7].g.children.forEach(ch=>{ if(ch===CITY37||ch===plotGroup) return; ch.traverse(off37); });
+  VIA_PARTS.forEach(p=>p.traverse(off37));
+  try{ shadowDirty=true; }catch(e){} }
+const city37Built=()=>!!(LS.get(BLD.KEY)||'').match(/[0-9a-o][0-6]/);

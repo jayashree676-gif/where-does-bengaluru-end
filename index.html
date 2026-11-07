@@ -180,6 +180,8 @@ body:not(.vrmode) #vrExit{pointer-events:none!important}body.vrmode #vrExit{opac
 body.vrmode #blkR{opacity:0!important;pointer-events:none!important}   /* no Watchtower quote over the VR view */
 #vrBar .pill{width:auto;padding:12px 20px}
 #vrBar .tip{font-size:14px;color:var(--muted)}
+#vrBuild{display:none}body.at2037 #vrBuild{display:inline-flex}   /* 2037 VR: build your own Bangalore */
+#vrBuild.locked,#vrBuild.locked:hover{background:#d6d6d6;color:#8c8c8c;cursor:not-allowed}
 /* VR view: every label, line of text and arrow on top of the scene is white */
 body.vrmode #vrBar .tip,body.vrmode #vrExit,body.vrmode .nav .txt .kick,body.vrmode .nav .txt span:not(.kick){color:#fff}
 body.vrmode .nav .arrow svg use,body.vrmode .nav .arrow svg path{fill:#fff}
@@ -738,7 +740,7 @@ body.has-launcher #launcher{display:block}
     <div class="bfoot" style="margin-top:10px"><button class="ghost glass" id="bExit">← Back to the timeline</button></div>
   </div>
 
-  <div id="vrBar"><span class="tip">Drag to look around · scroll to zoom</span></div>
+  <div id="vrBar"><span class="tip">Drag to look around · scroll to zoom</span><button class="cta ui" id="vrBuild" type="button">✦ Build Your Own Bangalore ✦</button></div>
   <button class="pill glass gbtn ui" id="vrExit">Exit VR view ✕</button>
 </main>
 
@@ -1441,7 +1443,8 @@ const SPEC={ rain:{cols:[0x2c561c,0x3a6823,0x477a2b,0x568a32,0x6a9a3a],spread:1.
   gul:{cols:[0xd8342a,0xe35a2a,0xc9281f,0xf07a35,0x3a6823,0x477a2b],spread:1.0,flat:.5,tips:2,lean:1.1},
   jac:{cols:[0x8a70c8,0x7b5fc0,0x9a80d4,0x6d55b0,0x4f7a32],spread:.85,flat:.7,tips:2,lean:.8},
   mango:{cols:[0x1f4a1a,0x2a5a20,0x2f6524,0x3b6a2a],spread:.7,flat:.95,tips:2,lean:.7},
-  neem:{cols:[0x3f6e2a,0x4d7d30,0x5c8a38,0x6a9a3e],spread:.8,flat:.8,tips:2,lean:.8} };
+  neem:{cols:[0x3f6e2a,0x4d7d30,0x5c8a38,0x6a9a3e],spread:.8,flat:.8,tips:2,lean:.8},
+  bloom:{cols:[0xf3a6c8,0xe98bb6,0xf7bfd6,0xdc7aa8,0x4f7a32],spread:.9,flat:.72,tips:2,lean:.85} };
 function htree(seed,{h=1.6,w=1.0,kind='rain',leaves=1}={}){ const R=rng(seed), sp=SPEC[kind]||SPEC.rain, K=kit(), bark=0x54402e, pts=[];
   const grow=(a,dir,len,r,dep)=>{ const b=a.clone().addScaledVector(dir,len); K.l({rough:.95,pat:{k:'wood',a:1,f:90}},UCYL(r,r*.62,7),bark,a,b);
     if(dep>=sp.tips){ const cr=(.2+R()*.12)*w*1.5; const n=Math.round((38+R()*16)*leaves);
@@ -2482,13 +2485,13 @@ const bulbMat=new THREE.MeshStandardMaterial({color:0xfff1d0,emissive:0xffb35c,e
 /* ---- 2037 onwards: the elevated metro and wind turbines ----
    One viaduct from its terminal station (in front of scene 7) to the end of the world, on piers that stand on the ground. The train is part of the world, not of the scene, so it never floats
    when the scene is not assembled: it stands at the platform, pulls out east, goes out of sight, and comes back to the platform. Sizes are the scene's (x1.3). */
-const metroTrain=new THREE.Group(), turbines=[];
+const metroTrain=new THREE.Group(), turbines=[], VIA_PARTS=[];   /* the 2037 viaduct and train: set aside when your own 2037 city stands there */
 const METRO={X0:VIA_X0, Y:2.379, home:137.99, far:62.4, A:.78, V:3.12, dwell:24};
 METRO.ta=METRO.V/METRO.A; METRO.da=METRO.V*METRO.V/(2*METRO.A); METRO.tOut=METRO.ta+(METRO.far-METRO.da)/METRO.V; METRO.T=METRO.dwell+2*METRO.tOut;
 function metroS(t){ let u=((t%METRO.T)+METRO.T)%METRO.T; if(u<METRO.dwell) return 0; u-=METRO.dwell;
   const out=v=>v<METRO.ta?.5*METRO.A*v*v:METRO.da+(v-METRO.ta)*METRO.V; return u<METRO.tOut?out(u):out(2*METRO.tOut-u); }
 { const conc=mat(0xc8bcaa,{rough:.88}), conc2=mat(0xa99d8b,{rough:.9}), steel=mat(0x5a5c60,{metal:.6,rough:.4}), XA=METRO.X0, XB=X1-30, LEN=XB-XA, VZ=VIA_Z;
-  const add=(w,h,d,m,x,y,z)=>{ const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m); b.position.set(x,y,z); b.castShadow=b.receiveShadow=true; world.add(b); WORLD_COLOUR.push(b); return b; };
+  const add=(w,h,d,m,x,y,z)=>{ const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m); b.position.set(x,y,z); b.castShadow=b.receiveShadow=true; world.add(b); WORLD_COLOUR.push(b); VIA_PARTS.push(b); return b; };
   add(LEN,.208,1.3,conc,(XA+XB)/2,METRO.Y,VZ);
   for(const o of [-.611,.611]) add(LEN,.286,.104,conc2,(XA+XB)/2,2.6,VZ+o);
   for(const o of [-.26,.26]) add(LEN,.04,.052,steel,(XA+XB)/2,2.51,VZ+o);
@@ -2498,7 +2501,7 @@ function metroS(t){ let u=((t%METRO.T)+METRO.T)%METRO.T; if(u<METRO.dwell) retur
   const pg=new THREE.BoxGeometry(.52,1,.47).translate(0,.5,0), cg=new THREE.BoxGeometry(1.27,.312,.81), pim=new THREE.InstancedMesh(pg,conc,xs.length), cim=new THREE.InstancedMesh(cg,conc,xs.length), dm=new THREE.Object3D();
   xs.forEach((x,i)=>{ const g0=Math.min(hgt(x,VZ),hgt(x,VZ-.3),hgt(x,VZ+.3))-.12; dm.position.set(x,g0,VZ); dm.scale.set(1,2.05-g0,1); dm.updateMatrix(); pim.setMatrixAt(i,dm.matrix);
     dm.position.set(x,2.119,VZ); dm.scale.set(1,1,1); dm.updateMatrix(); cim.setMatrixAt(i,dm.matrix); });
-  [pim,cim].forEach(m=>{ m.castShadow=m.receiveShadow=true; m.frustumCulled=false; world.add(m); WORLD_COLOUR.push(m); });
+  [pim,cim].forEach(m=>{ m.castShadow=m.receiveShadow=true; m.frustumCulled=false; world.add(m); WORLD_COLOUR.push(m); VIA_PARTS.push(m); });
   const silver=mat(0xdfdcd6,{metal:.35,rough:.32}), purple=mat(0x7c4bb4,{rough:.35}), win=mat(0x2b3240,{rough:.12,metal:.2}), S=1.3;
   const car=(front)=>{ const g=new THREE.Group(), len=1.3*S, mb=(w,h,d,m,x,y,z)=>{ const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m); b.position.set(x,y,z); b.castShadow=true; g.add(b); return b; };
     mb(len,.5*S,.46*S,silver,0,0,0); mb((1.3-.14)*S,.15*S,.47*S,win,0,.08*S,0); mb((1.3-.06)*S,.04*S,.468*S,purple,0,-.13*S,0);
@@ -2507,7 +2510,7 @@ function metroS(t){ let u=((t%METRO.T)+METRO.T)%METRO.T; if(u<METRO.dwell) retur
       [-.13,.13].forEach(z=>{ const l=new THREE.Mesh(new THREE.SphereGeometry(.03*S,8,6),mat(0xffffff,{em:0xfff4d0,ei:1.5})); l.position.set(sx*(.65*S+.09*S),-.12*S,z*S); g.add(l); }); }
     return g; };
   [[-1.35,-1],[0,0],[1.35,1]].forEach(([x,f])=>{ const c=car(f); c.position.x=x*S; metroTrain.add(c); });   /* a cab at each end, so it can run either way */
-  metroTrain.position.set(METRO.home,2.86,VZ); world.add(metroTrain); metroTrain.traverse(o=>WORLD_COLOUR.push(o));
+  metroTrain.position.set(METRO.home,2.86,VZ); world.add(metroTrain); metroTrain.traverse(o=>WORLD_COLOUR.push(o)); VIA_PARTS.push(metroTrain);
   const tw=mat(0xf2f2f0,{rough:.4}); const R=rng(303);
   for(let i=0;i<16;i++){ const x=125+i*20+R()*10, z=-110-R()*120, y=hgt(x,z); if(lakeMask(x,z)>0) continue; const g=new THREE.Group();
     g.add(at(new THREE.Mesh(new THREE.CylinderGeometry(.18,.32,9,10).translate(0,4.5,0),tw),0,0,0)); g.add(at(new THREE.Mesh(new THREE.BoxGeometry(.5,.4,.9),tw),0,9.1,.1));
@@ -2752,9 +2755,10 @@ function hideStory(){ BLKS().forEach(b=>b.classList.remove('in')); clearTimeout(
 /* the primary CTA: Read Full Story, or at 2037 Build Your Bangalore, disabled until all 7 stamps are in */
 function syncRead(){ const rb=$('btnRead'), z=zoneIdx>=0?ZONES[zoneIdx]:null, fut=!!(z&&z.future), lock=fut&&!unlocked();
   rb.textContent=fut?'✦ Build Your Bangalore ✦':'✦ Read Full Story ✦'; rb.classList.toggle('locked',lock); rb.setAttribute('aria-disabled',lock?'true':'false');
+  bc('at2037',fut); const vb=$('vrBuild'); vb.classList.toggle('locked',lock); vb.setAttribute('aria-disabled',lock?'true':'false');
   if(lock) rb.setAttribute('aria-describedby','readTip'); else { rb.removeAttribute('aria-describedby'); readTip(false); } }
 let readTipT=null;
-function readTip(on){ const t=$('readTip'), rb=$('btnRead'); clearTimeout(readTipT);
+function readTip(on,el){ const t=$('readTip'), rb=el||$('btnRead'); clearTimeout(readTipT);
   if(!on){ t.classList.remove('show'); return; }
   t.textContent=`Bring me all 7 stamps first to enable me. You have ${stampCount()}.`;
   const r=rb.getBoundingClientRect(); t.style.left=(r.left+r.width/2)+'px'; t.style.top=(r.top-12)+'px'; t.classList.add('show'); }
@@ -2765,6 +2769,10 @@ $('btnRead').addEventListener('blur',()=>readTip(false));
 $('btnRead').onclick=()=>{ if(!started||zoneIdx<0||obBusy()) return; const z=ZONES[zoneIdx];
   if(z.future&&!unlocked()){ readTip(true); readTipT=setTimeout(()=>readTip(false),2600); return; }
   if(z.future) enterBuilder(); else openChapter(); };
+/* the same CTA inside the 2037 VR view */
+$('vrBuild').addEventListener('mouseenter',()=>{ if($('vrBuild').classList.contains('locked')) readTip(true,$('vrBuild')); });
+$('vrBuild').addEventListener('mouseleave',()=>readTip(false));
+$('vrBuild').onclick=()=>{ if(!unlocked()){ readTip(true,$('vrBuild')); readTipT=setTimeout(()=>readTip(false),2600); return; } readTip(false); if(vrMode) exitVR(); enterBuilder(); };
 $('navN').onclick=()=>{ if(!started) return; if(zoneIdx<N-1) goTo(zoneIdx+1); };
 $('navP').onclick=()=>{ if(!started) return; if(zoneIdx>0) goTo(zoneIdx-1); else { markDragged(); onLeave(); snapT=START; phase='snap'; } };
 
@@ -3348,7 +3356,7 @@ function openBuilder(code){ if(BLD.open) return; if(lamp&&lamp.open) closeLamp()
   $('bldTitle').innerHTML=BLD.visitor?'Someone’s Bengaluru,<br>in 2037.':'Build the Bengaluru<br>you envision.';
   $('bldLede').textContent=BLD.visitor?'A visitor built this with their 7 stamps. Bring all 7 memories back on the timeline and you can build your own.':'Yay, you have collected all the stamps! Drag the stamp you want and place it over the grid to build the Bangalore you envision. Use the same stamp as often as you like, up to 7 stamps in all.';
   bc('bld2',true); requestAnimationFrame(()=>b.classList.add('on')); whoosh&&whoosh(); setTimeout(()=>b.focus({preventScroll:true}),60); }
-function closeBuilder(){ if(!BLD.open) return; BLD.open=false; const b=$('bld'); b.classList.remove('on'); bc('bld2',false); BLD.drag=null; bldGhost(false);
+function closeBuilder(){ if(!BLD.open) return; BLD.open=false; try{ city37Sync(); }catch(e){} const b=$('bld'); b.classList.remove('on'); bc('bld2',false); BLD.drag=null; bldGhost(false);
   setTimeout(()=>{ if(!BLD.open) b.hidden=true; },REDUCED?0:500); if(location.hash.startsWith('#build-')) history.replaceState(null,'',location.pathname+location.search); }
 function enterBuilder(code){ if(!started) startExperience(true); openBuilder(typeof code==='string'&&/^([0-9a-o][0-6]){0,7}$/.test(code)?code:null); }
 function exitBuilder(){ closeBuilder(); }
@@ -3369,6 +3377,50 @@ addEventListener('keydown',e=>{ if(!BLD.open) return; if(e.key==='Escape'){ e.pr
   if(e.key==='Tab'){ const f=[...$('bld').querySelectorAll('button:not([disabled])')].filter(x=>x.offsetParent!==null); if(!f.length) return; const a=f[0], z=f[f.length-1];
     if(e.shiftKey&&document.activeElement===a){ e.preventDefault(); z.focus(); } else if(!e.shiftKey&&document.activeElement===z){ e.preventDefault(); a.focus(); } } },true);
 addEventListener('resize',()=>{ if(BLD.open) bldLayout(); });
+
+/* ================= 2037 IN 3D: THE CITY YOU BUILT =================
+   Until you build, 2037 stays grey like the world around it (see greyK in the composite). Once your
+   own plan has stamps on it, the stop's default scene is switched off and your 5 x 5 plan is laid out
+   in 3D on the same plot, one model per stamp, in the same diamond as the builder. */
+const CITY37=new THREE.Group(); DIO[7].g.add(CITY37);
+CITY37.position.set(0,plot.T,-2.45); CITY37.rotation.y=Math.PI/4;
+function cityModel(key,seed){ const K=kit(), R=rng(seed), g=new THREE.Group(), T=.5, pave={rough:.9}, grass={rough:.95};
+  const tile=(col)=>K.p(pave,BX(T-.04,.03,T-.04),col,0,.015,0);
+  if(key==='tree'||key==='blossom'){ tile(0x7ea547); g.add(at(htree(seed,{h:key==='tree'?1.05:.95,w:.55,kind:key==='tree'?'rain':'bloom'}),0,.03,0)); }
+  if(key==='power'){ tile(0x8db04f);
+    K.p({rough:.4,metal:.5},CY(.022,.032,.9,8),0xf2f0ec,-.1,.48,-.08); K.p({rough:.4,metal:.4},BX(.1,.06,.07),0xf2f0ec,-.1,.93,-.08); K.p({rough:.4},SPH(.03,8,6),0xf2f0ec,-.1,.93,-.03);
+    for(let k=0;k<3;k++){ const a=k*2.094+.3; K.p({rough:.45},BX(.03,.34,.012),0xf7f6f2,-.1+Math.sin(a)*.17,.93+Math.cos(a)*.17,-.02,0,0,-a); }
+    for(const [x,z] of [[.1,.1],[.1,-.02]]){ K.p({rough:.5,metal:.4},CY(.008,.008,.12,6),0x55595c,x,.09,z); K.p({rough:.15,metal:.6},BX(.2,.012,.12),0x2c4f9e,x,.16,z,-.5,0,0); } }
+  if(key==='startup'){ tile(0xd9d2c4); const W=0x2b3a46;
+    for(let f=0;f<3;f++){ const y=.03+f*.2; K.p({rough:.8},BX(.36,.2,.32),[0xf0e7d6,0xe6dccb,0xf3ece0][f],0,y+.1,0); K.p({rough:.1,metal:.4},BX(.3,.1,.322),W,0,y+.11,0);
+      K.p(grass,BX(.38,.035,.06),0x4f8a32,0,y+.02,.18); for(let k=0;k<4;k++) K.p(grass,SPH(.03,6,5),[0x5c9a3a,0x6fab45,0x4f8a32][k%3],-.14+k*.095,y+.05,.19); }
+    K.p(grass,BX(.36,.02,.32),0x5c9a3a,0,.64,0); }
+  if(key==='techpark'){ tile(0xcfc8b8); const gl={rough:.06,metal:.7};
+    for(let f=0;f<7;f++) K.p(gl,BX(.3,.13,.26),f%2?0x4a8fbf:0x5aa4d4,Math.sin(f*.7)*.03,.03+.065+f*.135,0,0,f*.09,0);
+    for(let f=0;f<8;f++) K.p({rough:.5},BX(.32,.012,.28),0xe9e6df,Math.sin(f*.7)*.03,.03+f*.135,0,0,f*.09,0); }
+  if(key==='lab'){ tile(0xd9d2c4); K.p({rough:.8},BX(.38,.26,.3),0xf1ebe0,0,.16,0); K.p({rough:.1,metal:.4},BX(.34,.08,.302),0x2b3a46,0,.18,0);
+    K.p({rough:.35,metal:.3},new THREE.SphereGeometry(.13,16,10,0,Math.PI*2,0,Math.PI/2),0x3fbfb0,0,.29,0); K.p({rough:.5,metal:.4},CY(.01,.01,.1,6),0x55595c,.12,.34,.08); }
+  if(key==='build'){ tile(0xbfb39b); const cc={rough:.85};
+    for(let f=0;f<3;f++){ K.p(cc,BX(.34,.025,.3),0xb9b4aa,0,.06+f*.17,0); for(const [x,z] of [[-.15,-.13],[.15,-.13],[-.15,.13],[.15,.13]]) if(f<2||x<0) K.p(cc,BX(.03,.17,.03),0xa9a499,x,.06+f*.17+.085,z); }
+    K.p({rough:.5,metal:.4},BX(.03,1.0,.03),0xf2b230,.19,.53,-.17); K.p({rough:.5,metal:.4},BX(.6,.03,.03),0xf2b230,.05,1.02,-.17); K.p({rough:.6},BX(.07,.06,.06),0x55595c,-.22,.99,-.17);
+    K.l({rough:.5},UCYL(.003),0x333333,V3(-.18,1.0,-.17),V3(-.18,.62,-.17)); K.p({rough:.7},BX(.06,.04,.06),0x8a6a40,-.18,.6,-.17); }
+  g.add(K.build()); return g; }
+let city37Code=null;
+function city37Sync(){ const code=LS.get(BLD.KEY)||''; if(code===city37Code) return; city37Code=code;
+  while(CITY37.children.length) CITY37.remove(CITY37.children[0]);
+  const cells=Array(BLD.N*BLD.N).fill(-1); (code.match(/[0-9a-o][0-6]/g)||[]).slice(0,BLD.MAX).forEach(p=>{ const k=parseInt(p[0],36); if(k<cells.length) cells[k]=+p[1]; });
+  const T=.85, off=(BLD.N-1)/2; let n=0;
+  cells.forEach((v,k)=>{ if(v<0) return; n++; const r=(k/BLD.N)|0, c=k%BLD.N, m=cityModel(BLD_STAMPS[v][0],k*31+v*7+3);
+    m.position.set((c-off)*T,0,(r-off)*T); m.rotation.y=-Math.PI/4; m.scale.setScalar(1.75); CITY37.add(m); });
+  /* a light plaza under the plan, so the city reads as one place */
+  if(n){ const K=kit(); K.p({rough:.95},BX(BLD.N*T+.12,.02,BLD.N*T+.12),0xd8d1c1,0,.005,0); const base=K.build(); CITY37.add(base); }
+  CITY37.traverse(o=>{ o.layers.enable(2); if(o.isMesh){ o.castShadow=true; o.receiveShadow=true; } });
+  /* the stop's default 2037 scene steps aside while your city stands in its place */
+  const off37=o=>{ if(n){ o.layers.disable(0); o.layers.disable(2); } else { o.layers.enable(0); o.layers.enable(2); } };
+  DIO[7].g.children.forEach(ch=>{ if(ch===CITY37||ch===plotGroup) return; ch.traverse(off37); });
+  VIA_PARTS.forEach(p=>p.traverse(off37));
+  try{ shadowDirty=true; }catch(e){} }
+const city37Built=()=>!!(LS.get(BLD.KEY)||'').match(/[0-9a-o][0-6]/);
 
 
 /* ================= MR. LAMP (Figma "Pop up" 48:5268) =================
@@ -3570,9 +3622,9 @@ function adaptQuality(rawDt){ qEma+=(Math.min(rawDt,.1)*1000-qEma)*.06; if(++qN<
   if(q!==QS){ QS=q; cardComp.setPixelRatio(CARD_PR*QS); fullComp.setPixelRatio(FULL_PR*QS); cardComp.__w=0; fullComp.__w=0; } }
 const postScene=new THREE.Scene(), postCam=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
 const postMat=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,transparent:false,
-  uniforms:{tex:{value:null},texel:{value:new THREE.Vector2()},focus:{value:.45},blurK:{value:1},region:{value:new THREE.Vector4()},card:{value:new THREE.Vector4()},radius:{value:30},clayK:{value:0},full:{value:0},band:{value:new THREE.Vector2()},expo:{value:1.08},uT:WT,maskT:{value:null},muteK:{value:0},fadeK:{value:0},fadePx:{value:60},BG:{value:new THREE.Vector3(.89,.89,.89)}},
+  uniforms:{tex:{value:null},texel:{value:new THREE.Vector2()},focus:{value:.45},blurK:{value:1},region:{value:new THREE.Vector4()},card:{value:new THREE.Vector4()},radius:{value:30},clayK:{value:0},full:{value:0},band:{value:new THREE.Vector2()},expo:{value:1.08},uT:WT,maskT:{value:null},muteK:{value:0},fadeK:{value:0},fadePx:{value:60},greyK:{value:0},BG:{value:new THREE.Vector3(.89,.89,.89)}},
   vertexShader:`void main(){ gl_Position=vec4(position.xy,0.,1.); }`,
-  fragmentShader:`uniform sampler2D tex; uniform vec2 texel; uniform float focus, blurK; uniform vec4 region, card; uniform float radius, clayK, full, expo, uT; uniform vec2 band; uniform sampler2D maskT; uniform float muteK, fadeK, fadePx; uniform vec3 BG;
+  fragmentShader:`uniform sampler2D tex; uniform vec2 texel; uniform float focus, blurK; uniform vec4 region, card; uniform float radius, clayK, full, expo, uT; uniform vec2 band; uniform sampler2D maskT; uniform float muteK, fadeK, fadePx, greyK; uniform vec3 BG;
   vec3 rrt(vec3 v){ vec3 a=v*(v+.0245786)-.000090537; vec3 b=v*(.983729*v+.4329510)+.238081; return a/b; }
   vec3 aces(vec3 c){ const mat3 I=mat3(.59719,.07600,.02840,.35458,.90834,.13383,.04823,.01566,.83777); const mat3 O=mat3(1.60475,-.10208,-.00327,-.53108,1.10813,-.07276,-.07367,-.00605,1.07602); return clamp(O*rrt(I*c),0.,1.); }
   vec3 srgb(vec3 c){ return mix(c*12.92,1.055*pow(c,vec3(1./2.4))-.055,step(.0031308,c)); }
@@ -3581,7 +3633,7 @@ const postMat=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,transpa
     vec2 cu0=(fc-card.xy)/(card.zw-card.xy); float bl=blurK*(smoothstep(.1,.42,cu0.y-focus)*1.15+smoothstep(.16,.5,focus-cu0.y)*.8);
     float hm=0.; if(muteK>0.){ vec2 mo=texel*7.;
       hm=(texture2D(maskT,uv).r*2.+texture2D(maskT,uv+vec2(mo.x,0.)).r+texture2D(maskT,uv-vec2(mo.x,0.)).r+texture2D(maskT,uv+vec2(0.,mo.y)).r+texture2D(maskT,uv-vec2(0.,mo.y)).r)/6.;
-      hm=smoothstep(.15,.85,hm); bl=mix(bl+.6*fadeK,0.,hm)*muteK+bl*(1.-muteK); }
+      hm=smoothstep(.15,.85,hm)*(1.-greyK); bl=mix(bl+.6*fadeK,0.,hm)*muteK+bl*(1.-muteK); }
     vec3 c=texture2D(tex,uv).rgb;
     if(bl>.02){ vec3 acc=c; float wsum=1.; for(int i=0;i<16;i++){ float a=float(i)*2.39996, r=sqrt(float(i)+.5)/4.; vec2 o=vec2(cos(a),sin(a))*r*bl*5.5*texel; acc+=texture2D(tex,uv+o).rgb; wsum+=1.; } c=acc/wsum; }
     c*=expo/.6;
@@ -3598,6 +3650,8 @@ const postMat=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,transpa
       c=mix(c,mix(m,c,hm*inCard),muteK);
       /* and dissolves into the page colour towards the frame's edges, most of all at the sky */
       }
+    /* 2037 before you build it: the whole world goes grey, VR included */
+    if(greyK>0.&&muteK<.5){ float lg=dot(c,vec3(.2126,.7152,.0722)); vec3 mg=mix(vec3(lg),c,.2); mg=mix(vec3(.7),mg,.5); mg=mix(mg,BG,.4); c=mix(c,mg,greyK); }
     c+=(fract(sin(dot(fc+uT*60.,vec2(12.9898,78.233)))*43758.5453)-.5)*.016;
     float inBand=step(band.x,fc.y)*step(fc.y,band.y);
     float g=dot(c,vec3(.299,.587,.114)); vec3 gc=mix(vec3(g),vec3(.8),.3);
@@ -3620,6 +3674,7 @@ function renderWorld(mode,gr,clayKv){
   const b=bandRect(); U.band.value.set((H-b.b)*pr,(H-b.t)*pr);
   U.clayK.value=clayKv; U.full.value=mode==='full-colour'?1:0;
   U.maskT.value=maskRT.texture; U.muteK.value=mode==='full-colour'?0:1; U.fadeK.value=mode==='full-colour'?0:1-clayKv; U.fadePx.value=64*gr.w/384*pr;
+  U.greyK.value=city37Built()?0:clamp(1-Math.abs(fx-stopX(7))/(SP*.5),0,1);
   renderer.setRenderTarget(null); renderer.setScissorTest(false); renderer.setViewport(0,0,W,H); renderer.setClearColor(0x000000,0); renderer.clear();
   renderer.render(postScene,postCam);
   camera.setViewOffset(W,H,offX,offY,W,H); }
@@ -3845,7 +3900,7 @@ async function loadModels(){ if(!/^https?:/.test(location.protocol)) return;
   const L=new GLTFLoader();
   try{ const [veh,ppl]=await Promise.all([L.loadAsync(modelURL('traffic.glb')),L.loadAsync(modelURL('people.glb'))]);
     MAN=prepMannequin(ppl); applyVehicleSwaps(veh); applyTraffic(veh); if(MAN) applyPeople();
-    MODELS_READY=true; try{ renderer.compileAsync&&renderer.compileAsync(scene,camera).catch(()=>{}); }catch(e){}
+    MODELS_READY=true; try{ city37Code=null; city37Sync(); }catch(e){} try{ renderer.compileAsync&&renderer.compileAsync(scene,camera).catch(()=>{}); }catch(e){}
     document.body.classList.add('models-ready'); }
   catch(e){ console.warn('Real models not loaded; keeping the built-in ones.',e); } }
 
@@ -3871,7 +3926,7 @@ const GRAIN='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.
   /* compile every scene's shaders in the background, so no stop hitches the first time it comes into view */
   try{ renderer.compileAsync&&renderer.compileAsync(scene,camera).catch(()=>{}); }catch(e){}
   handleHash();
-  loadModels();
+  loadModels(); try{ city37Sync(); }catch(e){ console.warn(e); }
   window.__app={ manual(on){ MANUAL=on; }, step(n=1,r=1/30){ for(let k=0;k<n;k++){ SKIPR=k<n-1; stepFrame(r); } SKIPR=false; }, goTo, enterBuilder, exitBuilder, enterVR, exitVR, openChapter, closeChapter, startFollow, stopFollow, start:()=>startExperience(true), bTap:(k)=>bTap(k), setTool:(k)=>{B.tool=k;}, bResult:()=>bResult(), setDrag(x){ markDragged(); phase='drag'; dragT=x; }, release(){ releaseSnap(restX); }, get state(){ return {fx,phase,zoneIdx,arrived,building,lensMode,vrMode,follow,stamps:stampCount(),cardDX,clayK,ST:!!ST}; }, DIO, earn:earnStamp, camera, cardRect, unlockAll:()=>$('btnUnlockAll').onclick(), ob:()=>({coach:wt.i,static:OB.static,p:OB.p,cls:BODY.className}), obReset:()=>{ try{ localStorage.removeItem(OB_KEY); }catch(e){} }, chScrollTo:(y)=>{ if(chLenis) chLenis.scrollTo(y,{immediate:true}); else loScroll.scrollTop=y; }, scrollInfo:()=>({lenis:!!chLenis,page:!!pageLenis,gsap:gsapReady,triggers:window.ScrollTrigger?ScrollTrigger.getAll().length:0,top:loScroll.scrollTop}) };
 })();
 

@@ -14,9 +14,9 @@ function adaptQuality(rawDt){ qEma+=(Math.min(rawDt,.1)*1000-qEma)*.06; if(++qN<
   if(q!==QS){ QS=q; cardComp.setPixelRatio(CARD_PR*QS); fullComp.setPixelRatio(FULL_PR*QS); cardComp.__w=0; fullComp.__w=0; } }
 const postScene=new THREE.Scene(), postCam=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
 const postMat=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,transparent:false,
-  uniforms:{tex:{value:null},texel:{value:new THREE.Vector2()},focus:{value:.45},blurK:{value:1},region:{value:new THREE.Vector4()},card:{value:new THREE.Vector4()},radius:{value:30},clayK:{value:0},full:{value:0},band:{value:new THREE.Vector2()},expo:{value:1.08},uT:WT,maskT:{value:null},muteK:{value:0},fadeK:{value:0},fadePx:{value:60},BG:{value:new THREE.Vector3(.89,.89,.89)}},
+  uniforms:{tex:{value:null},texel:{value:new THREE.Vector2()},focus:{value:.45},blurK:{value:1},region:{value:new THREE.Vector4()},card:{value:new THREE.Vector4()},radius:{value:30},clayK:{value:0},full:{value:0},band:{value:new THREE.Vector2()},expo:{value:1.08},uT:WT,maskT:{value:null},muteK:{value:0},fadeK:{value:0},fadePx:{value:60},greyK:{value:0},BG:{value:new THREE.Vector3(.89,.89,.89)}},
   vertexShader:`void main(){ gl_Position=vec4(position.xy,0.,1.); }`,
-  fragmentShader:`uniform sampler2D tex; uniform vec2 texel; uniform float focus, blurK; uniform vec4 region, card; uniform float radius, clayK, full, expo, uT; uniform vec2 band; uniform sampler2D maskT; uniform float muteK, fadeK, fadePx; uniform vec3 BG;
+  fragmentShader:`uniform sampler2D tex; uniform vec2 texel; uniform float focus, blurK; uniform vec4 region, card; uniform float radius, clayK, full, expo, uT; uniform vec2 band; uniform sampler2D maskT; uniform float muteK, fadeK, fadePx, greyK; uniform vec3 BG;
   vec3 rrt(vec3 v){ vec3 a=v*(v+.0245786)-.000090537; vec3 b=v*(.983729*v+.4329510)+.238081; return a/b; }
   vec3 aces(vec3 c){ const mat3 I=mat3(.59719,.07600,.02840,.35458,.90834,.13383,.04823,.01566,.83777); const mat3 O=mat3(1.60475,-.10208,-.00327,-.53108,1.10813,-.07276,-.07367,-.00605,1.07602); return clamp(O*rrt(I*c),0.,1.); }
   vec3 srgb(vec3 c){ return mix(c*12.92,1.055*pow(c,vec3(1./2.4))-.055,step(.0031308,c)); }
@@ -25,7 +25,7 @@ const postMat=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,transpa
     vec2 cu0=(fc-card.xy)/(card.zw-card.xy); float bl=blurK*(smoothstep(.1,.42,cu0.y-focus)*1.15+smoothstep(.16,.5,focus-cu0.y)*.8);
     float hm=0.; if(muteK>0.){ vec2 mo=texel*7.;
       hm=(texture2D(maskT,uv).r*2.+texture2D(maskT,uv+vec2(mo.x,0.)).r+texture2D(maskT,uv-vec2(mo.x,0.)).r+texture2D(maskT,uv+vec2(0.,mo.y)).r+texture2D(maskT,uv-vec2(0.,mo.y)).r)/6.;
-      hm=smoothstep(.15,.85,hm); bl=mix(bl+.6*fadeK,0.,hm)*muteK+bl*(1.-muteK); }
+      hm=smoothstep(.15,.85,hm)*(1.-greyK); bl=mix(bl+.6*fadeK,0.,hm)*muteK+bl*(1.-muteK); }
     vec3 c=texture2D(tex,uv).rgb;
     if(bl>.02){ vec3 acc=c; float wsum=1.; for(int i=0;i<16;i++){ float a=float(i)*2.39996, r=sqrt(float(i)+.5)/4.; vec2 o=vec2(cos(a),sin(a))*r*bl*5.5*texel; acc+=texture2D(tex,uv+o).rgb; wsum+=1.; } c=acc/wsum; }
     c*=expo/.6;
@@ -42,6 +42,8 @@ const postMat=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,transpa
       c=mix(c,mix(m,c,hm*inCard),muteK);
       /* and dissolves into the page colour towards the frame's edges, most of all at the sky */
       }
+    /* 2037 before you build it: the whole world goes grey, VR included */
+    if(greyK>0.&&muteK<.5){ float lg=dot(c,vec3(.2126,.7152,.0722)); vec3 mg=mix(vec3(lg),c,.2); mg=mix(vec3(.7),mg,.5); mg=mix(mg,BG,.4); c=mix(c,mg,greyK); }
     c+=(fract(sin(dot(fc+uT*60.,vec2(12.9898,78.233)))*43758.5453)-.5)*.016;
     float inBand=step(band.x,fc.y)*step(fc.y,band.y);
     float g=dot(c,vec3(.299,.587,.114)); vec3 gc=mix(vec3(g),vec3(.8),.3);
@@ -64,6 +66,7 @@ function renderWorld(mode,gr,clayKv){
   const b=bandRect(); U.band.value.set((H-b.b)*pr,(H-b.t)*pr);
   U.clayK.value=clayKv; U.full.value=mode==='full-colour'?1:0;
   U.maskT.value=maskRT.texture; U.muteK.value=mode==='full-colour'?0:1; U.fadeK.value=mode==='full-colour'?0:1-clayKv; U.fadePx.value=64*gr.w/384*pr;
+  U.greyK.value=city37Built()?0:clamp(1-Math.abs(fx-stopX(7))/(SP*.5),0,1);
   renderer.setRenderTarget(null); renderer.setScissorTest(false); renderer.setViewport(0,0,W,H); renderer.setClearColor(0x000000,0); renderer.clear();
   renderer.render(postScene,postCam);
   camera.setViewOffset(W,H,offX,offY,W,H); }

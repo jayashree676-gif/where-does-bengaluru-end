@@ -343,7 +343,8 @@ const SPEC={ rain:{cols:[0x2c561c,0x3a6823,0x477a2b,0x568a32,0x6a9a3a],spread:1.
   gul:{cols:[0xd8342a,0xe35a2a,0xc9281f,0xf07a35,0x3a6823,0x477a2b],spread:1.0,flat:.5,tips:2,lean:1.1},
   jac:{cols:[0x8a70c8,0x7b5fc0,0x9a80d4,0x6d55b0,0x4f7a32],spread:.85,flat:.7,tips:2,lean:.8},
   mango:{cols:[0x1f4a1a,0x2a5a20,0x2f6524,0x3b6a2a],spread:.7,flat:.95,tips:2,lean:.7},
-  neem:{cols:[0x3f6e2a,0x4d7d30,0x5c8a38,0x6a9a3e],spread:.8,flat:.8,tips:2,lean:.8} };
+  neem:{cols:[0x3f6e2a,0x4d7d30,0x5c8a38,0x6a9a3e],spread:.8,flat:.8,tips:2,lean:.8},
+  bloom:{cols:[0xf3a6c8,0xe98bb6,0xf7bfd6,0xdc7aa8,0x4f7a32],spread:.9,flat:.72,tips:2,lean:.85} };
 function htree(seed,{h=1.6,w=1.0,kind='rain',leaves=1}={}){ const R=rng(seed), sp=SPEC[kind]||SPEC.rain, K=kit(), bark=0x54402e, pts=[];
   const grow=(a,dir,len,r,dep)=>{ const b=a.clone().addScaledVector(dir,len); K.l({rough:.95,pat:{k:'wood',a:1,f:90}},UCYL(r,r*.62,7),bark,a,b);
     if(dep>=sp.tips){ const cr=(.2+R()*.12)*w*1.5; const n=Math.round((38+R()*16)*leaves);
@@ -1112,9 +1113,10 @@ function hideStory(){ BLKS().forEach(b=>b.classList.remove('in')); clearTimeout(
 /* the primary CTA: Read Full Story, or at 2037 Build Your Bangalore, disabled until all 7 stamps are in */
 function syncRead(){ const rb=$('btnRead'), z=zoneIdx>=0?ZONES[zoneIdx]:null, fut=!!(z&&z.future), lock=fut&&!unlocked();
   rb.textContent=fut?'✦ Build Your Bangalore ✦':'✦ Read Full Story ✦'; rb.classList.toggle('locked',lock); rb.setAttribute('aria-disabled',lock?'true':'false');
+  bc('at2037',fut); const vb=$('vrBuild'); vb.classList.toggle('locked',lock); vb.setAttribute('aria-disabled',lock?'true':'false');
   if(lock) rb.setAttribute('aria-describedby','readTip'); else { rb.removeAttribute('aria-describedby'); readTip(false); } }
 let readTipT=null;
-function readTip(on){ const t=$('readTip'), rb=$('btnRead'); clearTimeout(readTipT);
+function readTip(on,el){ const t=$('readTip'), rb=el||$('btnRead'); clearTimeout(readTipT);
   if(!on){ t.classList.remove('show'); return; }
   t.textContent=`Bring me all 7 stamps first to enable me. You have ${stampCount()}.`;
   const r=rb.getBoundingClientRect(); t.style.left=(r.left+r.width/2)+'px'; t.style.top=(r.top-12)+'px'; t.classList.add('show'); }
@@ -1125,6 +1127,10 @@ $('btnRead').addEventListener('blur',()=>readTip(false));
 $('btnRead').onclick=()=>{ if(!started||zoneIdx<0||obBusy()) return; const z=ZONES[zoneIdx];
   if(z.future&&!unlocked()){ readTip(true); readTipT=setTimeout(()=>readTip(false),2600); return; }
   if(z.future) enterBuilder(); else openChapter(); };
+/* the same CTA inside the 2037 VR view */
+$('vrBuild').addEventListener('mouseenter',()=>{ if($('vrBuild').classList.contains('locked')) readTip(true,$('vrBuild')); });
+$('vrBuild').addEventListener('mouseleave',()=>readTip(false));
+$('vrBuild').onclick=()=>{ if(!unlocked()){ readTip(true,$('vrBuild')); readTipT=setTimeout(()=>readTip(false),2600); return; } readTip(false); if(vrMode) exitVR(); enterBuilder(); };
 $('navN').onclick=()=>{ if(!started) return; if(zoneIdx<N-1) goTo(zoneIdx+1); };
 $('navP').onclick=()=>{ if(!started) return; if(zoneIdx>0) goTo(zoneIdx-1); else { markDragged(); onLeave(); snapT=START; phase='snap'; } };
 
@@ -1985,7 +1991,7 @@ async function loadModels(){ if(!/^https?:/.test(location.protocol)) return;
   const L=new GLTFLoader();
   try{ const [veh,ppl]=await Promise.all([L.loadAsync(modelURL('traffic.glb')),L.loadAsync(modelURL('people.glb'))]);
     MAN=prepMannequin(ppl); applyVehicleSwaps(veh); applyTraffic(veh); if(MAN) applyPeople();
-    MODELS_READY=true; try{ renderer.compileAsync&&renderer.compileAsync(scene,camera).catch(()=>{}); }catch(e){}
+    MODELS_READY=true; try{ city37Code=null; city37Sync(); }catch(e){} try{ renderer.compileAsync&&renderer.compileAsync(scene,camera).catch(()=>{}); }catch(e){}
     document.body.classList.add('models-ready'); }
   catch(e){ console.warn('Real models not loaded; keeping the built-in ones.',e); } }
 
@@ -2011,6 +2017,6 @@ const GRAIN='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.
   /* compile every scene's shaders in the background, so no stop hitches the first time it comes into view */
   try{ renderer.compileAsync&&renderer.compileAsync(scene,camera).catch(()=>{}); }catch(e){}
   handleHash();
-  loadModels();
+  loadModels(); try{ city37Sync(); }catch(e){ console.warn(e); }
   window.__app={ manual(on){ MANUAL=on; }, step(n=1,r=1/30){ for(let k=0;k<n;k++){ SKIPR=k<n-1; stepFrame(r); } SKIPR=false; }, goTo, enterBuilder, exitBuilder, enterVR, exitVR, openChapter, closeChapter, startFollow, stopFollow, start:()=>startExperience(true), bTap:(k)=>bTap(k), setTool:(k)=>{B.tool=k;}, bResult:()=>bResult(), setDrag(x){ markDragged(); phase='drag'; dragT=x; }, release(){ releaseSnap(restX); }, get state(){ return {fx,phase,zoneIdx,arrived,building,lensMode,vrMode,follow,stamps:stampCount(),cardDX,clayK,ST:!!ST}; }, DIO, earn:earnStamp, camera, cardRect, unlockAll:()=>$('btnUnlockAll').onclick(), ob:()=>({coach:wt.i,static:OB.static,p:OB.p,cls:BODY.className}), obReset:()=>{ try{ localStorage.removeItem(OB_KEY); }catch(e){} }, chScrollTo:(y)=>{ if(chLenis) chLenis.scrollTo(y,{immediate:true}); else loScroll.scrollTop=y; }, scrollInfo:()=>({lenis:!!chLenis,page:!!pageLenis,gsap:gsapReady,triggers:window.ScrollTrigger?ScrollTrigger.getAll().length:0,top:loScroll.scrollTop}) };
 })();
