@@ -28,8 +28,10 @@ function branchFan(parts,R,y0,n,len,spread,col=BARK){ const base=new THREE.Vecto
 function geoRain(seed,cols=LEAF){ const R=rng(seed), parts=[];
   parts.push(P(new THREE.CylinderGeometry(.06,.1,1.15,7),BARK,0,.57,0,(R()-.5)*.08,0,(R()-.5)*.08));
   branchFan(parts,R,1.0,5,.75,.95);
-  for(let k=0;k<4;k++){ const a=R()*6.28, r=R()*.3; canopy(parts,R,Math.sin(a)*r,1.66+R()*.1,Math.cos(a)*r,.38+R()*.12,.22+R()*.06,.38+R()*.12,cols); }
-  for(let k=0;k<9;k++){ const a=k/9*6.283+R()*.5, r=.58+R()*.38; canopy(parts,R,Math.sin(a)*r,1.4+R()*.24,Math.cos(a)*r,.3+R()*.14,.2+R()*.07,.3+R()*.14,cols); }
+  /* a crown of leaf clusters at the branch tips (umbrella-shaped, like a rain tree), each built from small lumps */
+  const CL=[[0,1.72,0,.4]]; for(let k=0;k<7;k++){ const a=k/7*6.283+R()*.5, r=.5+R()*.34; CL.push([Math.sin(a)*r,1.4+R()*.22,Math.cos(a)*r,.34]); }
+  for(const [x,y,z,s] of CL) for(let j=0;j<8;j++){ const u=R()*6.283, v=R()*1.4, rr=s*(.2+.8*R());
+    canopy(parts,R,x+Math.sin(u)*Math.sin(v)*rr,y+Math.cos(v)*rr*.42,z+Math.cos(u)*Math.sin(v)*rr,.22+R()*.09,.15+R()*.05,.22+R()*.09,cols,0); }
   return MG(parts); }
 function geoAshoka(seed){ const R=rng(seed), parts=[]; parts.push(P(new THREE.CylinderGeometry(.035,.06,2.4,6),BARK,0,1.2,0));
   for(let k=0;k<6;k++){ const y=.75+k*.36, r=.36-k*.04; canopy(parts,R,(R()-.5)*.06,y,(R()-.5)*.06,r,.34,r,[0x1f4a1a,0x2a5a20,0x356a26]); }

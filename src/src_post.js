@@ -1,11 +1,17 @@
 /* ================= CINEMATIC FINISH: HDR render → bloom → grade → the glass-frame composite =================
    At rest only the frame's window is rendered (cheap, sharp). While the frame moves, the whole
    band is rendered and shown in grey outside the frame, colour inside it. */
-function makeComposer(pr){ const rt=new THREE.WebGLRenderTarget(4,4,{type:THREE.HalfFloatType,samples:4});
+function makeComposer(pr,ms=4){ const rt=new THREE.WebGLRenderTarget(4,4,{type:THREE.HalfFloatType,samples:ms});
   const c=new EffectComposer(renderer,rt); c.renderToScreen=false; c.setPixelRatio(pr); c.addPass(new RenderPass(scene,camera));
   const b=new UnrealBloomPass(new THREE.Vector2(4,4),.28,.55,.92); c.addPass(b); c.__w=0; c.__h=0; return c; }
 const DPR=Math.min(devicePixelRatio||1,2);
-const cardComp=makeComposer(DPR), fullComp=makeComposer(Math.min(DPR,1.35));
+const CARD_PR=Math.min(DPR,1.75), FULL_PR=Math.min(DPR,1.15);
+const cardComp=makeComposer(CARD_PR,4), fullComp=makeComposer(FULL_PR,2);
+/* adaptive resolution: if frames take too long, render the world at a lower pixel ratio, and bring it back up when there is headroom */
+let QS=1, qEma=16.7, qN=0;
+function adaptQuality(rawDt){ qEma+=(Math.min(rawDt,.1)*1000-qEma)*.06; if(++qN<45) return; qN=0;
+  let q=QS; if(qEma>24) q=Math.max(.6,QS-.1); else if(qEma<18&&QS<1) q=Math.min(1,QS+.05);
+  if(q!==QS){ QS=q; cardComp.setPixelRatio(CARD_PR*QS); fullComp.setPixelRatio(FULL_PR*QS); cardComp.__w=0; fullComp.__w=0; } }
 const postScene=new THREE.Scene(), postCam=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
 const postMat=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,transparent:false,
   uniforms:{tex:{value:null},texel:{value:new THREE.Vector2()},focus:{value:.45},blurK:{value:1},region:{value:new THREE.Vector4()},card:{value:new THREE.Vector4()},radius:{value:30},clayK:{value:0},full:{value:0},band:{value:new THREE.Vector2()},expo:{value:1.08},uT:WT,maskT:{value:null},muteK:{value:0},fadeK:{value:0},fadePx:{value:60},BG:{value:new THREE.Vector3(.89,.89,.89)}},
@@ -49,6 +55,7 @@ function renderWorld(mode,gr,clayKv){
   else { R={l:0,t:0,w:W,h:H}; comp=fullComp; camera.setViewOffset(W,H,offX,offY,W,H); }
   if(comp.__w!==R.w||comp.__h!==R.h){ comp.setSize(R.w,R.h); comp.__w=R.w; comp.__h=R.h; }
   const ps=comp._pixelRatio||pr; pointsScale(H*ps/(2*Math.tan(camera.fov*Math.PI/360)));
+  if(shadowDirty||(frameN&1)===0){ renderer.shadowMap.needsUpdate=true; shadowDirty=false; }
   comp.render();
   if(mode!=='full-colour') renderHeroMask(R);
   const U=postMat.uniforms; U.tex.value=comp.readBuffer.texture; U.texel.value.set(1/(R.w*comp._pixelRatio),1/(R.h*comp._pixelRatio)); U.blurK.value=mode==='full-colour'?.35:1; U.focus.value=.46;
@@ -61,5 +68,5 @@ function renderWorld(mode,gr,clayKv){
   renderer.render(postScene,postCam);
   camera.setViewOffset(W,H,offX,offY,W,H); }
 /* point sprites (smoke, motes) need the screen scale */
-function pointsScale(v){ [smoke,motes].forEach(p=>{ p.material.uniforms.sz.value=p.userData.sz*v; }); }
+function pointsScale(v){ [smoke,motes,...EXTRA_PTS].forEach(p=>{ p.material.uniforms.sz.value=p.userData.sz*v; }); }
 smoke.userData.sz=.55; motes.userData.sz=.045;

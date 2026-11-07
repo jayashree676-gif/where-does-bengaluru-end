@@ -4,7 +4,7 @@
    (stones, grass tufts, flowers on stems) dresses the ground around it. Everything here is switched
    off in VR and in the builder, so those views render exactly as before. */
 const HERO_LAYER=2;
-DIO.forEach(d=>d.g.traverse(o=>o.layers.enable(HERO_LAYER)));
+DIO.forEach(d=>d.g.traverse(o=>o.layers.enable(HERO_LAYER))); WORLD_COLOUR.forEach(o=>o.layers.enable(HERO_LAYER));
 const KITS=[], haloScene=new THREE.Scene();
 (function buildKits(){
   const stoneGeo=new THREE.IcosahedronGeometry(1,1), stoneMat=mat(0xffffff,{rough:.93,flat:true});
@@ -20,11 +20,11 @@ const KITS=[], haloScene=new THREE.Scene();
   const STONES=[0x9c9284,0x857a6c,0xb3a998,0x6f675d,0xa39070,0x8d8577], GREENS=[0x6f9a3c,0x7ea547,0x8db04f,0x5f8c33,0x9bbb5c], BLOOMS=[0xf2c94c,0xffffff,0xe86a92,0xb38df0,0xf29a4a,0xffe08a];
   DIO.forEach(d=>{ const bb=new THREE.Box3().setFromObject(d.g); if(bb.isEmpty()) return;
     const R=rng(d.i*53+9), kit=new THREE.Group(); kit.visible=false; scene.add(kit); KITS.push(kit);
-    const x0=bb.min.x, x1=bb.max.x, z0=bb.min.z, z1=Math.min(bb.max.z,ROAD_Z-1.3), w=x1-x0, dz=z1-z0;
+    const x0=bb.min.x, x1=bb.max.x, z0=bb.min.z, z1=Math.min(bb.max.z,ROAD_Z-1.7), w=x1-x0, dz=z1-z0;
     /* a point on a band around the footprint, d0..d1 outside its edge */
     const ring=(d0,d1)=>{ for(let t=0;t<12;t++){ const per=2*(w+dz), u=R()*per, e=d0+(d1-d0)*Math.pow(R(),1.4); let x, z;
         if(u<w){ x=x0+u; z=z0-e; } else if(u<w+dz){ x=x1+e; z=z0+(u-w); } else if(u<2*w+dz){ x=x1-(u-w-dz); z=z1+e; } else { x=x0-e; z=z1-(u-2*w-dz); }
-        if(z>ROAD_Z-1.1) continue; return [x,z]; } return null; };
+        if(z>ROAD_Z-1.5) continue; return [x,z]; } return null; };
     /* stones */
     const NS=170, st=new THREE.InstancedMesh(stoneGeo,stoneMat,NS); st.castShadow=true; st.receiveShadow=true; let n=0;
     for(let k=0;k<NS;k++){ const p=ring(.05,1.25); if(!p) continue; const s=.03+Math.pow(R(),2.2)*.1;
@@ -52,10 +52,10 @@ const KITS=[], haloScene=new THREE.Scene();
 })();
 /* default state on/off: detail shading, the kit, and a tighter (sharper) sun shadow around the focal asset */
 const SHADOW_WIDE={left:-24,right:24,top:22,bottom:-14}, SHADOW_TIGHT={left:-12,right:12,top:11,bottom:-8};
-let heroShadow='';
+let heroShadow='', shadowDirty=true;
 function heroMode(on,tight,cx){ HD.value=on?1:0;
   KITS.forEach(k=>{ k.visible=on&&Math.abs(k.userData.x-cx)<26; });
-  const want=on&&tight?'t':'w'; if(want!==heroShadow){ heroShadow=want; Object.assign(sun.shadow.camera,want==='t'?SHADOW_TIGHT:SHADOW_WIDE); sun.shadow.camera.updateProjectionMatrix(); } }
+  const want=on&&tight?'t':'w'; if(want!==heroShadow){ heroShadow=want; Object.assign(sun.shadow.camera,want==='t'?SHADOW_TIGHT:SHADOW_WIDE); sun.shadow.camera.updateProjectionMatrix(); shadowDirty=true; } }
 /* the colour mask: the focal asset drawn white on black, same view as the frame, half resolution */
 const maskRT=new THREE.WebGLRenderTarget(4,4,{depthBuffer:true}), maskMat=new THREE.MeshBasicMaterial({color:0xffffff,fog:false}), _cc=new THREE.Color();
 function renderHeroMask(R){ const w=Math.max(2,Math.round(R.w*.5)), h=Math.max(2,Math.round(R.h*.5)); if(maskRT.width!==w||maskRT.height!==h) maskRT.setSize(w,h);

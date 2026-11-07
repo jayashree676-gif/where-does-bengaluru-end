@@ -11,7 +11,8 @@ function fbm(x,z,o=4){ let s=0,a=.5,f=1; for(let i=0;i<o;i++){ s+=a*vnoise(x*f+i
 const sstep=(a,b,x)=>{ const t=clamp((x-a)/(b-a),0,1); return t*t*(3-2*t); };
 const eraX=x=>x/SP;
 const nearStop=x=>{ const i=clamp(Math.round(x/SP),0,N-1); return [i,x-stopX(i)]; };
-const inHero=(x,z,rx=5.5,rz=4)=>{ const [,dx]=nearStop(x); return Math.abs(dx)<rx&&Math.abs(z)<rz; };
+/* the cleared patch around a scene is just its own footprint (about 5 wide, 3.4 behind, as far as the road in front), so the surrounding city comes right up to it */
+const inHero=(x,z,rx=5.5,rz=4)=>{ const [,dx]=nearStop(x); return Math.abs(dx)<Math.min(rx,5.2)&&z<rz&&z>-Math.min(rz,3.4); };
 const nearNarrator=(x,z,r=4)=>Math.hypot(x-START,z+1)<r;
 
 /* ---- lakes: Bengaluru was built around tanks ---- */
@@ -118,17 +119,32 @@ roadMat.onBeforeCompile=s=>{ worldVaryings(s);
     c*=.8+.2*smoothstep(0.,.07,min(v,1.-v)); diffuseColor.rgb=c; } `); };
 roadMat.customProgramCacheKey=()=>'road';
 const ROAD_Z=5.2;
-{ const pts=[]; for(let x=X0;x<=X1;x+=.6) pts.push([x,ROAD_Z]); const m=new THREE.Mesh(ribbon(pts,1.5,.03),roadMat); m.receiveShadow=true; world.add(m); }
+/* height of the road ribbon itself (it is lifted over the ground and the water), so wheels sit on it */
+function roadY(x,z){ const a=Math.max(hgt(x,ROAD_Z+1),WATER_Y+.05), b=Math.max(hgt(x,ROAD_Z-1),WATER_Y+.05), t=clamp((ROAD_Z+1-z)/2,0,1); return a+(b-a)*t+.03+.006; }
+{ const pts=[]; for(let x=X0;x<=X1;x+=.6) pts.push([x,ROAD_Z]); const m=new THREE.Mesh(ribbon(pts,2.0,.03),roadMat); m.receiveShadow=true; world.add(m); }
 const urb=x=>sstep(2.3,6.0,eraX(x));
 const STREET_Z=[-14,-31,-50,-73,-100,-134,-178,-232];
 const streetZ=(Z,x)=>Z+(1-urb(x))*2.6*Math.sin(x*.06+Z);
 const crossX=x=>{ const m=((x-3)%12+12)%12; return m<1.0; };
-function onStreet(x,z,pad=.7){ for(const Z of STREET_Z){ if(Math.abs(z-streetZ(Z,x))<pad) return true; } if(z<-10&&urb(x)>.3&&crossX(x)&&z>-260) return true; return false; }
+/* the through street forks off the main road before scene 5 and runs on to the end of the world; the viaduct starts at its terminal in front of scene 7 and does the same */
+const STAGE_X0=70, STAGE_X1=86, stageZ=x=>ROAD_Z+(STAGE_Z-ROAD_Z)*sstep(STAGE_X0,STAGE_X1,x);
+function onStreet(x,z,pad=.7){ for(const Z of STREET_Z){ if(Math.abs(z-streetZ(Z,x))<pad) return true; }
+  if(x>STAGE_X0-1&&Math.abs(z-stageZ(x))<pad+STAGE_HW+.5) return true; if(x>VIA_X0-1.5&&Math.abs(z-VIA_Z)<pad+.95) return true; if(z<-10&&urb(x)>.3&&crossX(x)&&z>-260) return true; return false; }
 { const parts=[]; for(const Z of STREET_Z){ const pts=[]; for(let x=X0;x<=X1;x+=Z>-60?.8:2) pts.push([x,streetZ(Z,x)]); parts.push(ribbon(pts,Z>-60?.95:1.3)); }
   for(let x=3.5;x<X1;x+=12){ if(urb(x)<.3) continue; const pts=[]; for(let z=-10;z>=-260;z-=1) pts.push([x,z]); parts.push(ribbon(pts,.85)); }
   const g=mergeGeometries(parts,false), m=new THREE.Mesh(g,roadMat); m.receiveShadow=true; world.add(m); }
 /* pavements from the 1940s on */
-{ const pv=mat(0xb4ab9c,{brick:[.22,.22],rough:.9}); for(let x=3.6*SP;x<X1;x+=10){ [4.2,6.2].forEach(z=>{ const b=new THREE.Mesh(new THREE.BoxGeometry(10,.07,.42),pv); b.position.set(x+5,.035,z); b.receiveShadow=true; world.add(b); }); } }
+const PAVE_X=3.6*SP, PAVE_TOP=.055;
+const walkY=(x,z)=>x>=PAVE_X?Math.max(PAVE_TOP,hgt(x,z)):Math.max(hgt(x,z),WATER_Y+.05);
+{ const pv=mat(0xb4ab9c,{brick:[.22,.22],rough:.9}), kb=mat(0x8f8a82,{rough:.85}); for(let x=PAVE_X;x<X1;x+=10){ [[3.98,4.2],[6.42,6.2]].forEach(([z,ez])=>{ const b=new THREE.Mesh(new THREE.BoxGeometry(10,.075,.48),pv); b.position.set(x+5,PAVE_TOP-.0375,z); b.receiveShadow=true; world.add(b);
+      const k=new THREE.Mesh(new THREE.BoxGeometry(10,.08,.035),kb); k.position.set(x+5,PAVE_TOP-.036,ez); k.receiveShadow=true; world.add(k); }); } }
+
+/* ---- the through street: forks off the main road, passes scenes 5, 6 and 7 and runs on to the end of the world, with kerbs and footpaths (so the scenes sit on a road that never ends) ---- */
+{ const pts=[]; for(let x=STAGE_X0;x<=X1;x+=x<STAGE_X1+4?.5:2) pts.push([x,stageZ(x)]);
+  const m=new THREE.Mesh(ribbon(pts,STAGE_HW*2,.036),roadMat); m.receiveShadow=true; world.add(m); WORLD_COLOUR.push(m);
+  const pv=mat(0xb4ab9c,{brick:[.22,.22],rough:.9}), kb=mat(0x8f8a82,{rough:.85}), XS=STAGE_X1+1, LEN=X1-XS;
+  for(const s of [-1,1]){ const f=new THREE.Mesh(new THREE.BoxGeometry(LEN,.075,.26),pv); f.position.set(XS+LEN/2,PAVE_TOP-.0375,STAGE_Z+s*.645); f.receiveShadow=true; world.add(f); WORLD_COLOUR.push(f);
+    const k=new THREE.Mesh(new THREE.BoxGeometry(LEN,.08,.045),kb); k.position.set(XS+LEN/2,PAVE_TOP-.036,STAGE_Z+s*.4925); k.receiveShadow=true; world.add(k); WORLD_COLOUR.push(k); } }
 
 /* ---- instancing helper (chunks so off-screen parts are skipped) ---- */
 const tmpM=new THREE.Matrix4(), tmpQ=new THREE.Quaternion(), tmpE=new THREE.Euler(), tmpP=new THREE.Vector3(), tmpS=new THREE.Vector3(), tmpCol=new THREE.Color();
@@ -214,6 +230,10 @@ function pickType(ej,R){
   if(ej<5.7) return R()<.66?'flats':R()<.72?'office':'house';
   if(ej<6.7) return R()<.52?'flats':R()<.62?'glass':'office';
   return R()<.45?'future':R()<.55?'glass':'flats'; }
+/* scale what one addBuilding call pushed about its own footprint (used for the low buildings next to the road) */
+function grow(arrs,n0,x,z,m){ let base=null; arrs.forEach((a,k)=>{ for(let i=n0[k];i<a.length;i++){ const e=a[i]; if(base===null) base=e.y;
+    e.x=x+(e.x-x)*m; e.z=z+(e.z-z)*m; e.y=base+(e.y-base)*m; e.sx*=m; if(e.sy!=null) e.sy*=m; if(e.sz!=null) e.sz*=m; if(e.st) e.st=[e.st[0],e.st[1],e.st[2],e.st[3]*m];
+      if(i===n0[k]&&(a===WALLS||a===HUTW)) occupy(e.x,e.z,(e.sx||0)*(a===HUTW?2:1)+.4,(e.sz||e.sx||0)*(a===HUTW?2:1)+.4); } }); }
 function addBuilding(x,z,type,R,capF){
   const ry=(R()-.5)*.08+(R()<.5?0:Math.PI/2)*(type==='hut'?1:0), fh=.32;
   const cornerBase=(w,d)=>Math.min(hgt(x-w/2,z-d/2),hgt(x+w/2,z-d/2),hgt(x-w/2,z+d/2),hgt(x+w/2,z+d/2))-.12;
@@ -254,9 +274,14 @@ function addBuilding(x,z,type,R,capF){
       addBuilding(xx,zz,type,R,capF); }
     z-=dz; }
   /* low buildings in the gaps between the hero scenes keep the timeline continuous */
-  for(let x=X0;x<X1;x+=2.6){ for(const z of [-6.2,-3.4]){ const xx=x+(R()-.5)*.8, zz=z+(R()-.5)*.5, e=eraX(xx);
+  const GAP_M=2.0;
+  for(let x=X0;x<X1;x+=2.6*1.9){ for(const z of [-8.4,-4.2]){ const xx=x+(R()-.5)*.8, zz=z+(R()-.5)*.5, e=eraX(xx);
       if(inHero(xx,zz,7.5,9)||nearNarrator(xx,zz,6)||R()>(.25+.45*urb(xx))*sstep(-60,-10,xx)) continue;
-      addBuilding(xx,zz,pickType(Math.min(e+(R()-.5),5.4),R),R,3); } } }
+      const n0=[WALLS,HUTW,HIPS,THATCH,SAWS,CHIM,TANKS,SOLARS,ANTS,ROOFTREES].map(a=>a.length);
+      addBuilding(xx,zz,pickType(Math.min(e+(R()-.5),5.4),R),R,2); const AR=[WALLS,HUTW,HIPS,THATCH,SAWS,CHIM,TANKS,SOLARS,ANTS,ROOFTREES]; grow(AR,n0,xx,zz,GAP_M);
+      /* keep clear of the scenes: undo a building whose grown footprint reaches into one */
+      const m0=WALLS.length>n0[0]?WALLS[n0[0]]:HUTW.length>n0[1]?HUTW[n0[1]]:null; if(m0){ const hw=Math.max(m0.sx*(m0===HUTW[n0[1]]?1:.5),(m0.sz||m0.sx)*.5)*1.15, [,ddx]=nearStop(m0.x);
+        if(Math.abs(ddx)-hw<5.2) AR.forEach((a,k)=>a.length=n0[k]); } } } }
 scatter(G_BOX,facadeMat,WALLS,{style:true}); scatter(G_CYL,facadeMat,HUTW,{style:true});
 scatter(G_HIP,roofMat,HIPS); scatter(G_CONE,roofMat,THATCH); scatter(G_SAW,roofMat,SAWS);
 scatter(G_CYL,solidMat,CHIM.map(c=>({...c,sx:c.sx,sz:c.sz}))); scatter(G_TANK,solidMat,TANKS,{shadow:false}); scatter(G_SOLAR,solidMat,SOLARS,{shadow:false}); scatter(G_ANT,solidMat,ANTS,{shadow:false});
@@ -276,7 +301,7 @@ function plantTree(x,z,R,big=1){ const e=clamp(eraX(x),-1,8), y=hgt(x,z); const 
       const dens=eraLerp(TREE_DENS,xx)*(1-.45*urb(xx)*(OCC.has(occK(xx+1,zz))?1:0))*(.55+.45*sstep(-.2,.4,fbm(xx*.06,zz*.06,3)));
       if(R()<dens*.42) plantTree(xx,zz,R); }
   /* avenue trees along the timeline road */
-  for(let x=-40;x<X1-60;x+=3.3){ const e=eraX(x); if(e<1.4) continue; for(const z of [3.5,6.95]){ const xx=x+(R()-.5)*.4; if(inHero(xx,z,6.2,8)) continue; if(R()<.8) TREES[R()<.8?'rain':'ash'].push({x:xx,y:hgt(xx,z),z,ry:R()*6,sx:1.05+R()*.4,c:0xffffff}); } }
+  for(let x=-40;x<X1-60;x+=3.3){ const e=eraX(x); if(e<1.4) continue; for(const z of [3.5,6.95]){ const xx=x+(R()-.5)*.4; if(inHero(xx,z,6.2,8)||onStreet(xx,z,.5)) continue; if(R()<.8) TREES[R()<.8?'rain':'ash'].push({x:xx,y:hgt(xx,z),z,ry:R()*6,sx:1.05+R()*.4,c:0xffffff}); } }
   /* scrub and trees in the gaps along the stage */
   for(let x=-60;x<X1-60;x+=1.3){ for(const z of [-8,-5,-2,1.5,3.2]){ const xx=x+(R()-.5), zz=z+(R()-.5)*.8; if(inHero(xx,zz,6,6)||nearNarrator(xx,zz,3.5)||OCC.has(occK(xx,zz))) continue; if(R()<.18*eraLerp(TREE_DENS,xx)+.04) plantTree(xx,zz,R,.95); } }
   /* far forests on the hills */
@@ -294,10 +319,10 @@ const G_TUFT=(()=>{ const pos=[], col=[], c0=new THREE.Color(0x2c4a19), c1=new T
 const G_FLOWER=MG([P(new THREE.IcosahedronGeometry(.035,0),0xffffff,0,.07,0)]);
 { const R=rng(88), GR=[], FL=[], RK=[], dry=new THREE.Color(0xd8c98a), lush=new THREE.Color(0xbfe0a0), tc=new THREE.Color();
   const FLC=[0xf2c14e,0xe86fa0,0xffffff,0xe8622a,0xb98ae8,0xfff0a0];
-  for(let i=0;i<62000;i++){ const x=-70+R()*300, z=-11+R()*26; if((z>3.9&&z<6.5)||inHero(x,z,3.9,3.3)||lakeMask(x,z)>.01||nearNarrator(x,z,2.4)||OCC.has(occK(x,z))) continue;
+  for(let i=0;i<62000;i++){ const x=-70+R()*300, z=-11+R()*26; if((z>3.9&&z<6.5)||inHero(x,z,3.9,3.3)||lakeMask(x,z)>.01||nearNarrator(x,z,2.4)||OCC.has(occK(x,z))||onStreet(x,z,.15)) continue;
     const dryness=1-eraLerp(GAMT,x); tc.copy(lush).lerp(dry,clamp(dryness*1.4+.15*fbm(x*.1,z*.1,2),0,1)); GR.push({x,y:hgt(x,z),z,ry:R()*6.28,sx:.38+R()*.42,c:tc.getHex()}); }
-  for(let i=0;i<5200;i++){ const x=-60+R()*280, z=-10+R()*24, e=eraX(x); const p=e>.5&&e<1.6?1:e>6.6?.6:.16; if(R()>p||(z>3.9&&z<6.5)||inHero(x,z,3.9,3.3)||lakeMask(x,z)>.01) continue; FL.push({x,y:hgt(x,z),z,sx:.7+R()*.7,c:pal(R,FLC)}); }
-  for(let i=0;i<900;i++){ const x=-120+R()*420, z=-60+R()*74; const e=eraX(x); if(R()>(e<1.5?.9:.25)||inHero(x,z,5,4.5)||(z>3.6&&z<6.8)||lakeMask(x,z)>.02||OCC.has(occK(x,z))) continue; const s=.12+Math.pow(R(),3)*.9; RK.push({x,y:hgt(x,z)-s*.3,z,rx:R()*3,ry:R()*3,sx:s*(1+R()*.6),sy:s*(.6+R()*.5),sz:s,c:0xffffff}); }
+  for(let i=0;i<5200;i++){ const x=-60+R()*280, z=-10+R()*24, e=eraX(x); const p=e>.5&&e<1.6?1:e>6.6?.6:.16; if(R()>p||(z>3.9&&z<6.5)||inHero(x,z,3.9,3.3)||lakeMask(x,z)>.01||onStreet(x,z,.15)) continue; FL.push({x,y:hgt(x,z),z,sx:.7+R()*.7,c:pal(R,FLC)}); }
+  for(let i=0;i<900;i++){ const x=-120+R()*420, z=-60+R()*74; const e=eraX(x); if(R()>(e<1.5?.9:.25)||inHero(x,z,5,4.5)||(z>3.6&&z<6.8)||lakeMask(x,z)>.02||OCC.has(occK(x,z))||onStreet(x,z,.5)) continue; const s=.12+Math.pow(R(),3)*.9; RK.push({x,y:hgt(x,z)-s*.3,z,rx:R()*3,ry:R()*3,sx:s*(1+R()*.6),sy:s*(.6+R()*.5),sz:s,c:0xffffff}); }
   /* the granite outcrop the Watchtower stands on */
   for(let k=0;k<7;k++){ const a=k/7*6.28; RK.push({x:START+Math.cos(a)*1.4,y:-.2,z:-1+Math.sin(a)*1.1,ry:a,sx:1.1+R()*.5,sy:.7+R()*.3,sz:1.0,c:0xffffff}); }
   RK.push({x:START,y:-.1,z:-1,ry:0,sx:1.9,sy:1.1,sz:1.6,c:0xffffff});
@@ -309,7 +334,7 @@ const G_FLOWER=MG([P(new THREE.IcosahedronGeometry(.035,0),0xffffff,0,.07,0)]);
 const bulbMat=new THREE.MeshStandardMaterial({color:0xfff1d0,emissive:0xffb35c,emissiveIntensity:3.2,roughness:.4});
 { const POST=MG([P(new THREE.CylinderGeometry(.016,.026,1.15,6),0x2c352f,0,.575,0),P(new THREE.BoxGeometry(.24,.016,.016),0x2c352f,.1,1.12,0),P(new THREE.CylinderGeometry(.04,.025,.06,6),0x2c352f,.2,1.09,0)]);
   const BULB=MG([P(new THREE.SphereGeometry(.032,8,6),0xffffff,.2,1.05,0)]);
-  const posts=[]; for(let x=1.8*SP;x<X1-60;x+=3.2){ for(const [z,ry] of [[4.15,Math.PI/2],[6.25,-Math.PI/2]]){ if(inHero(x,z,4.2,8)) continue; posts.push({x,y:0,z,ry,sx:1,c:0xffffff}); } }
+  const posts=[]; for(let x=1.8*SP;x<X1-60;x+=3.2){ for(const [z,ry] of [[3.95,Math.PI/2],[6.45,-Math.PI/2]]){ if(inHero(x,z,4.2,8)||onStreet(x,z,.3)) continue; posts.push({x,y:0,z,ry,sx:1,c:0xffffff}); } }
   scatter(POST,solidMat,posts); scatter(BULB,bulbMat,posts,{shadow:false});
   const POLE=MG([P(new THREE.CylinderGeometry(.02,.03,1.6,6),0x6b6258,0,.8,0),P(new THREE.BoxGeometry(.04,.03,.42),0x5b5248,0,1.52,0)]);
   const poles=[], wire=[]; let prev=null;
@@ -327,17 +352,35 @@ const bulbMat=new THREE.MeshStandardMaterial({color:0xfff1d0,emissive:0xffb35c,e
   segs.forEach(s=>{ const b=new THREE.Mesh(new THREE.BoxGeometry(1,1,1).translate(0,.5,0),wallM); b.position.set(s.x,s.y,s.z); b.rotation.y=s.ry; b.scale.set(s.sx,s.sy,s.sz); b.castShadow=b.receiveShadow=true; world.add(b); });
   towers.forEach(t=>{ const c=new THREE.Mesh(new THREE.CylinderGeometry(.3,.36,.8,12).translate(0,.4,0),wallM); c.position.set(t.x,0,t.z); c.castShadow=c.receiveShadow=true; world.add(c); }); }
 
-/* ---- 2037 onwards: elevated metro and wind turbines ---- */
+/* ---- 2037 onwards: the elevated metro and wind turbines ----
+   One viaduct from its terminal station (in front of scene 7) to the end of the world, on piers that stand on the ground. The train is part of the world, not of the scene, so it never floats
+   when the scene is not assembled: it stands at the platform, pulls out east, goes out of sight, and comes back to the platform. Sizes are the scene's (x1.3). */
 const metroTrain=new THREE.Group(), turbines=[];
-{ const conc=mat(0xc9bfae,{rough:.85}), z=-10.2, xs=118;
-  for(let x=xs;x<X1-30;x+=3.4){ const h=2.4; const pl=new THREE.Mesh(new THREE.BoxGeometry(.32,h,.32).translate(0,h/2,0),conc); pl.position.set(x,hgt(x,z)-.1,z); pl.castShadow=pl.receiveShadow=true; world.add(pl);
-    const cap=new THREE.Mesh(new THREE.BoxGeometry(.5,.18,.9),conc); cap.position.set(x,2.36,z); world.add(cap); }
-  for(let x=xs;x<X1-30;x+=20){ const deck=new THREE.Mesh(new THREE.BoxGeometry(20.05,.16,.95),conc); deck.position.set(x+10,2.53,z); deck.castShadow=deck.receiveShadow=true; world.add(deck);
-    [-.42,.42].forEach(o=>{ const w=new THREE.Mesh(new THREE.BoxGeometry(20.05,.14,.06),mat(0xb0a693)); w.position.set(x+10,2.68,z+o); world.add(w); }); }
-  const silver=mat(0xe2dfd8,{metal:.3,rough:.3}), purple=mat(0x7c4bb4,{rough:.35}), win=mat(0x232a36,{rough:.1,metal:.3});
-  for(let k=0;k<6;k++){ const car=new THREE.Group(); car.add(new THREE.Mesh(new THREE.BoxGeometry(1.04,.3,.32),silver)); const w=new THREE.Mesh(new THREE.BoxGeometry(.98,.09,.325),win); w.position.y=.05; car.add(w);
-    const st=new THREE.Mesh(new THREE.BoxGeometry(1.04,.03,.326),purple); st.position.y=-.08; car.add(st); car.position.x=-k*1.08; car.children.forEach(m=>{ m.castShadow=true; }); metroTrain.add(car); }
-  metroTrain.position.set(xs,2.79,z); world.add(metroTrain);
+const METRO={X0:VIA_X0, Y:2.379, home:137.99, far:62.4, A:.78, V:3.12, dwell:24};
+METRO.ta=METRO.V/METRO.A; METRO.da=METRO.V*METRO.V/(2*METRO.A); METRO.tOut=METRO.ta+(METRO.far-METRO.da)/METRO.V; METRO.T=METRO.dwell+2*METRO.tOut;
+function metroS(t){ let u=((t%METRO.T)+METRO.T)%METRO.T; if(u<METRO.dwell) return 0; u-=METRO.dwell;
+  const out=v=>v<METRO.ta?.5*METRO.A*v*v:METRO.da+(v-METRO.ta)*METRO.V; return u<METRO.tOut?out(u):out(2*METRO.tOut-u); }
+{ const conc=mat(0xc8bcaa,{rough:.88}), conc2=mat(0xa99d8b,{rough:.9}), steel=mat(0x5a5c60,{metal:.6,rough:.4}), XA=METRO.X0, XB=X1-30, LEN=XB-XA, VZ=VIA_Z;
+  const add=(w,h,d,m,x,y,z)=>{ const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m); b.position.set(x,y,z); b.castShadow=b.receiveShadow=true; world.add(b); WORLD_COLOUR.push(b); return b; };
+  add(LEN,.208,1.3,conc,(XA+XB)/2,METRO.Y,VZ);
+  for(const o of [-.611,.611]) add(LEN,.286,.104,conc2,(XA+XB)/2,2.6,VZ+o);
+  for(const o of [-.26,.26]) add(LEN,.04,.052,steel,(XA+XB)/2,2.51,VZ+o);
+  add(.104,.286,1.3,conc2,XA+.052,2.6,VZ);   /* the terminal end wall */
+  /* piers and their caps, on the ground (the scene's pier spacing, 2.535) */
+  const xs=[]; for(let x=140-2.535*2;x<XB;x+=2.535) xs.push(x);
+  const pg=new THREE.BoxGeometry(.52,1,.47).translate(0,.5,0), cg=new THREE.BoxGeometry(1.27,.312,.81), pim=new THREE.InstancedMesh(pg,conc,xs.length), cim=new THREE.InstancedMesh(cg,conc,xs.length), dm=new THREE.Object3D();
+  xs.forEach((x,i)=>{ const g0=Math.min(hgt(x,VZ),hgt(x,VZ-.3),hgt(x,VZ+.3))-.12; dm.position.set(x,g0,VZ); dm.scale.set(1,2.05-g0,1); dm.updateMatrix(); pim.setMatrixAt(i,dm.matrix);
+    dm.position.set(x,2.119,VZ); dm.scale.set(1,1,1); dm.updateMatrix(); cim.setMatrixAt(i,dm.matrix); });
+  [pim,cim].forEach(m=>{ m.castShadow=m.receiveShadow=true; m.frustumCulled=false; world.add(m); WORLD_COLOUR.push(m); });
+  const silver=mat(0xdfdcd6,{metal:.35,rough:.32}), purple=mat(0x7c4bb4,{rough:.35}), win=mat(0x2b3240,{rough:.12,metal:.2}), S=1.3;
+  const car=(front)=>{ const g=new THREE.Group(), len=1.3*S, mb=(w,h,d,m,x,y,z)=>{ const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m); b.position.set(x,y,z); b.castShadow=true; g.add(b); return b; };
+    mb(len,.5*S,.46*S,silver,0,0,0); mb((1.3-.14)*S,.15*S,.47*S,win,0,.08*S,0); mb((1.3-.06)*S,.04*S,.468*S,purple,0,-.13*S,0);
+    for(let k=1;k<4;k++) mb(.012*S,.38*S,.472*S,mat(0xbab6ae),(-.65+k*.325)*S,-.02*S,0);
+    if(front!==0){ const sx=front, nose=mb(.18*S,.48*S,.45*S,purple,sx*.65*S,0,0); mb(.03*S,.18*S,.36*S,win,sx*(.65*S+.08*S),.09*S,0);
+      [-.13,.13].forEach(z=>{ const l=new THREE.Mesh(new THREE.SphereGeometry(.03*S,8,6),mat(0xffffff,{em:0xfff4d0,ei:1.5})); l.position.set(sx*(.65*S+.09*S),-.12*S,z*S); g.add(l); }); }
+    return g; };
+  [[-1.35,-1],[0,0],[1.35,1]].forEach(([x,f])=>{ const c=car(f); c.position.x=x*S; metroTrain.add(c); });   /* a cab at each end, so it can run either way */
+  metroTrain.position.set(METRO.home,2.86,VZ); world.add(metroTrain); metroTrain.traverse(o=>WORLD_COLOUR.push(o));
   const tw=mat(0xf2f2f0,{rough:.4}); const R=rng(303);
   for(let i=0;i<16;i++){ const x=125+i*20+R()*10, z=-110-R()*120, y=hgt(x,z); if(lakeMask(x,z)>0) continue; const g=new THREE.Group();
     g.add(at(new THREE.Mesh(new THREE.CylinderGeometry(.18,.32,9,10).translate(0,4.5,0),tw),0,0,0)); g.add(at(new THREE.Mesh(new THREE.BoxGeometry(.5,.4,.9),tw),0,9.1,.1));
@@ -348,33 +391,106 @@ const metroTrain=new THREE.Group(), turbines=[];
 const vehMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.42,metalness:.25});
 const wheel=(x,z,r=.33,w=.14)=>P(new THREE.CylinderGeometry(r,r,w,10),0x161616,x,r,z,Math.PI/2);
 function carGeo(L,W,H,cabin,glassC=0x1d2633){ return MG([P(new THREE.BoxGeometry(L,H*.55,W),0xffffff,0,H*.42,0), P(new THREE.BoxGeometry(L*cabin,H*.42,W*.92),glassC,-L*.05,H*.86,0), wheel(L*.33,W*.45),wheel(-L*.33,W*.45),wheel(L*.33,-W*.45),wheel(-L*.33,-W*.45)]).scale(.1,.1,.1); }
+/* the road's Ambassadors, vintage cars and bullock carts reuse the detailed models built for the scenes, merged for instancing */
+/* ---- life in the vehicles: wheels roll, legs swing, pedals turn. Done in the vertex shader from the distance an instance has travelled along the road,
+   so it costs no extra draw calls and always matches the speed. Per-vertex: aA=(kind,pivot.xy,extra), aB=(a,b,c,extra); kind 0 = rigid.
+   1 wheel roll (aB.x radius) · 2 limb swing (amp,phase,freq) · 3 crank arm · 4 pedal (aB.x crank length, aB.y phase) · 5 rider thigh · 6 rider shin · 7 rider foot (IK onto the pedals)
+   8 lower leg of a walking animal (hip pivot, knee at (aA.w,aB.w)) · 9 body bob */
+const CYC={HX:-.17,HY:1.04,L1:.44,L2:.43,CX:-.02,CY:.36,CR:.17,AO:.07,TURN:2.86,SC:.1};   /* metres: rider hip, thigh, shin, crank centre, crank length, ankle above pedal, crank radians per metre */
+const _f=n=>(n*CYC.SC).toFixed(5);
+const ANIM_HEAD=`attribute vec4 aA; attribute vec4 aB;
+const vec2 CHIP=vec2(${_f(CYC.HX)},${_f(CYC.HY)}); const vec2 CCC=vec2(${_f(CYC.CX)},${_f(CYC.CY)});
+const float CL1=${_f(CYC.L1)}, CL2=${_f(CYC.L2)}, CCR=${_f(CYC.CR)}, CAO=${_f(CYC.AO)}, CSC=${CYC.SC.toFixed(3)}, CGEAR=${(CYC.TURN/CYC.SC).toFixed(3)};\n`;
+const ANIM_NORMAL=`#include <beginnormal_vertex>
+float anK=aA.x, anRot=0.; vec2 anPiv=aA.yz, anOff=vec2(0.);
+if(anK>.5){
+  #ifdef USE_INSTANCING
+    float anS=instanceMatrix[3].x*(instanceMatrix[0].x<0.?-1.:1.)/length(instanceMatrix[0].xyz);
+  #else
+    float anS=modelMatrix[3].x*(modelMatrix[0].x<0.?-1.:1.)/length(modelMatrix[0].xyz);
+  #endif
+  if(anK<1.5){ anRot=-anS/aB.x; }
+  else if(anK<2.5){ anRot=aB.x*sin(anS*aB.z+aB.y); }
+  else if(anK<3.5){ anRot=-anS*CGEAR; }
+  else if(anK<4.5){ float ps=-anS*CGEAR+aB.y; anOff=aB.x*vec2(cos(ps)-cos(aB.y),sin(ps)-sin(aB.y)); }
+  else if(anK<7.5){
+    float ps=-anS*CGEAR+aB.y; vec2 ank=CCC+CCR*vec2(cos(ps),sin(ps))+vec2(0.,CAO);
+    vec2 dv=ank-CHIP; float dl=max(length(dv),1e-4); float d=clamp(dl,.2*CSC,CL1+CL2-.003*CSC); vec2 u=dv/dl;
+    float a=(CL1*CL1-CL2*CL2+d*d)/(2.*d); float h=sqrt(max(CL1*CL1-a*a,0.)); vec2 kn=CHIP+u*a+vec2(-u.y,u.x)*h;
+    vec2 k0=CHIP-vec2(0.,CL1);
+    if(anK<5.5){ anRot=atan(kn.x-CHIP.x,-(kn.y-CHIP.y)); anPiv=CHIP; }
+    else if(anK<6.5){ vec2 sd=ank-kn; anRot=atan(sd.x,-sd.y); anPiv=k0; anOff=kn-k0; }
+    else { anPiv=k0; anOff=ank-(k0-vec2(0.,CL2)); } }
+  else if(anK<8.5){
+    float ph=anS*aB.z+aB.y; float t1=aB.x*sin(ph), t2=-1.15*aB.x*max(0.,cos(ph)); vec2 kn=vec2(aA.w,aB.w);
+    float c1=cos(t1), s1=sin(t1); anPiv=aA.yz+kn; anRot=t1+t2; anOff=vec2(c1*kn.x-s1*kn.y,s1*kn.x+c1*kn.y)-kn; }
+  else { anOff=vec2(0.,aB.x*abs(sin(anS*aB.z))); }
+  float anC=cos(anRot), anSn=sin(anRot);
+  objectNormal.xy=vec2(anC*objectNormal.x-anSn*objectNormal.y, anSn*objectNormal.x+anC*objectNormal.y);
+}`;
+const ANIM_BEGIN=`#include <begin_vertex>
+if(aA.x>.5){ float anC2=cos(anRot), anS2=sin(anRot); vec2 anD=transformed.xy-anPiv; transformed.xy=anPiv+vec2(anC2*anD.x-anS2*anD.y,anS2*anD.x+anC2*anD.y)+anOff; }`;
+function animPatch(m){ const pb=m.onBeforeCompile, k0=m.customProgramCacheKey.bind(m);
+  m.onBeforeCompile=(sh,r)=>{ pb(sh,r); sh.vertexShader=ANIM_HEAD+sh.vertexShader.replace('#include <beginnormal_vertex>',ANIM_NORMAL).replace('#include <begin_vertex>',ANIM_BEGIN); };
+  m.customProgramCacheKey=()=>k0()+'anim'; return m; }
+const ANIMMAT=animPatch(vehMat.clone());
+const zeroAnim=g=>{ const n=g.attributes.position.count; if(!g.attributes.aA) g.setAttribute('aA',new THREE.BufferAttribute(new Float32Array(n*4),4)); if(!g.attributes.aB) g.setAttribute('aB',new THREE.BufferAttribute(new Float32Array(n*4),4)); return g; };
+/* tag every vertex of a built group: pivot (x,y) and extra are scaled by sc (the scale the group is shrunk by afterwards); a,b,c,d go in as they are */
+function animTag(grp,kind,px=0,py=0,a=0,b=0,c=0,d=0,ex=0,sc=1){ grp.traverse(o=>{ if(!o.isMesh) return; const g=zeroAnim(o.geometry), n=g.attributes.position.count, A=g.attributes.aA.array, B=g.attributes.aB.array;
+    for(let i=0;i<n;i++){ A[i*4]=kind; A[i*4+1]=px*sc; A[i*4+2]=py*sc; A[i*4+3]=ex*sc; B[i*4]=a; B[i*4+1]=b; B[i*4+2]=c; B[i*4+3]=d; } }); return grp; }
+function mergedOf(group){ group.updateMatrixWorld(true); const gs=[]; group.traverse(o=>{ if(o.isMesh&&!o.isInstancedMesh){ let g=o.geometry.clone(); g.applyMatrix4(o.matrixWorld); for(const k of Object.keys(g.attributes)) if(!['position','normal','color','aA','aB'].includes(k)) g.deleteAttribute(k); zeroAnim(g); if(g.index) g=g.toNonIndexed(); gs.push(g); } }); return MG(gs); }
+function roadAmby(s){ const g=mergedOf(ambassador(0xffffff)); if(s!==1) g.scale(s,s,s); return g; }
+function roadCyclist(){ const g=new THREE.Group(), fr={rough:.4,metal:.5}, FR=0x22262a, SC=CYC.SC, KF=kit();
+  const P3=(x,y)=>V3(x,y,0), bb=P3(CYC.CX,CYC.CY), st=P3(-.14,.92), ht=P3(.4,.95), hb=P3(.43,.78);
+  KF.l(fr,UCYL(.025),FR,bb,st); KF.l(fr,UCYL(.025),FR,bb,hb); KF.l(fr,UCYL(.022),FR,st,ht); KF.l(fr,UCYL(.02),FR,bb,P3(-.52,.34)); KF.l(fr,UCYL(.018),FR,st,P3(-.52,.34)); KF.l(fr,UCYL(.022),FR,ht,P3(.52,.34));
+  KF.l(fr,UCYL(.018),FR,ht,P3(.36,1.12)); KF.l(fr,UCYL(.016),FR,V3(.34,1.12,-.26),V3(.34,1.12,.26)); KF.p({rough:.7},RB(.22,.05,.12,.02),0x1a1a1a,-.17,.97,0); g.add(KF.build());
+  for(const x of [.52,-.52]){ const Kw=kit(); wheelK(Kw,x,.34,0,.32,{spokes:14,w:.04,hub:.03}); g.add(animTag(Kw.build(),1,x,.34,.34*SC,0,0,0,0,SC)); }
+  { const Kc=kit(); Kc.p(fr,TOR(.09,.015,Math.PI*2,4,12),0x55585c,CYC.CX,CYC.CY,.04); g.add(animTag(Kc.build(),3,CYC.CX,CYC.CY,0,0,0,0,0,SC)); }
+  for(const [off,z] of [[0,.07],[Math.PI,-.07]]){ const px=CYC.CX+CYC.CR*Math.cos(off), py=CYC.CY+CYC.CR*Math.sin(off), Ka=kit(), Kp=kit();
+    Ka.l(fr,UCYL(.014),0x55585c,V3(CYC.CX,CYC.CY,z),V3(px,py,z)); g.add(animTag(Ka.build(),3,CYC.CX,CYC.CY,0,0,0,0,0,SC));
+    Kp.p(fr,BX(.1,.02,.06),0x1a1a1a,px,py,z*1.55); g.add(animTag(Kp.build(),4,CYC.CX,CYC.CY,CYC.CR*SC,off,0,0,0,SC)); }
+  /* the rider: leaning forward onto the bars, legs follow the pedals */
+  { const KR=kit(), cl={rough:.88}, sk={rough:.6}, SK=SKINS[1], TOP=0xefe9dc, PANTS=0x3a4350;
+    KR.l(cl,UCYL(.1,.085,8),TOP,V3(CYC.HX,CYC.HY-.02,0),V3(.12,1.45,0)); KR.p(cl,SPH(.095,10,8),TOP,.12,1.44,0,0,0,0,1,.8,1.5); KR.l(sk,UCYL(.036,.04,8),SK,V3(.12,1.44,0),V3(.19,1.55,0)); KR.p(sk,SPH(.078,10,8),SK,.215,1.61,0); KR.p({rough:.8},SPH(.082,10,8),0x1b1714,.2,1.635,0,0,0,0,1,.8,1.05);
+    for(const z of [-1,1]){ const S=V3(.12,1.42,z*.15), E=V3(.26,1.24,z*.23), G=V3(.35,1.12,z*.26); KR.l(cl,UCYL(.04,.034,8),TOP,S,E); KR.l(sk,UCYL(.032,.026,8),SK,E,G); }
+    g.add(KR.build());
+    for(const [off,z] of [[0,-.09],[Math.PI,.09]]){ const K1=kit(), K2=kit(), K3=kit(), k0=V3(CYC.HX,CYC.HY-CYC.L1,z), a0=V3(CYC.HX,CYC.HY-CYC.L1-CYC.L2,z);
+      K1.l(cl,UCYL(.075,.055,8),PANTS,V3(CYC.HX,CYC.HY,z),k0); K2.l(cl,UCYL(.055,.042,8),PANTS,k0,a0); K3.p({rough:.7},BX(.15,.05,.075),0x2a211b,a0.x+.04,a0.y-.045,z);
+      g.add(animTag(K1.build(),5,0,0,0,off,0,0,0,SC),animTag(K2.build(),6,0,0,0,off,0,0,0,SC),animTag(K3.build(),7,0,0,0,off,0,0,0,SC)); } }
+  const m=mergedOf(g); m.scale(SC,SC,SC); return m; }
+function roadConvoy(){ const g=new THREE.Group(), K=kit(), wd={rough:.85}, WD=0x7a5634, WD2=0x6a4a2c, SC=.28;
+  for(let k=0;k<4;k++) K.p(wd,BX(.9,.022,.11),k%2?WD:WD2,0,.3,-.165+k*.11);
+  for(const s of [-1,1]){ K.p(wd,BX(.96,.045,.045),WD2,0,.28,s*.24); K.p(wd,BX(.9,.02,.02),WD,0,.45,s*.24); for(let x=-.42;x<=.43;x+=.21) K.p(wd,BX(.022,.15,.022),WD2,x,.37,s*.24);
+    const Kw=kit(); Kw.p(wd,TOR(.185,.022,Math.PI*2,5,20),WD,-.04,.2,s*.31); for(let k=0;k<8;k++){ const a=k/8*6.283; Kw.l(wd,UCYL(.009),WD,V3(-.04,.2,s*.31),V3(-.04+Math.cos(a)*.18,.2+Math.sin(a)*.18,s*.31)); }
+    g.add(animTag(Kw.build(),1,-.04,.2,.2*SC,0,0,0,0,SC)); }
+  K.l(wd,UCYL(.024,.02,6),WD2,V3(.42,.29,0),V3(1.08,.4,0)); K.p(wd,BX(.045,.045,.52),WD2,1.06,.41,0);
+  K.p({rough:.9,side:true},new THREE.CylinderGeometry(.27,.27,.8,12,1,true,0,Math.PI).rotateZ(Math.PI/2),0xcbb68c,-.05,.47,0,0,0,0,1,.6,.95);
+  g.add(K.build()); const b1=bullock(61), b2=bullock(62,0x2e6db4); b1.position.set(1.18,0,-.13); b2.position.set(1.18,0,.13); g.add(b1,b2); g.updateMatrixWorld(true); bullockTag(b1,SC); bullockTag(b2,SC);
+  const m=mergedOf(g); m.scale(SC,SC,SC); return m; }
 const VG={
-  cart:MG([P(new THREE.BoxGeometry(2.2,.5,1.4),0x7a5232,-.4,1.0,0),P(new THREE.CylinderGeometry(.95,.95,1.6,10,1,true,0,Math.PI),0xc9b48a,-.4,1.2,0,Math.PI/2,0,0,1,1,.8),
-    P(new THREE.TorusGeometry(.6,.08,5,12),0x4a3220,-.4,.6,.75),P(new THREE.TorusGeometry(.6,.08,5,12),0x4a3220,-.4,.6,-.75),P(new THREE.BoxGeometry(1.6,.08,.08),0x5a3e25,1.2,1.0,0),
-    P(new THREE.BoxGeometry(1.4,.75,.55),0xe9e3d6,1.9,1.05,.38),P(new THREE.BoxGeometry(1.4,.75,.55),0xe9e3d6,1.9,1.05,-.38),P(new THREE.BoxGeometry(.4,.4,.35),0xe9e3d6,2.75,1.35,.38),P(new THREE.BoxGeometry(.4,.4,.35),0xe9e3d6,2.75,1.35,-.38),
-    P(new THREE.ConeGeometry(.06,.45,5),0xc0392b,2.7,1.75,.5),P(new THREE.ConeGeometry(.06,.45,5),0xc0392b,2.7,1.75,-.5),
-    ...[[1.4,.38],[2.4,.38],[1.4,-.38],[2.4,-.38]].map(([x,z])=>P(new THREE.BoxGeometry(.14,.7,.14),0xd9d2c4,x,.35,z))]).scale(.1,.1,.1),
-  cycle:MG([P(new THREE.TorusGeometry(.33,.04,4,12),0x222222,.5,.33,0),P(new THREE.TorusGeometry(.33,.04,4,12),0x222222,-.5,.33,0),P(new THREE.BoxGeometry(1.0,.06,.06),0x2b2b2b,0,.62,0),
-    P(new THREE.CapsuleGeometry(.2,.6,3,6),0xffffff,-.1,1.25,0,0,0,-.2),P(new THREE.SphereGeometry(.15,8,6),0x7a4e34,.0,1.82,0)]).scale(.1,.1,.1),
-  vintage:carGeo(4.0,1.7,1.6,.45,0x202020),
-  amby:MG([P(new THREE.BoxGeometry(4.3,.8,1.7),0xffffff,0,.68,0),P(new THREE.BoxGeometry(2.2,.65,1.56),0x1d2633,-.2,1.38,0),P(new THREE.BoxGeometry(2.0,.12,1.5),0xffffff,-.2,1.75,0),wheel(1.35,.8),wheel(-1.35,.8),wheel(1.35,-.8),wheel(-1.35,-.8)]).scale(.1,.1,.1),
+  cart:roadConvoy(),
+  cycle:roadCyclist(),
+  vintage:roadAmby(.95),
+  amby:roadAmby(1),
   auto:MG([P(new THREE.BoxGeometry(2.6,.8,1.3),0x2e7d3a,0,.75,0),P(new THREE.BoxGeometry(2.3,.95,1.36),0xf2c12e,-.15,1.62,0),P(new THREE.BoxGeometry(.06,.6,1.1),0x1d2633,1.0,1.55,0),wheel(1.1,0,.3),wheel(-.9,.55,.3),wheel(-.9,-.55,.3)]).scale(.1,.1,.1),
   bus:MG([P(new THREE.BoxGeometry(11,2.4,2.5),0xffffff,0,1.65,0),P(new THREE.BoxGeometry(10.8,.85,2.52),0x1d2633,.1,2.15,0),P(new THREE.BoxGeometry(11.02,.3,2.52),0x2f6fc0,0,.9,0),wheel(3.6,1.2,.5,.3),wheel(-3.6,1.2,.5,.3),wheel(3.6,-1.2,.5,.3),wheel(-3.6,-1.2,.5,.3)]).scale(.1,.1,.1),
   car:carGeo(4.1,1.75,1.45,.55),
   scooter:MG([P(new THREE.BoxGeometry(1.6,.5,.4),0xffffff,0,.6,0),wheel(.6,0,.25,.1),wheel(-.6,0,.25,.1),P(new THREE.CapsuleGeometry(.2,.55,3,6),0x2a2a2a,-.15,1.3,0),P(new THREE.SphereGeometry(.17,8,6),0x111111,-.1,1.9,0)]).scale(.1,.1,.1),
   pod:MG([P(new THREE.CapsuleGeometry(.85,2.0,4,10),0xffffff,0,1.1,0,0,0,Math.PI/2,1,1,.95),P(new THREE.BoxGeometry(2.0,.5,1.62),0x14324a,.2,1.45,0),P(new THREE.BoxGeometry(3.6,.08,1.64),0x55d8ff,0,.7,0),wheel(1.1,.7,.3,.12),wheel(-1.1,.7,.3,.12),wheel(1.1,-.7,.3,.12),wheel(-1.1,-.7,.3,.12)]).scale(.1,.1,.1) };
-const VTYPES=[['cart',-3,2.6,.28,14,[0xffffff]],['cycle',1.5,5.6,.55,16,[0xc0392b,0x2e86c1,0x7d3c98,0xf1c40f,0xffffff]],['vintage',3.2,5.0,1.0,8,[0x1c1c1c,0x5b1f1f,0x23324a,0x3a3a3a]],
-  ['bus',4.0,7.6,.85,9,[0xd9d9d9,0xb7312b,0xe8e6e0]],['amby',4.6,6.3,1.1,12,[0xf2f0ea,0xffffff,0x1c1c1c]],['auto',4.8,7.8,.95,18,[0xffffff]],['car',5.8,9.5,1.25,28,[0xc0392b,0xf2f0ea,0x2c3e50,0x7f8c8d,0x1f618d,0xd4ac0d,0x1c1c1c]],
+const VTYPES=[['cart',-3,2.6,.28,14,[0xffffff]],['cycle',1.5,5.6,.55,16,[0xffffff,0xf4e4e0,0xe2ecf6,0xf6efd8,0xe6f2e2]],['vintage',3.2,5.0,1.0,8,[0xffffff,0xd9d2c6,0xa8a8b0]],
+  ['bus',4.0,7.6,.85,9,[0xd9d9d9,0xb7312b,0xe8e6e0]],['amby',4.6,6.3,1.1,12,[0xffffff,0xece6da,0xc9c4b8]],['auto',4.8,7.8,.95,18,[0xffffff]],['car',5.8,9.5,1.25,28,[0xc0392b,0xf2f0ea,0x2c3e50,0x7f8c8d,0x1f618d,0xd4ac0d,0x1c1c1c]],
   ['scooter',5.0,8.2,1.1,16,[0xc0392b,0x2e86c1,0x7f8c8d,0xf2f0ea]],['pod',6.8,11,1.15,14,[0xffffff,0xeaf6ff]]];
-const VEH=[];
-{ const R=rng(4242); VTYPES.forEach(([k,e0,e1,sp,n,cols])=>{ const im=new THREE.InstancedMesh(VG[k],vehMat,n); im.castShadow=true; im.frustumCulled=false; world.add(im); const list=[];
-    for(let i=0;i<n;i++){ const dir=R()<.5?1:-1; list.push({x:e0*SP+R()*(e1-e0)*SP,dir,z:dir>0?4.85:5.55,v:sp*(.8+R()*.4),x0:e0*SP,x1:e1*SP}); im.setColorAt(i,tmpCol.set(pal(R,cols))); }
-    VEH.push({im,list}); }); }
+const VEH=[], ALLV=[];
+{ const R=rng(4242); VTYPES.forEach(([k,e0,e1,sp,n,cols])=>{ const im=new THREE.InstancedMesh(VG[k],k==='cycle'||k==='cart'?ANIMMAT:vehMat,n); im.castShadow=true; im.frustumCulled=false; world.add(im); const list=[];
+    VG[k].computeBoundingBox(); const bb=VG[k].boundingBox, len=(bb.max.x-bb.min.x)*RS, wid=(bb.max.z-bb.min.z)*RS, two=k==='cycle'||k==='scooter';   /* two-wheelers keep to the kerb lane */
+    for(let i=0;i<n;i++){ list.push(makeVehicle({kind:k,x0:e0*SP,x1:e1*SP,dir:R()<.5?1:-1,speed:sp*1.6*(.8+R()*.4),len,wid,two})); im.setColorAt(i,tmpCol.set(pal(R,cols))); }
+    list.forEach(v=>ALLV.push(v)); VEH.push({im,list,k}); });
+  initPlace(ALLV,rng(77)); }
 
 /* ---- people walking on the edges of the road ---- */
 const PEOPLE=[], bodyIM=new THREE.InstancedMesh(MG([P(new THREE.CapsuleGeometry(.2,.95,3,7),0xffffff,0,.68,0)]).scale(.1,.1,.1),vehMat,320), headIM=new THREE.InstancedMesh(MG([P(new THREE.SphereGeometry(.14,8,6),0xffffff,0,1.58,0)]).scale(.1,.1,.1),vehMat,320);
 { const R=rng(55), CL=[0xc0392b,0xe67e22,0xf1c40f,0x16a085,0x2980b9,0x8e44ad,0xecf0f1,0xd35400,0x27ae60,0xe84393,0x34495e,0xfdcb6e], SK=[0x8d5a3b,0x7a4b30,0xa66a45,0x6b3f26];
-  for(let i=0;i<320;i++){ const z=R()<.5?(3.9+R()*.15):(6.45+R()*.15), dir=R()<.5?1:-1; PEOPLE.push({x:-40+R()*300,z,dir,v:.12+R()*.1,ph:R()*6}); bodyIM.setColorAt(i,tmpCol.set(pal(R,CL))); headIM.setColorAt(i,tmpCol.set(pal(R,SK))); }
+  for(let i=0;i<320;i++){ const z=R()<.5?(3.88+R()*.16):(6.34+R()*.16), dir=R()<.5?1:-1; PEOPLE.push({x:-40+R()*300,z,dir,v:(.12+R()*.1)*1.8,ph:R()*6}); bodyIM.setColorAt(i,tmpCol.set(pal(R,CL))); headIM.setColorAt(i,tmpCol.set(pal(R,SK))); }
   [bodyIM,headIM].forEach(m=>{ m.frustumCulled=false; m.castShadow=true; world.add(m); }); }
 
 /* ---- birds ---- */
@@ -398,13 +514,20 @@ const motes=new THREE.Points(moteG,pointsMat(0xffd9a0,.035,.55)); motes.frustumC
 
 /* ---- per-frame life ---- */
 const _o=new THREE.Object3D();
+/* what the viewer can actually see of the road: the glass card at rest, the whole band while moving (set each frame in stepFrame) */
+const TVIEW={l:0,r:innerWidth}, _pv=new THREE.Vector3();
+function roadSX(x){ _pv.set(x,.3,5.2).applyMatrix4(camera.matrixWorldInverse); if(_pv.z>-.05) return NaN; _pv.applyMatrix4(camera.projectionMatrix); return (_pv.x*.5+.5)*innerWidth; }
+function trafficOffscreen(x,len){ const h=len*.5+.8, a=roadSX(x-h), b=roadSX(x+h); if(a!==a||b!==b) return true; return Math.max(a,b)<TVIEW.l-60||Math.min(a,b)>TVIEW.r+60; }
 function updateWorld(t,dt,cx){
-  WT.value=t; waterTex.offset.set(t*.006,t*.004); sky.position.copy(camera.position);
-  for(const {im,list} of VEH){ list.forEach((v,i)=>{ v.x+=v.dir*v.v*dt; const span=v.x1-v.x0; if(v.x>v.x1) v.x-=span; if(v.x<v.x0) v.x+=span;
-      const fade=Math.min(1,(v.x-v.x0)/1.5,(v.x1-v.x)/1.5); _o.position.set(v.x,hgt(v.x,v.z),v.z); _o.rotation.set(0,v.dir>0?0:Math.PI,0); _o.scale.setScalar(Math.max(.001,fade)); _o.updateMatrix(); im.setMatrixAt(i,_o.matrix); });
-    im.instanceMatrix.needsUpdate=true; }
+  WT.value=t; waterTex.offset.set(t*.006,t*.004); sky.position.copy(camera.position); updateModels(dt,cx);
+  /* traffic (traffic.js): each vehicle follows the one ahead in its lane and brakes smoothly; vehicles are only added or removed out of sight */
+  camera.updateMatrixWorld(); stepTraffic(ALLV,dt,trafficOffscreen);
+  for(const V of VEH){ const {im,list}=V; if(V.parts) for(const P of V.parts) P.near=false;
+    list.forEach((v,i)=>{ const on=v.state===0; _o.position.set(v.x,roadY(v.x,v.z),v.z); _o.rotation.set(0,v.dir>0?0:Math.PI,0); _o.scale.setScalar(on?RS:.0001); _o.updateMatrix();
+      if(V.parts){ const P=V.parts[v.var]; if(on&&Math.abs(v.x-cx)<64) P.near=true; for(const m of P.ims) m.setMatrixAt(v.slot,_o.matrix); } else im.setMatrixAt(i,_o.matrix); });
+    if(V.parts) V.parts.forEach(P=>P.ims.forEach(m=>{ m.instanceMatrix.needsUpdate=true; m.visible=P.near; })); else im.instanceMatrix.needsUpdate=true; }
   PEOPLE.forEach((p,i)=>{ p.x+=p.dir*p.v*dt; if(p.x>cx+40) p.x-=80; if(p.x<cx-40) p.x+=80; const b=Math.abs(Math.sin(t*6+p.ph))*.012;
-    _o.position.set(p.x,b,p.z); _o.rotation.set(0,p.dir>0?Math.PI/2:-Math.PI/2,Math.sin(t*6+p.ph)*.05); _o.scale.setScalar(1); _o.updateMatrix(); bodyIM.setMatrixAt(i,_o.matrix); headIM.setMatrixAt(i,_o.matrix); });
+    _o.position.set(p.x,walkY(p.x,p.z)+b*RS,p.z); _o.rotation.set(0,p.dir>0?Math.PI/2:-Math.PI/2,Math.sin(t*6+p.ph)*.05); _o.scale.setScalar(RS); _o.updateMatrix(); bodyIM.setMatrixAt(i,_o.matrix); headIM.setMatrixAt(i,_o.matrix); });
   bodyIM.instanceMatrix.needsUpdate=headIM.instanceMatrix.needsUpdate=true;
   BIRDS.forEach((b,i)=>{ const a=b.ph+t*b.sp, x=cx+Math.cos(a)*b.r+(b.flock-1)*5, z=b.z+Math.sin(a)*b.r*.4, y=b.h+Math.sin(t*.7+b.ph)*.6, flap=Math.sin(t*9+b.fl)*.6;
     _o.position.set(x,y,z); _o.rotation.set(0,-a,flap); _o.scale.setScalar(.6); _o.updateMatrix(); wingR.setMatrixAt(i,_o.matrix);
@@ -415,5 +538,5 @@ function updateWorld(t,dt,cx){
   smokeG.attributes.position.needsUpdate=smokeG.attributes.aLife.needsUpdate=true;
   moteD.forEach((m,i)=>{ moteP[i*3]=cx+((m.x+t*m.sp*.3)%16+16)%16-8; moteP[i*3+1]=m.y+Math.sin(t*.6+m.ph)*.25; moteP[i*3+2]=m.z+Math.cos(t*.4+m.ph)*.3; moteL[i]=.5+.45*Math.sin(t*.8+m.ph); });
   moteG.attributes.position.needsUpdate=moteG.attributes.aLife.needsUpdate=true;
-  metroTrain.position.x=118+((t*5.5)%(X1-160)); turbines.forEach((r,i)=>r.rotation.z+=dt*(.9+i%3*.15));
+  metroTrain.position.x=METRO.home+metroS(t); turbines.forEach((r,i)=>r.rotation.z+=dt*(.9+i%3*.15));
 }
