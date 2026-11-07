@@ -1596,12 +1596,13 @@ function wtShow(i){ wt.i=i; const st=TOUR[i]; const co=$('coach');
   const apply=()=>{ $('wtHead').textContent=st.h; $('wtDesc').textContent=st.d; wtScene(st.scene); wt.last=''; wtLayout(); co.classList.remove('swap'); };
   if(REDUCED||!BODY.classList.contains('wt-on')) apply(); else { co.classList.add('swap'); setTimeout(apply,170); } }
 function wtStart(after){ wt.after=after; bc('has-launcher',true); bc('ob-coach',true); if(pageLenis) pageLenis.stop();
-  wtShow(0); requestAnimationFrame(()=>bc('wt-on',true)); const co=$('coach'); co.focus({preventScroll:true}); if(!wt.raf) wt.raf=requestAnimationFrame(wtLoop); }
+  wtShow(0); requestAnimationFrame(()=>bc('wt-on',true)); $('wtNext').focus({preventScroll:true}); if(!wt.raf) wt.raf=requestAnimationFrame(wtLoop); }
 function wtNext(){ if(wt.i<0||BODY.classList.contains('wt-closing')) return; if(wt.i>=TOUR.length-1) return wtClose(); tone(560,.03,.2); wtShow(wt.i+1); }
 function wtClose(){ if(wt.i<0) return; LS.set(WT_KEY,'1'); bc('wt-closing',true);
   setTimeout(()=>{ wt.i=-1; bc('ob-coach',false); bc('wt-on',false); bc('wt-closing',false); bc('wt-intro',false); bc('wt-narrow',false);
     hideStory(); bc('ob-static',false); OB.static=false; $('coach').classList.remove('swap'); if(pageLenis) pageLenis.start(); const f=wt.after; wt.after=null; f&&f(); },REDUCED?0:300); }
-$('coach').addEventListener('click',e=>{ e.preventDefault(); e.stopPropagation(); wtNext(); });
+$('coach').addEventListener('click',e=>{ e.preventDefault(); e.stopPropagation(); });   /* a click on the overlay no longer advances: only Next does */
+$('wtNext').addEventListener('click',e=>{ e.preventDefault(); e.stopPropagation(); wtNext(); });
 $('wtSkip').addEventListener('click',e=>{ e.preventDefault(); e.stopPropagation(); wtClose(); });
 ['pointerdown','pointerup','mousedown','touchstart'].forEach(t=>$('coach').addEventListener(t,e=>{ e.stopPropagation(); },{passive:true}));
 ['wheel','touchmove'].forEach(t=>$('coach').addEventListener(t,e=>{ e.preventDefault(); e.stopPropagation(); },{passive:false}));
@@ -1627,9 +1628,8 @@ const obUp=()=>{ if(!OB.dragging) return; OB.dragging=null; bc('ob-dragging',fal
 addEventListener('pointerup',obUp,true); addEventListener('pointercancel',obUp,true);
 addEventListener('keydown',e=>{
   if(BODY.classList.contains('ob-coach')){ if(e.key==='Escape'){ e.preventDefault(); e.stopPropagation(); wtClose(); return; }
-    if(e.target&&e.target.id==='wtSkip'&&(e.key==='Enter'||e.key===' ')) return;
-    if(['Enter',' ','ArrowRight','ArrowDown'].includes(e.key)){ e.preventDefault(); e.stopPropagation(); wtNext(); return; }
-    if(e.key==='Tab'){ e.preventDefault(); (document.activeElement===$('wtSkip')?$('coach'):$('wtSkip')).focus({preventScroll:true}); return; }
+    if(e.target&&(e.target.id==='wtSkip'||e.target.id==='wtNext')&&(e.key==='Enter'||e.key===' ')) return;
+    if(e.key==='Tab'){ e.preventDefault(); (document.activeElement===$('wtNext')?$('wtSkip'):$('wtNext')).focus({preventScroll:true}); return; }
     e.preventDefault(); e.stopPropagation(); return; }
   if(BODY.classList.contains('ob-drag')&&(e.key==='ArrowRight'||e.key==='Enter')&&!e.target.closest('input,button')){ e.preventDefault(); obReveal(); }
   if(BODY.classList.contains('assist')&&e.key==='Escape'){ closeAssist(); } },true);

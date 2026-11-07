@@ -430,7 +430,7 @@ body.ob-landing #landing{display:block}
 
 /* 02-07 · coach marks: black 70% scrim with spotlight holes (Figma "Exclude" boolean) */
 /* ---------- first-time walkthrough (Figma 79:3307): 80% black mask with cutouts, dashed connectors, centred text ---------- */
-#coach{position:fixed;inset:0;z-index:60;display:none;cursor:pointer;touch-action:none;overscroll-behavior:contain;opacity:0;transition:opacity .3s var(--out);outline:none;-webkit-tap-highlight-color:transparent}
+#coach{position:fixed;inset:0;z-index:60;display:none;cursor:default;touch-action:none;overscroll-behavior:contain;opacity:0;transition:opacity .3s var(--out);outline:none;-webkit-tap-highlight-color:transparent}
 body.ob-coach #coach{display:block}
 body.ob-coach.wt-on #coach{opacity:1}
 body.wt-closing #coach{opacity:0;pointer-events:none}
@@ -446,12 +446,15 @@ body:not(.wt-narrow) #coachPath{transition:d .45s var(--out)}
 .wt-h{margin:0;height:24px;padding-top:1.2px;font-family:var(--kicker);font-weight:600;font-size:16px;line-height:21.6px;letter-spacing:.12em;text-transform:uppercase;color:#fff;white-space:nowrap}
 .wt-rule{display:block;width:48px;height:2px;border-radius:2px;background:#fff;margin:16px auto 0}
 .wt-d{margin:16px auto 0;width:460px;min-height:60px;font-family:var(--sans);font-style:italic;font-weight:400;font-size:24px;line-height:30px;letter-spacing:0;color:#fff}
-.wt-skip{display:block;margin:61px auto 0;height:29px;padding:0 16px;background:none;border:0;font-family:var(--sans);font-weight:400;font-size:24px;line-height:29px;color:rgba(255,255,255,.6);cursor:pointer;border-radius:8px;transition:color .2s}
+.wt-next{display:flex;align-items:center;justify-content:center;margin:50px auto 0;width:88px;height:43px;padding:12px 20px;box-sizing:border-box;background:#fff;border:1px solid #bdbdb8;border-radius:999px;font-family:var(--sans);font-weight:600;font-size:20px;line-height:normal;color:#1e1e1e;cursor:pointer;transition:background .2s}   /* secondary CTA (Figma 111:11705) */
+.wt-next:hover{background:#e9e9e7}
+.wt-next:focus-visible{outline:2px solid rgba(255,255,255,.7);outline-offset:4px}
+.wt-skip{display:block;margin:50px auto 0;height:29px;padding:0 16px;background:none;border:0;font-family:var(--sans);font-weight:400;font-size:24px;line-height:29px;color:rgba(255,255,255,.6);cursor:pointer;border-radius:8px;transition:color .2s}
 .wt-skip:hover{color:rgba(255,255,255,.85)}
 .wt-skip:focus-visible{outline:2px solid rgba(255,255,255,.7);outline-offset:4px}
 body.wt-narrow .wt-h{white-space:normal;height:auto}
 body.wt-narrow .wt-d{width:auto;max-width:460px;font-size:20px;line-height:26px;min-height:0}
-body.wt-narrow .wt-skip{margin-top:36px}
+body.wt-narrow .wt-next{margin-top:32px}body.wt-narrow .wt-skip{margin-top:28px}
 @media (prefers-reduced-motion:reduce){ #coach,#wtText,#wtLines,body:not(.wt-narrow) #coachPath{transition:none} }
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 /* tour presentation states (never touch progress): intro = the plain start frame, chapter = the 1537 chapter */
@@ -755,8 +758,8 @@ body.has-launcher #launcher{display:block}
 </section>
 <div id="coach" role="dialog" aria-modal="true" aria-labelledby="wtHead" aria-describedby="wtDesc wtHint" tabindex="-1">
   <svg id="wtSvg" aria-hidden="true"><path id="coachPath" d=""/><path id="wtRing" d=""/><g id="wtLines"></g></svg>
-  <div id="wtText"><p class="wt-h" id="wtHead"></p><span class="wt-rule" aria-hidden="true"></span><p class="wt-d" id="wtDesc"></p><button class="wt-skip" id="wtSkip" type="button">Skip</button></div>
-  <p class="sr-only" id="wtHint">Tap anywhere or press Enter to continue. Press Escape to skip.</p>
+  <div id="wtText"><p class="wt-h" id="wtHead"></p><span class="wt-rule" aria-hidden="true"></span><p class="wt-d" id="wtDesc"></p><button class="wt-next" id="wtNext" type="button">Next</button><button class="wt-skip" id="wtSkip" type="button">Skip</button></div>
+  <p class="sr-only" id="wtHint">Press Next to continue. Press Escape to skip.</p>
 </div>
 <div id="obDim"></div>
 <div class="ob-art" id="artM" role="dialog" aria-modal="true" aria-labelledby="mTitle">
