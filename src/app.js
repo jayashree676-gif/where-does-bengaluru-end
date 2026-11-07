@@ -1450,7 +1450,7 @@ function beginAgain(){ if(obBusy()) return; $('panel').classList.remove('open');
   starred.clear(); seen.clear(); F.allAnn=false; pendingStamp=-1; arrived=false; zoneIdx=-1; fx=snapT=dragT=restX=0; vx=0; phase='rest'; camLook.x=0; syncLenis();
   updatePassport(); OB.p=0; obDragVis(0); bc('ob-drag',true); tone(440,.04,.3);
   const g=window.gsap; if(g&&!REDUCED) g.from('#obCard .ob-plain',{y:24,autoAlpha:0,duration:.8,ease:'power3.out'}); }
-$('btnBegin').onclick=beginAgain;
+$('btnBegin')&&($('btnBegin').onclick=beginAgain);   /* the Begin Again button was removed from the header */
 $('btnNotes').onclick=()=>$('panel').classList.add('open'); $('panelX').onclick=()=>$('panel').classList.remove('open');
 $('btnShare').onclick=async()=>{ const y=zoneIdx>=0?ZONES[zoneIdx].year:null; let url=location.href.split('#')[0]+(y?'#stop-'+y:'');
   try{ if(y) history.replaceState(null,'','#stop-'+y); }catch(e){}
