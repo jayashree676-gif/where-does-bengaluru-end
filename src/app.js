@@ -755,7 +755,7 @@ function trainer({body=0xc4c8cc,wing=0xe8b42e,trim=0x8c2a22,dim=1}={}){ const g=
   const prop=Kp.build(); prop.position.set(.075,.27,0); g.add(prop); g.userData.prop=prop; return g; }
 
 /* 4 · 1940 Hindustan Aircraft: a corrugated barrel-vault hangar, a trainer on the apron, a control tower, and the termite scrub it was cut from */
-{ const d=makeDio(4); const R=rng(40);
+{ const d=makeDio(4); const R=rng(40), PLANE_ZOOM=3.0;
   /* apron slabs, grass airstrip with markers */
   { const g=new THREE.Group(); const ap=new THREE.Mesh(P(BX(3.1,.025,1.45),0xbab3a6),vmat({rough:.92,brick:[.42,.42],pat:{k:'stain',d:.35}})); ap.position.set(-.35,.0125,-.3); ap.receiveShadow=true; g.add(ap);
     const K=kit(); K.p({rough:.98},BX(4.0,.018,.62),0x9c8a66,0,.009,1.15);
@@ -820,7 +820,9 @@ function trainer({body=0xc4c8cc,wing=0xe8b42e,trim=0x8c2a22,dim=1}={}){ const g=
   piece(d,at(figure({pose:'point',dress:'pants',head:'topi',top:0x5a6e86,bottom:0x4b5d74,skin:SKINS[0],seed:43}),.95,.025,.58,-2.3),{amp:.4});
   piece(d,at(new THREE.Mesh(TREE_GEOS.euc[0],leafMat),1.95,0,-1.9,0,0,0,.62),{key:true}); piece(d,at(htree(431,{h:1.35,w:.72,kind:'neem'}),-1.85,0,.45),{key:true});
   d.update=(t,dt,k)=>{ plane.userData.prop.rotation.x+=dt*26; if(sock) sock.rotation.set(0,.4+Math.sin(t*.7)*.25,Math.sin(t*2.1)*.06-.05); };
-  finalize(d,7.0); }
+  finalize(d,7.0);
+  /* zoom in on the trainer: the whole scene grows around it, so the aircraft fills the coloured window */
+  { const Z=PLANE_ZOOM, sc=d.g.scale.x; d.g.scale.setScalar(sc*Z); d.g.position.x-=.45*sc*(Z-1); d.g.position.z-=.3*sc*(Z-1); d.g.updateMatrixWorld(true); d.cy=new THREE.Box3().setFromObject(plane).getCenter(new THREE.Vector3()).y; } }
 
 /* a Hallikar bullock (Karnataka breed): grey-white, humped, long swept-back painted horns. Faces +x. */
 function bullock(seed,horn=0xc0392b){ const K=kit(), Q=rng(seed), hd={rough:.85}, W=0xdcd8d0, G=0xb9b4aa, DK=0x3a332c;
