@@ -84,7 +84,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .vr{width:48px;height:48px;flex:none;border-radius:20px;padding:8px;background:#000;display:grid;place-items:center;transform:translate(calc(var(--magnetic-x,0) * 1px),calc(var(--magnetic-y,0) * 1px));transition:background .25s}
 .vr svg{width:32px;height:32px;display:block}
 .crow .read[hidden]{display:none}
-.read{width:292px;height:48px;flex:none;border-radius:16px;padding:12px 20px;background:#000;color:#fff;font-weight:600;font-size:14px;line-height:17px;display:flex;align-items:center;justify-content:center;white-space:pre;
+.read{width:292px;height:48px;flex:none;border-radius:999px;padding:12px 20px;background:#000;color:#fff;font-weight:600;font-size:14px;line-height:17px;display:flex;align-items:center;justify-content:center;white-space:pre;
   transform:translate(calc(var(--magnetic-x,0) * 1px),calc(var(--magnetic-y,0) * 1px));transition:background .25s}
 .read:hover,.vr:hover{background:#333}
 .handle{position:absolute;top:292px;width:40px;height:100px;border-radius:999px;display:grid;place-items:center;--bw:2px;transform:translateX(var(--dx));touch-action:none;cursor:pointer}
@@ -246,7 +246,7 @@ dialog.help .row{display:flex;justify-content:flex-end;margin-top:18px}
 
 /* buttons used in overlays */
 .cta,.ghost{height:48px;padding:12px 20px;border-radius:16px;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:10px;transition:background .3s,color .3s;transform:translate(calc(var(--magnetic-x,0) * 1px),calc(var(--magnetic-y,0) * 1px))}
-.cta{background:#000;color:#fff}.cta:hover{background:#333}
+.cta{background:#000;color:#fff;border-radius:999px}   /* primary CTAs: full pill, like the secondary ones */.cta:hover{background:#333}
 .ghost{border-radius:999px;font-weight:500;font-size:16px}
 #loVR{font-weight:600;color:#000;padding:12px 32px}#loVR:hover,#loVR:focus-visible{color:#fff}   /* secondary CTA (Figma 29:6711): glass pill, white edge, black semibold label */
 .ghost:hover,.ghost:focus-visible{background:var(--ink);color:#fff}
@@ -680,7 +680,7 @@ body.has-launcher #launcher{display:block}
         </div>
         <div class="crow">
           <button class="vr ui" id="btnVR" aria-label="VR view: look around this diorama" data-cursor="VR"><svg viewBox="0 0 32 32" fill="none"><path d="M28.4225 14.0258C28.0409 13.0468 27.3828 12.3039 26.5394 11.7075C26.0929 9.08812 25.3339 7.30001 22.613 6.71318C18.2027 5.76182 13.7454 5.75768 9.33514 6.72837C6.6309 7.32348 5.91336 9.11159 5.46127 11.7033C4.74512 12.2377 4.09671 12.8328 3.72757 13.6958C2.33121 16.9641 2.30909 20.6853 3.68471 23.9701C4.30409 25.4503 5.63409 26.4307 7.16871 26.7607C8.14616 26.9706 9.04205 27.1556 10.0333 27.2909C11.5361 27.4967 13.0362 26.8656 13.8726 25.616C14.1505 25.2004 14.3731 24.7972 14.6994 24.4396C15.3132 23.7672 16.2796 23.5973 17.029 24.1994C17.358 24.4631 17.6456 24.7848 17.8364 25.1535C18.5995 26.6295 20.1576 27.5146 21.8485 27.302C22.9393 27.1653 23.9817 26.9554 25.0477 26.7013C26.7247 26.2995 27.9593 25.0886 28.5275 23.4855C29.6211 20.3981 29.6156 17.0814 28.4238 14.0258H28.4225ZM9.7347 9.32147C13.845 8.37149 18.1032 8.37287 22.2149 9.30766C22.5799 9.39051 22.8508 9.51892 23.1356 9.71637C23.3485 10.0326 23.5366 10.2908 23.6264 10.7575C18.5581 9.77989 13.451 9.78817 8.36598 10.7533C8.58166 9.92211 8.919 9.51063 9.73331 9.32285L9.7347 9.32147ZM26.0873 22.5673C25.8081 23.3571 25.2246 23.9895 24.3951 24.1855C23.4508 24.4079 22.5259 24.5901 21.5595 24.7213C21.0826 24.7862 20.5213 24.5418 20.2931 24.1579C19.942 23.5683 19.6102 23.0947 19.1207 22.5783C17.5156 20.8813 14.8556 20.7695 13.1496 22.3298C12.5537 22.8738 12.1223 23.462 11.7159 24.1538C11.4795 24.557 10.9278 24.7738 10.4536 24.713C9.46234 24.5887 8.51945 24.4092 7.5572 24.169C6.78713 23.977 6.22443 23.4068 5.95207 22.6639C5.01195 20.0984 5.03269 17.2706 6.10554 14.7548C6.35024 14.179 6.89358 13.7828 7.46457 13.6309C8.62037 13.3243 9.71811 13.149 10.9071 12.9833C14.3095 12.5069 17.6981 12.5042 21.1005 12.9833C22.3379 13.1587 23.502 13.3271 24.6965 13.682C25.3007 13.8615 25.7777 14.4041 26.0058 14.9896C26.957 17.4377 26.9625 20.0957 26.0901 22.5645L26.0873 22.5673Z" fill="white"/><rect x="8" y="16" width="4" height="1.33333" rx="0.666667" fill="white"/></svg></button>
-          <button class="read ui" id="btnRead" data-cursor="Read">✦  Read Full Story</button>
+          <button class="read ui" id="btnRead" data-cursor="Read">✦ Read Full Story ✦</button>
         </div>
       </div>
     </div>
@@ -722,7 +722,7 @@ body.has-launcher #launcher{display:block}
     <p>Every block was unlocked by a stamp you earned. The lake is my gift. Grey blocks are today’s concrete. Pick a block, then tap the plot.</p>
     <div class="meters"><div class="meter"><span>Green <em id="mg"></em></span><i><b id="bg"></b></i></div><div class="meter"><span>Liveable <em id="ml"></em></span><i><b id="bl"></b></i></div><div class="meter"><span>Innovation <em id="mi"></em></span><i><b id="bi"></b></i></div></div>
     <div class="palette" id="bpal"></div>
-    <div class="bfoot"><div class="budget" id="bbud"></div><button class="ghost glass" id="bReset">Reset</button><button class="cta" id="bDone">✦  Name my city</button></div>
+    <div class="bfoot"><div class="budget" id="bbud"></div><button class="ghost glass" id="bReset">Reset</button><button class="cta" id="bDone">✦ Name my city ✦</button></div>
     <div class="bfoot" style="margin-top:10px"><button class="ghost glass" id="bExit">← Back to the timeline</button></div>
   </div>
 
@@ -790,7 +790,7 @@ body.has-launcher #launcher{display:block}
     </form>
     <button class="lclose" id="lClose" type="button" aria-label="Close and continue your journey"><svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.20462 7.82071C8.64396 7.38137 9.35627 7.38138 9.79561 7.82072L27.7956 25.8208C28.2349 26.2602 28.2349 26.9725 27.7956 27.4118C27.3563 27.8512 26.644 27.8512 26.2046 27.4118L8.20462 9.4117C7.76528 8.97236 7.76528 8.26005 8.20462 7.82071Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M27.7956 7.82072C28.2349 8.26006 28.2349 8.97237 27.7956 9.41171L9.79549 27.4117C9.35615 27.851 8.64384 27.851 8.2045 27.4117C7.76516 26.9724 7.76517 26.26 8.20451 25.8207L26.2046 7.82071C26.644 7.38137 27.3563 7.38138 27.7956 7.82072Z" fill="black"/></svg></button>
   </div>
-  <button class="mstart ui" id="lGo" type="button">Continue your journey</button>
+  <button class="mstart ui" id="lGo" type="button">✦ Continue your journey ✦</button>
 </div>
 
 <!-- ================= BUILD YOUR OWN BENGALURU (2037, L2) =================
@@ -806,7 +806,7 @@ body.has-launcher #launcher{display:block}
       <div class="bld-count" aria-live="polite"><span class="bld-n" id="bldN">0</span><span class="bld-of">/ 7</span><span class="kick bld-lab">stamps on the ground</span></div>
       <div class="bld-dots" id="bldDots" aria-hidden="true"></div>
       <p class="bld-hint" id="bldHint">Tip: drag a stamp off the ground to remove it.</p>
-      <div class="bld-acts"><button class="bld-clear glass ui" id="bldClear" type="button">Clear</button><button class="bld-share ui" id="bldShare" type="button">✦ Share my Bengaluru</button></div>
+      <div class="bld-acts"><button class="bld-clear glass ui" id="bldClear" type="button">Clear</button><button class="bld-share ui" id="bldShare" type="button">✦ Share my Bengaluru ✦</button></div>
     </div>
     <div class="bld-stage" id="bldStage">
       <svg class="bld-plate" id="bldPlate" aria-hidden="true"></svg>
@@ -827,7 +827,7 @@ body.has-launcher #launcher{display:block}
     <li><b>Read Full Story</b> opens the chapter. <b>VR</b> lets you look around the scene.</li>
     <li><b>Begin Again</b> starts the journey from the first frame.</li>
   </ul>
-  <div class="row"><button class="cta" id="helpClose">Got it</button></div>
+  <div class="row"><button class="cta" id="helpClose">✦ Got it ✦</button></div>
 </dialog>
 
 <div id="bres"><div class="res" id="resIn"></div></div>
@@ -849,7 +849,7 @@ body.has-launcher #launcher{display:block}
   <ul><li>Three.js for the 3D world, with a two-pass render for the grey and colour lens.</li><li>GSAP for the frame snap tweens and Lenis for smooth wheel and trackpad scrolling along the timeline.</li><li>StringTune for the magnetic buttons.</li></ul>
   <h4 class="kick">Reviewer shortcut</h4>
   <p>Want to see the ending without visiting all 7 memories?</p>
-  <button class="cta" id="btnUnlockAll">✦  Give me all 7 stamps</button>
+  <button class="cta" id="btnUnlockAll">✦ Give me all 7 stamps ✦</button>
 </aside>
 <div class="toast" id="toast"></div>
 
@@ -2726,7 +2726,7 @@ function fillBlocks(i){
   setSplit($('qR'),quoteOf(i)); $('actsR').innerHTML=''; saying=false;
   const ft=FOOT[i]||{}; $('nT').textContent=ft.next||TEASE[i]||'The end of my timeline'; $('navN').classList.toggle('off',i>=N-1);
   $('pT').textContent=ft.prev||(i>0?ZONES[i-1].title:''); $('navP').classList.toggle('off',false);
-  const rb=$('btnRead'); rb.textContent=z.future&&unlocked()?'✦  Build Your City':'✦  Read Full Story'; rb.hidden=false;
+  const rb=$('btnRead'); rb.textContent=z.future&&unlocked()?'✦ Build Your City ✦':'✦ Read Full Story ✦'; rb.hidden=false;
   ensureSplit($('artF'));
 }
 let storyTimer=null;
@@ -2830,9 +2830,9 @@ function chapterHTML(i,imgs){
   const z=ZONES[i], nx=ZONES[i+1];
   const num=s=>`${s.raw?s.n:s.n.toLocaleString()}${s.s?`<small>${s.s}</small>`:''}`;
   let end;
-  if(z.future) end= unlocked()? `<div class="kick lo-label">Your turn</div><h2>Build the Bengaluru you want.</h2><div class="row"><button class="cta" id="loBuild">✦  Start building</button><button class="ghost glass" id="loBack">Back to the timeline</button></div>`
+  if(z.future) end= unlocked()? `<div class="kick lo-label">Your turn</div><h2>Build the Bengaluru you want.</h2><div class="row"><button class="cta" id="loBuild">✦ Start building ✦</button><button class="ghost glass" id="loBack">Back to the timeline</button></div>`
     : `<div class="kick lo-label">Locked, for now</div><h2>Bring me all 7 stamps.</h2><p style="font-size:18px;color:#555">You have ${stampCount()} of 7.</p><div class="row">${[0,1,2,3,4,5,6].filter(k=>!starred.has(k)).map(k=>`<button class="ghost glass" data-go="${k}">${ZONES[k].year} · ${ZONES[k].block} →</button>`).join('')}</div>`;
-  else end=`<div class="kick lo-label">Memory restored</div><h2>The ${z.block} block is yours for 2037.</h2><div class="row"><button class="cta" id="loBack">✦  Back to the timeline</button><button class="ghost glass" id="loVR" data-cursor="VR">Open in VR</button></div>`;
+  else end=`<div class="kick lo-label">Memory restored</div><h2>The ${z.block} block is yours for 2037.</h2><div class="row"><button class="cta" id="loBack">✦ Back to the timeline ✦</button><button class="ghost glass" id="loVR" data-cursor="VR">Open in VR</button></div>`;
   return `<section class="lo-hero"><img src="${imgs[0]}" alt="${z.year} diorama">
     <div class="lo-hero-txt"><div class="kick">Chapter ${pad(i+1)} - ${z.chapter}</div><div class="lo-year">${z.year}</div><h1 class="lo-title" data-split="word">${z.title}</h1></div><div class="lo-scrollcue kick">Scroll to read ↓</div></section>
   <section class="lo-narr"><div class="kick lo-label">The watch tower remembers</div>${z.story.map(p=>`<p class="scrub" data-split="word">${p}</p>`).join('')}</section>
@@ -2972,7 +2972,7 @@ function bResult(fromLink){
   B.objs.forEach(o=>{ if(o){ o.userData.pop=1; o.scale.setScalar(1); } });
   const X=stopX(7), img=snapshot(new THREE.Vector3(X+6,8.6,10.5),new THREE.Vector3(X,1.3,0),32);
   $('resIn').innerHTML=`<img src="${img}" alt="Your 2037 Bengaluru, rendered"><div><span class="kick">Bengaluru · 2037 · built by ${B.visitor?'a visitor':'you'}</span><h5>${name}</h5><p>“${line}”</p><div class="facts">${facts||'A quiet city.'}<br>Green ${s.g} · Liveable ${s.l} · Innovation ${s.i}</div>
-    <div class="row">${B.visitor?`<button class="cta" id="rOwn">✦  Build your own</button>`:`<button class="ghost glass" id="rEdit">Keep building</button><button class="cta" id="rShare">✦  Share my city</button>`}<button class="ghost glass" id="rBack">Back to the timeline</button></div></div>`;
+    <div class="row">${B.visitor?`<button class="cta" id="rOwn">✦ Build your own ✦</button>`:`<button class="ghost glass" id="rEdit">Keep building</button><button class="cta" id="rShare">✦ Share my city ✦</button>`}<button class="ghost glass" id="rBack">Back to the timeline</button></div></div>`;
   $('bres').classList.add('show'); chord(); spawnBurst(X,2.5,0,90,150,2.5);
   const q=id=>$(id); q('rEdit')&&(q('rEdit').onclick=()=>$('bres').classList.remove('show'));
   q('rShare')&&(q('rShare').onclick=()=>{ try{ location.hash='city-'+bCode(); }catch(e){} toast('Your city now has its own link. Copy this page’s link to share it.'); });
