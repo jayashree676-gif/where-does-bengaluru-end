@@ -1099,7 +1099,7 @@ function fillBlocks(i){
   setSplit($('qR'),quoteOf(i)); $('actsR').innerHTML=''; saying=false;
   const ft=FOOT[i]||{}; $('nT').textContent=ft.next||TEASE[i]||'The end of my timeline'; $('navN').classList.toggle('off',i>=N-1);
   $('pT').textContent=ft.prev||(i>0?ZONES[i-1].title:''); $('navP').classList.toggle('off',false);
-  const rb=$('btnRead'); rb.textContent=z.future&&unlocked()?'✦ Build Your City ✦':'✦ Read Full Story ✦'; rb.hidden=false;
+  const rb=$('btnRead'); rb.hidden=false; syncRead();
   ensureSplit($('artF'));
 }
 let storyTimer=null;
@@ -1109,7 +1109,22 @@ function showStory(i){
   if($('blkL').classList.contains('in')){ hideStory(); setTimeout(go,320); } else go();
 }
 function hideStory(){ BLKS().forEach(b=>b.classList.remove('in')); clearTimeout(storyTimer); clearInterval(typeT); clearTimeout(sayTimer); saying=false; }
-$('btnRead').onclick=()=>{ if(!started||zoneIdx<0||obBusy()) return; const z=ZONES[zoneIdx]; if(z.future&&unlocked()) enterBuilder(); else openChapter(); };
+/* the primary CTA: Read Full Story, or at 2037 Build Your Bangalore, disabled until all 7 stamps are in */
+function syncRead(){ const rb=$('btnRead'), z=zoneIdx>=0?ZONES[zoneIdx]:null, fut=!!(z&&z.future), lock=fut&&!unlocked();
+  rb.textContent=fut?'✦ Build Your Bangalore ✦':'✦ Read Full Story ✦'; rb.classList.toggle('locked',lock); rb.setAttribute('aria-disabled',lock?'true':'false');
+  if(lock) rb.setAttribute('aria-describedby','readTip'); else { rb.removeAttribute('aria-describedby'); readTip(false); } }
+let readTipT=null;
+function readTip(on){ const t=$('readTip'), rb=$('btnRead'); clearTimeout(readTipT);
+  if(!on){ t.classList.remove('show'); return; }
+  t.textContent=`Bring me all 7 stamps first to enable me. You have ${stampCount()}.`;
+  const r=rb.getBoundingClientRect(); t.style.left=(r.left+r.width/2)+'px'; t.style.top=(r.top-12)+'px'; t.classList.add('show'); }
+$('btnRead').addEventListener('mouseenter',()=>{ if($('btnRead').classList.contains('locked')) readTip(true); });
+$('btnRead').addEventListener('mouseleave',()=>readTip(false));
+$('btnRead').addEventListener('focus',()=>{ if($('btnRead').classList.contains('locked')) readTip(true); });
+$('btnRead').addEventListener('blur',()=>readTip(false));
+$('btnRead').onclick=()=>{ if(!started||zoneIdx<0||obBusy()) return; const z=ZONES[zoneIdx];
+  if(z.future&&!unlocked()){ readTip(true); readTipT=setTimeout(()=>readTip(false),2600); return; }
+  if(z.future) enterBuilder(); else openChapter(); };
 $('navN').onclick=()=>{ if(!started) return; if(zoneIdx<N-1) goTo(zoneIdx+1); };
 $('navP').onclick=()=>{ if(!started) return; if(zoneIdx>0) goTo(zoneIdx-1); else { markDragged(); onLeave(); snapT=START; phase='snap'; } };
 
@@ -1152,7 +1167,7 @@ $('sbar').innerHTML=stampsHTML(true);
 $('sbar').querySelectorAll('.st').forEach(b=>b.onclick=()=>{ if(!started) return; const i=+b.dataset.i; if(lensMode) closeChapter(()=>goTo(i)); else goTo(i); });
 function setStamp(b,got,i,pop){ if(got===b.classList.contains('got')&&b.dataset.ok) return; b.dataset.ok=1; b.classList.toggle('got',got); b.classList.toggle('glass',got); b.classList.toggle('pop',got&&!!pop);
   const src=STAMPS[i]||ICONS[i]; b.innerHTML=got&&src?`<img src="${src}" alt="">`:(TIMELINE_LABELS[i]??String(ZONES[i].year)); }
-function updatePassport(){ $('sbN').innerHTML=`${stampCount()} <small>/ 7</small>`;
+function updatePassport(){ $('sbN').innerHTML=`${stampCount()} <small>/ 7</small>`; if(typeof syncRead==='function') try{ syncRead(); }catch(e){}
   $('sbar').querySelectorAll('.st').forEach(b=>{ const i=+b.dataset.i; b.classList.toggle('here',arrived&&i===zoneIdx); if(i<7) setStamp(b,starred.has(i),i,started); else b.classList.toggle('locked',!unlocked()); b.title=i<7?(starred.has(i)?`${ZONES[i].year} · memory restored`:`${ZONES[i].year} · not restored yet`):(unlocked()?'2037 · open':'2037 · needs 7 stamps'); }); }
 
 /* ================= SNAPSHOTS (render the 3D picture) ================= */
