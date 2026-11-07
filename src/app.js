@@ -102,7 +102,7 @@ const nudgeST=()=>{ try{ window.dispatchEvent(new Event('resize')); }catch(e){} 
 
 /* ================= THE WATCHTOWER SPEAKS (right block) ================= */
 let MASCOT='';                       /* data URL, rendered from the 3D watchtower at boot */
-const FACE=()=>`<img class="m" src="${MASCOT}" alt="">`;
+const FACE=()=>'';   /* the Watchtower icon is removed from every screen */
 function react(mood){ const m=$('mascot'); m.classList.remove('jump'); void m.offsetWidth; m.classList.add('jump'); }
 let typeT=null, sayTimer=null, saying=false;
 function say(text, acts=[]){

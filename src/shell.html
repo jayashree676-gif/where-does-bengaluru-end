@@ -116,6 +116,7 @@ body:not(.dragged) #hL svg{animation-name:nudgeL}
 /* ---------- right: the Watchtower ---------- */
 .right{position:absolute;left:1025px;top:333px;width:355px;height:270px;display:flex;flex-direction:column;gap:4px}
 .mascot{width:94px;height:94px;display:block;cursor:pointer;border-radius:12px}
+#mascot{display:none}   /* the Watchtower icon is removed from every screen */
 .mascot img{width:94px;height:94px;display:block;object-fit:contain}
 .mascot.jump img{animation:jump .7s cubic-bezier(.2,1.5,.4,1)}
 @keyframes jump{30%{transform:translateY(-14px) scale(1.04,.96)}60%{transform:none}}
@@ -170,10 +171,13 @@ body:not(.dragged) #hL svg{animation-name:nudgeL}
 /* states */
 .navrow{display:contents}
 body.moving .blk{pointer-events:none}
-body.vrmode #artF>*:not(#vrBar),body.vrmode #cardB,body.building #cardB,body.building .stage,body.building .right,body.building .left,body.building .nav{opacity:0;pointer-events:none}
+body.vrmode #artF>*:not(#vrBar):not(#vrExit),body.vrmode #cardB,body.building #cardB,body.building .stage,body.building .right,body.building .left,body.building .nav{opacity:0;pointer-events:none}
 #artF>*{transition:opacity .5s}
 #vrBar{position:absolute;left:50%;top:812px;transform:translateX(-50%);display:flex;gap:12px;align-items:center;opacity:0;pointer-events:none}
 body.vrmode #vrBar{opacity:1;pointer-events:auto}
+#vrExit{position:absolute;top:24px;right:60px;width:auto;padding:12px 20px;opacity:0;pointer-events:none}   /* VR: exit sits top right, where the header buttons were */
+body:not(.vrmode) #vrExit{pointer-events:none!important}body.vrmode #vrExit{opacity:1;pointer-events:auto}
+body.vrmode #blkR{opacity:0!important;pointer-events:none!important}   /* no Watchtower quote over the VR view */
 #vrBar .pill{width:auto;padding:12px 20px}
 #vrBar .tip{font-size:14px;color:var(--muted)}
 /* VR view: every label, line of text and arrow on top of the scene is white */
@@ -367,6 +371,7 @@ body.vrmode .ring{border-color:rgba(255,255,255,.7)}
   #bpanel{position:fixed!important;left:0!important;right:0;bottom:0;top:auto!important;width:auto;max-height:58vh;overflow:auto;background:var(--bar);border-top:1px solid var(--rule);border-radius:32px 32px 0 0;padding:24px;z-index:9}
   body.building #bpanel{transform:none}
   #vrBar{position:fixed!important;left:50%!important;top:auto!important;bottom:24px}
+  #vrExit{position:fixed!important;top:16px!important;right:16px;left:auto!important;z-index:5}
   #obGray{display:none!important}
   #launcher{position:fixed!important;left:16px!important;top:auto!important;bottom:16px;z-index:20}
   #obChap{order:2}
@@ -730,7 +735,8 @@ body.has-launcher #launcher{display:block}
     <div class="bfoot" style="margin-top:10px"><button class="ghost glass" id="bExit">← Back to the timeline</button></div>
   </div>
 
-  <div id="vrBar"><span class="tip">Drag to look around · scroll to zoom</span><button class="pill glass gbtn ui" id="vrExit">Exit VR view ✕</button></div>
+  <div id="vrBar"><span class="tip">Drag to look around · scroll to zoom</span></div>
+  <button class="pill glass gbtn ui" id="vrExit">Exit VR view ✕</button>
 </main>
 
 <svg width="0" height="0" style="position:absolute"><defs><g id="arrowF"><path fill-rule="evenodd" clip-rule="evenodd" d="M11.4306 18.4881C11.161 18.1736 11.1974 17.7001 11.5119 17.4306L17.8476 12L11.5119 6.56946C11.1974 6.29989 11.161 5.82641 11.4306 5.51192C11.7001 5.19743 12.1736 5.161 12.4881 5.43057L19.0452 11.0509C19.6272 11.5498 19.6272 12.4502 19.0452 12.9491L12.4881 18.5695C12.1736 18.839 11.7001 18.8026 11.4306 18.4881Z"/><path fill-rule="evenodd" clip-rule="evenodd" d="M18.75 12C18.75 12.4142 18.4142 12.75 18 12.75L5 12.75C4.58579 12.75 4.25 12.4142 4.25 12C4.25 11.5858 4.58579 11.25 5 11.25L18 11.25C18.4142 11.25 18.75 11.5858 18.75 12Z"/></g></defs></svg>
@@ -848,7 +854,7 @@ body.has-launcher #launcher{display:block}
   <h3>Where does Bengaluru end? Told by the Watchtower.</h3>
   <p>A 5.8 m wall with a screen on rails, built here as a 3D world. The glass card is the frame. Outside it the timeline is a grey archive. Inside it, the past comes back in colour.</p>
   <h4 class="kick">The interaction</h4>
-  <ul><li><b>Drag the frame.</b> Drag, flick or scroll. The frame always settles on the next year in the direction you moved. Tap a handle to step one year.</li><li><b>One object per year.</b> Each stop shows a single hero piece. Slide the frame over it and the rest of the memory flies in and builds itself.</li><li><b>Earn stamps.</b> Every restored memory earns a stamp in the passport. 7 stamps unlock 2037, where you build the city you want.</li><li><b>VR view.</b> Step inside the diorama and look around.</li><li><b>Begin Again.</b> Clears your stamps and starts from the first frame.</li></ul>
+  <ul><li><b>Drag the frame.</b> Drag, flick or scroll. The frame always settles on the next year in the direction you moved. Tap a handle to step one year.</li><li><b>One object per year.</b> Each stop shows a single hero piece. Slide the frame over it and the rest of the memory flies in and builds itself.</li><li><b>Earn stamps.</b> Every restored memory earns a stamp in the passport. 7 stamps unlock 2037, where you build the city you want.</li><li><b>VR view.</b> Step inside the diorama and look around.</li></ul>
   <h4 class="kick">Built with</h4>
   <ul><li>Three.js for the 3D world, with a two-pass render for the grey and colour lens.</li><li>GSAP for the frame snap tweens and Lenis for smooth wheel and trackpad scrolling along the timeline.</li><li>StringTune for the magnetic buttons.</li></ul>
   <h4 class="kick">Reviewer shortcut</h4>
