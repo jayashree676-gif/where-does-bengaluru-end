@@ -580,9 +580,12 @@ body:not(.lamp) #artL *{pointer-events:none!important}
 .bld-clear:hover,.bld-clear:focus-visible{background:var(--ink);color:#fff}
 #bld .glass{box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 6px 18px rgba(0,0,0,.06)}   /* no long drop shadows on this calm page */
 #bld .bld-tray.glass{box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 18px 40px rgba(0,0,0,.08)}
-.bld-share{height:56px;padding:0 28px;border-radius:999px;border:0;background:#000;color:#fff;font-size:16px;font-weight:600;cursor:pointer;transition:background .25s}
-.bld-share:hover,.bld-share:focus-visible{background:#333}
-.bld-share[disabled],.bld-clear[disabled]{opacity:.35;cursor:default;pointer-events:none}
+.bld-view{height:56px;padding:0 28px;border-radius:999px;border:0;background:#000;color:#fff;font-size:16px;font-weight:600;cursor:pointer;transition:background .25s;white-space:nowrap}   /* primary: see the plan as the 2037 city */
+.bld-view:hover,.bld-view:focus-visible{background:#333}
+.bld-share{height:56px;padding:0 28px;border-radius:999px;font-size:16px;font-weight:500;color:var(--ink);cursor:pointer;transition:background .25s,color .25s;white-space:nowrap}   /* secondary */
+.bld-share:hover,.bld-share:focus-visible{background:var(--ink);color:#fff}
+.bld-share[disabled],.bld-clear[disabled],.bld-view[disabled]{opacity:.35;cursor:default;pointer-events:none}
+#bld.visitor .bld-view{display:none}
 .bld-stage{position:absolute;left:560px;top:120px;width:800px;height:560px}
 .bld-plate{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .bld-plate .t{fill:#f4f3ef;stroke:rgba(30,30,30,.09);stroke-width:1}
@@ -822,7 +825,7 @@ body.has-launcher #launcher{display:block}
       <div class="bld-count" aria-live="polite"><span class="bld-n" id="bldN">0</span><span class="bld-of">/ 7</span><span class="kick bld-lab">stamps on the ground</span></div>
       <div class="bld-dots" id="bldDots" aria-hidden="true"></div>
       <p class="bld-hint" id="bldHint">Tip: drag a stamp off the ground to remove it.</p>
-      <div class="bld-acts"><button class="bld-clear glass ui" id="bldClear" type="button">Clear</button><button class="bld-share ui" id="bldShare" type="button">✦ Share my Bengaluru ✦</button></div>
+      <div class="bld-acts"><button class="bld-clear glass ui" id="bldClear" type="button">Clear</button><button class="bld-view ui" id="bldView" type="button">✦ View Your Bangalore ✦</button><button class="bld-share glass ui" id="bldShare" type="button">Share my Bengaluru</button></div>
     </div>
     <div class="bld-stage" id="bldStage">
       <svg class="bld-plate" id="bldPlate" aria-hidden="true"></svg>

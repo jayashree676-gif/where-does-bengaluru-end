@@ -28,7 +28,7 @@ function bldRender(dropK=-1){ const box=$('bldItems'), w=BLD_W();
   box.innerHTML=BLD.cells.map((v,k)=>{ if(v<0) return ''; const r=(k/BLD.N)|0, c=k%BLD.N, [x,y]=bldPx(r,c), p=`translate(${(x-w*.5).toFixed(1)}px,${(y-w*.76).toFixed(1)}px)`;
     return `<button class="bs${k===dropK?' drop':''}" type="button" data-k="${k}" style="width:${w}px;height:${w}px;z-index:${(r+c)*10+5};transform:${p};--p:${p}" aria-label="${BLD_STAMPS[v][1]} on row ${r+1}, column ${c+1}. Drag or use arrow keys to move, Delete to remove."><img src="${LAMP_STAMPS[BLD_STAMPS[v][0]]}" alt=""></button>`; }).join('');
   const n=bldCount(); $('bldN').textContent=n; $('bldDots').innerHTML=Array.from({length:BLD.MAX},(_,i)=>`<i class="${i<n?'on':''}"></i>`).join('');
-  $('bld').classList.toggle('full',n>=BLD.MAX); $('bldShare').disabled=!n; $('bldClear').disabled=!n;
+  $('bld').classList.toggle('full',n>=BLD.MAX); $('bldShare').disabled=!n; $('bldClear').disabled=!n; $('bldView').disabled=!n;
   $('bldHint').textContent=BLD.visitor?'':n>=BLD.MAX?'All 7 stamps are on the ground. Drag one off to swap it.':n?'Tip: drag a stamp off the ground to remove it.':'Start anywhere. The ground is yours.'; }
 function bldTray(){ $('bldTray').innerHTML=BLD_STAMPS.map(([k,name],i)=>`<button class="bt" type="button" data-s="${i}" aria-label="${name} stamp"><img src="${LAMP_STAMPS[k]}" alt=""><span>${name}</span></button>`).join(''); }
 function bldLayout(){ $('bld').style.setProperty('--bs',bldScale()); }
@@ -64,6 +64,8 @@ function closeBuilder(){ if(!BLD.open) return; BLD.open=false; try{ city37Sync()
 function enterBuilder(code){ if(!started) startExperience(true); openBuilder(typeof code==='string'&&/^([0-9a-o][0-6]){0,7}$/.test(code)?code:null); }
 function exitBuilder(){ closeBuilder(); }
 $('bldBack').onclick=closeBuilder;
+$('bldView').onclick=()=>{ if(BLD.visitor||!bldCount()) return; bldSave(); closeBuilder();   /* closing lays the plan out in 3D at 2037 */
+  setTimeout(()=>{ if(zoneIdx!==7||!arrived) goTo(7); setTimeout(()=>toast('Your Bengaluru, 2037. Tap the VR icon to walk around it.'),zoneIdx===7?400:1600); },REDUCED?0:450); };
 $('bldClear').onclick=()=>{ BLD.cells.fill(-1); bldRender(); bldSave(); tone(300,.04,.15); };
 $('bldShare').onclick=async()=>{ const url=location.href.split('#')[0]+'#build-'+bldCode(); let ok=false; try{ await navigator.clipboard.writeText(url); ok=true; }catch(_){ }
   if(!ok){ try{ history.replaceState(null,'',url); }catch(_){ } } toast(ok?'Link copied. Anyone with it can see your Bengaluru.':'Your Bengaluru now has its own link in the address bar. Copy it to share.'); };
