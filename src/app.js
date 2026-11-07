@@ -1198,7 +1198,7 @@ function closeChapter(after){
 $('loClose').onclick=()=>closeChapter();
 const CHAPTER_PAGE=true; /* the Read Full Story page */
 const RENDER_OF={0:RENDERS.fort,3:RENDERS.lab,7:RENDERS.metro};
-const ARROW=`<svg viewBox="0 0 24 24" fill="none"><use href="#arrowF"/></svg>`;
+const ARROW=`<svg viewBox="0 0 24 24" fill="none"><use href="#arrowF" fill="currentColor"/></svg>`;   /* the shared arrow path has no fill of its own */
 function chapterHTML(i,imgs){
   const z=ZONES[i], nx=ZONES[i+1];
   const num=s=>`${s.raw?s.n:s.n.toLocaleString()}${s.s?`<small>${s.s}</small>`:''}`;
