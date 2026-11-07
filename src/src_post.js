@@ -38,7 +38,7 @@ const postMat=new THREE.ShaderMaterial({depthTest:false,depthWrite:false,transpa
     vec2 cu=(fc-card.xy)/(card.zw-card.xy); c*=mix(.8,1.,smoothstep(1.,.3,length((cu-.5)*vec2(1.1,.85)))*(1.-.75*fadeK)+.75*fadeK);
     /* default state: the focal asset keeps its colour, everything else goes soft, grey and light */
     if(muteK>0.){
-      float lm=dot(c,vec3(.2126,.7152,.0722)); vec3 m=mix(vec3(lm),c,.2); m=mix(vec3(.7),m,.5); m=mix(m,BG,.88);   /* outside the coloured window the frame reads as an even, plain light grey */
+      float lm=dot(c,vec3(.2126,.7152,.0722)); vec3 m=mix(vec3(lm),c,.2); m=mix(vec3(.7),m,.5); m=mix(m,BG,.4);   /* outside the coloured window the scene stays, greyed out */
       c=mix(c,mix(m,c,hm*inCard),muteK);
       /* and dissolves into the page colour towards the frame's edges, most of all at the sky */
       }
