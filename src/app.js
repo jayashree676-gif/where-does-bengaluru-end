@@ -1168,11 +1168,11 @@ function clickWorld(cx,cy){ const cr=cardRect(); if(clayK<.2&&!(cx>cr.l&&cx<cr.r
 /* ================= PASSPORT BAR ================= */
 const ICONS=[];                      /* per-stop stamp images, rendered from each hero piece */
 function stampsHTML(live){ let h=''; ZONES.forEach((z,i)=>{ const lab=TIMELINE_LABELS[i]??String(z.year);
-  h+=`<li>${i?'<i class="ln" aria-hidden="true"></i>':''}<button class="st ${i===7?'last':''}" data-i="${i}" ${live?`data-cursor="Go" aria-label="Go to ${z.year}: ${z.title}"`:'tabindex="-1" aria-hidden="true"'}>${lab}</button></li>`; }); return h; }
+  h+=`<li>${i?'<i class="ln" aria-hidden="true"></i>':''}<button class="st ${i===7?'last':''}" data-i="${i}" ${live?`data-cursor="Go" aria-label="Go to ${z.year}: ${z.title}"`:'tabindex="-1" aria-hidden="true"'}>${lab}<i class="sdot" aria-hidden="true"></i></button></li>`; }); return h; }
 $('sbar').innerHTML=stampsHTML(true);
 $('sbar').querySelectorAll('.st').forEach(b=>b.onclick=()=>{ if(!started) return; const i=+b.dataset.i; if(lensMode) closeChapter(()=>goTo(i)); else goTo(i); });
 function setStamp(b,got,i,pop){ if(got===b.classList.contains('got')&&b.dataset.ok) return; b.dataset.ok=1; b.classList.toggle('got',got); b.classList.toggle('glass',got); b.classList.toggle('pop',got&&!!pop);
-  const src=STAMPS[i]||ICONS[i]; b.innerHTML=got&&src?`<img src="${src}" alt="">`:(TIMELINE_LABELS[i]??String(ZONES[i].year)); }
+  const src=STAMPS[i]||ICONS[i]; b.innerHTML=(got&&src?`<img src="${src}" alt="">`:(TIMELINE_LABELS[i]??String(ZONES[i].year)))+'<i class="sdot" aria-hidden="true"></i>'; }
 function updatePassport(){ $('sbN').innerHTML=`${stampCount()} <small>/ 7</small>`; if(typeof syncRead==='function') try{ syncRead(); }catch(e){}
   $('sbar').querySelectorAll('.st').forEach(b=>{ const i=+b.dataset.i; b.classList.toggle('here',arrived&&i===zoneIdx); if(i<7) setStamp(b,starred.has(i),i,started); else b.classList.toggle('locked',!unlocked()); b.title=i<7?(starred.has(i)?`${ZONES[i].year} · memory restored`:`${ZONES[i].year} · not restored yet`):(unlocked()?'2037 · open':'2037 · needs 7 stamps'); }); }
 
@@ -1777,8 +1777,10 @@ let MANUAL=false, SKIPR=false; const REDUCED=matchMedia('(prefers-reduced-motion
 function loop(){ const raw=clock.getDelta(), r=Math.min(.05,raw); if(!MANUAL){ adaptQuality(raw); stepFrame(r); } requestAnimationFrame(loop); }
 let lookY=2.2; const EL=.13, LOOKY=2.2, tpV=new THREE.Vector3(), tlV=new THREE.Vector3();
 function scissor(r){ const sx=Math.max(0,Math.floor(r.l)), sy=Math.max(0,Math.floor(r.t)), sw=Math.min(innerWidth,Math.ceil(r.r))-sx, sh=Math.min(innerHeight,Math.ceil(r.b))-sy; if(sw<2||sh<2) return false; renderer.setScissorTest(true); renderer.setScissor(sx,innerHeight-sy-sh,sw,sh); return true; }
+let curStampI=-2;
 function stepFrame(rdt){
   const dt=rdt*60; time+=rdt; frameN++;
+  { const ci=started?clamp(Math.round(fx/SP),0,7):-1; if(ci!==curStampI){ curStampI=ci; $('sbar').querySelectorAll('li').forEach((li,i)=>li.classList.toggle('onyr',i===ci)); } }   /* highlight the year the frame is on */
   /* frame physics */
   const prev=fx;
   if(phase!=='snap'&&SNAP.to!==null) killSnap();

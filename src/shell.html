@@ -156,7 +156,11 @@ body:not(.dragged) #hL svg{animation-name:nudgeL}
 .cnt b{font-weight:700;font-size:24px;line-height:28px;height:28px}.cnt b small{font-weight:500;font-size:16px}
 .cnt em{font-style:normal;font-weight:700;font-size:14px;line-height:20px}
 .stamps{display:flex;align-items:center;list-style:none}
-.stamps li{display:flex;align-items:center}
+.stamps li{display:flex;align-items:center;position:relative}
+/* the year the frame is on: a thicker ink ring and a dot beneath, live while you slide */
+#sbar li.onyr .st{outline:2px solid var(--ink);outline-offset:3px}
+.st .sdot{position:absolute;left:50%;bottom:-12px;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:var(--ink);opacity:0;transition:opacity .2s;pointer-events:none;z-index:2}
+#sbar li.onyr .sdot{opacity:1}
 .stamps .ln{width:20px;height:1px;background:var(--rule);display:block}
 .st{position:relative;width:56px;height:56px;border-radius:999px;border:1px solid var(--rule);font-weight:700;font-size:16px;line-height:20px;display:grid;place-items:center;color:var(--ink);transition:transform .35s var(--out),border-color .3s,background .25s,color .25s}
 .st:hover{transform:translateY(-3px)}
