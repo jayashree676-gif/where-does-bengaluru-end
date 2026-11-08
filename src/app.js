@@ -1488,13 +1488,14 @@ function hint(){ if(!started||lensMode) return;
 
 /* cursor */
 const cur=$('cur'), ring=$('ring'); let rx=-100, ry=-100, hoverPiece=null;
-/* two concentric circles (outline ring + small filled dot) on open ground; the normal hand near the
-   frame, its arrows and anything clickable; the normal cursor inside overlays */
+/* two concentric circles (outline ring + small filled dot) on open ground; over the frame arrows the dot
+   grows into a black "Drag" disc; the normal hand near the frame and anything clickable; the normal cursor inside overlays */
 function cursorMode(t){
   const overlay=BODY.classList.contains('bld2')||BODY.classList.contains('lamp')||!!lensMode||obBusy();
   const clickable=t&&t.closest&&t.closest('button,a,input,textarea,select,label,[role="button"],[tabindex="0"],.handle');
   let near=false; if(!vrMode&&!overlay){ const r=cardRect(), m=28*r.w/384; near=mx>r.l-m&&mx<r.r+m&&my>r.t-m&&my<r.b+m; }
-  bc('cur-custom',!overlay&&!clickable&&!near); canvas.style.cursor=near?'pointer':''; }
+  const drag=!overlay&&!vrMode&&!!(t&&t.closest&&t.closest('.handle'));   /* the frame arrows: the dot grows into a "Drag" disc */
+  bc('cur-custom',drag||(!overlay&&!clickable&&!near)); bc('cur-drag',drag); canvas.style.cursor=near&&!drag?'pointer':''; }
 addEventListener('pointermove',e=>{ mx=e.clientX; my=e.clientY; const tr=`translate(${mx}px,${my}px)`; cur.style.transform=tr; ring.style.transform=tr; rx=mx; ry=my; cursorMode(e.target); },{passive:true});
 function cursorLabel(){
   const el=document.elementFromPoint(mx,my); let lab='';

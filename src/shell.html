@@ -315,6 +315,12 @@ body.cur-custom,body.cur-custom *{cursor:none!important}
 .cur{--d:clamp(4px,.33vw,6px);width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;background:var(--ink)}
 .ring{--d:clamp(16px,1.45vw,24px);width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;border:1px solid rgba(30,30,30,.45);box-sizing:border-box}
 .ring span{display:none}
+/* over the frame arrows: the centre dot grows out from inside into a black disc reading "Drag" */
+.cur{display:grid;place-items:center;overflow:hidden;transition:opacity .15s,width .4s var(--out),height .4s var(--out),margin .4s var(--out)}
+.cur::after{content:"Drag";font-size:12px;font-weight:600;line-height:1;color:#fff;white-space:nowrap;opacity:0;transform:scale(.4);transition:opacity .2s,transform .4s var(--out)}
+body.cur-drag .cur{--d:76px}
+body.cur-drag .cur::after{opacity:1;transform:none;transition-delay:.08s}
+body.cur-drag .ring{opacity:0}
 body.vrmode .cur{background:#fff}
 body.vrmode .ring{border-color:rgba(255,255,255,.7)}
 @media (hover:none){.cur,.ring{display:none}}

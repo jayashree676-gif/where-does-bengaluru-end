@@ -315,6 +315,12 @@ body.cur-custom,body.cur-custom *{cursor:none!important}
 .cur{--d:clamp(4px,.33vw,6px);width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;background:var(--ink)}
 .ring{--d:clamp(16px,1.45vw,24px);width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;border:1px solid rgba(30,30,30,.45);box-sizing:border-box}
 .ring span{display:none}
+/* over the frame arrows: the centre dot grows out from inside into a black disc reading "Drag" */
+.cur{display:grid;place-items:center;overflow:hidden;transition:opacity .15s,width .4s var(--out),height .4s var(--out),margin .4s var(--out)}
+.cur::after{content:"Drag";font-size:12px;font-weight:600;line-height:1;color:#fff;white-space:nowrap;opacity:0;transform:scale(.4);transition:opacity .2s,transform .4s var(--out)}
+body.cur-drag .cur{--d:76px}
+body.cur-drag .cur::after{opacity:1;transform:none;transition-delay:.08s}
+body.cur-drag .ring{opacity:0}
 body.vrmode .cur{background:#fff}
 body.vrmode .ring{border-color:rgba(255,255,255,.7)}
 @media (hover:none){.cur,.ring{display:none}}
@@ -3138,13 +3144,14 @@ function hint(){ if(!started||lensMode) return;
 
 /* cursor */
 const cur=$('cur'), ring=$('ring'); let rx=-100, ry=-100, hoverPiece=null;
-/* two concentric circles (outline ring + small filled dot) on open ground; the normal hand near the
-   frame, its arrows and anything clickable; the normal cursor inside overlays */
+/* two concentric circles (outline ring + small filled dot) on open ground; over the frame arrows the dot
+   grows into a black "Drag" disc; the normal hand near the frame and anything clickable; the normal cursor inside overlays */
 function cursorMode(t){
   const overlay=BODY.classList.contains('bld2')||BODY.classList.contains('lamp')||!!lensMode||obBusy();
   const clickable=t&&t.closest&&t.closest('button,a,input,textarea,select,label,[role="button"],[tabindex="0"],.handle');
   let near=false; if(!vrMode&&!overlay){ const r=cardRect(), m=28*r.w/384; near=mx>r.l-m&&mx<r.r+m&&my>r.t-m&&my<r.b+m; }
-  bc('cur-custom',!overlay&&!clickable&&!near); canvas.style.cursor=near?'pointer':''; }
+  const drag=!overlay&&!vrMode&&!!(t&&t.closest&&t.closest('.handle'));   /* the frame arrows: the dot grows into a "Drag" disc */
+  bc('cur-custom',drag||(!overlay&&!clickable&&!near)); bc('cur-drag',drag); canvas.style.cursor=near&&!drag?'pointer':''; }
 addEventListener('pointermove',e=>{ mx=e.clientX; my=e.clientY; const tr=`translate(${mx}px,${my}px)`; cur.style.transform=tr; ring.style.transform=tr; rx=mx; ry=my; cursorMode(e.target); },{passive:true});
 function cursorLabel(){
   const el=document.elementFromPoint(mx,my); let lab='';
