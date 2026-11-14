@@ -170,6 +170,48 @@ figcaption{font-size:14px;color:var(--muted);margin-top:10px;line-height:1.45}
 .trt div:nth-child(3) .lab{color:#5c7a2c}
 @media (max-width:760px){.trt{grid-template-columns:1fr}.ch{grid-template-columns:1fr}}
 
+
+/* lessons tree */
+.lessons{background:var(--paper);border:1px solid #e1e1e3;border-radius:24px;padding:32px;margin:36px 0}
+.lessons .root{display:flex;justify-content:center}
+.lessons .root div{background:var(--card);border:1px solid var(--rule);border-radius:16px;padding:14px 26px;text-align:center}
+.lessons .root b{font-family:var(--display);font-weight:400;font-size:24px;display:block}
+.lessons .root span{font-size:14px;color:var(--muted)}
+.lessons .stem{width:1px;height:22px;background:var(--rule);margin:0 auto}
+.lessons .branches{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;position:relative;padding-top:22px}
+.lessons .branches::before{content:"";position:absolute;top:0;left:16.66%;right:16.66%;height:1px;background:var(--rule)}
+.lcol{position:relative;--c:var(--moss);--t:#eef2e6}
+.lcol::before{content:"";position:absolute;top:-22px;left:50%;width:1px;height:22px;background:var(--rule)}
+.lcol.lrn{--c:var(--steel);--t:#e8eaec}
+.lcol.avoid{--c:#A0522D;--t:#f5e9e3}
+.lcol h4{font-family:var(--label);font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--c);border-radius:12px;padding:12px 16px;margin:0 0 12px;text-align:center}
+.lcol ul{list-style:none;display:grid;gap:8px;padding-left:14px;border-left:1px solid var(--c);margin-left:10px}
+.lcol li{background:var(--card);border:1px solid #e1e1e3;border-left:3px solid var(--c);border-radius:10px;padding:10px 14px;font-size:15px;line-height:1.35;position:relative;display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.lcol li::before{content:"";position:absolute;left:-15px;top:50%;width:14px;height:1px;background:var(--c)}
+.lcol li small{font-family:var(--label);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+@media (max-width:860px){.lessons{padding:22px}.lessons .branches{grid-template-columns:1fr}.lessons .branches::before,.lcol::before{display:none}}
+
+/* milestone funnel */
+.funnel{background:var(--paper);border:1px solid #e1e1e3;border-radius:24px;padding:32px;margin:28px 0 36px;overflow-x:auto}
+.fgrid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:20px;min-width:860px}
+.fcol header{border-bottom:1px solid var(--rule);padding-bottom:12px;margin-bottom:14px}
+.fcol header .lab{display:block}
+.fcol header b{font-family:var(--display);font-weight:400;font-size:44px;line-height:1.05;display:block;font-variant-numeric:tabular-nums}
+.fcol header span{font-size:14px;color:var(--muted)}
+.chips{display:grid;gap:6px}
+.fcol.long .chips{grid-template-columns:1fr 1fr}
+.chip{font-size:14px;line-height:1.2;padding:8px 10px;border-radius:8px;background:var(--card);border:1px solid #e1e1e3;border-left:3px solid var(--k);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip b{font-weight:600;margin-right:6px}
+.k-none{--k:#B9B9BC;color:#77777b}
+.k-fold{--k:var(--steel)}
+.k-story{--k:#A0522D}
+.k-final{--k:var(--sand)}
+.k-keep{--k:var(--moss);background:#eef2e6;border-color:#d7e0c4}
+.legend{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:22px;font-size:14px;color:#4a4a4e;min-width:860px}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.legend i{width:14px;height:14px;border-radius:4px;background:var(--k);display:inline-block}
+.legend .k-keep i{background:var(--moss)}
+
 /* ai pipeline */
 .ai{background:#151515;color:#ECECEC;border-radius:32px;padding:56px 48px;margin-top:8px}
 .ai h2,.ai h3{color:#fff}
@@ -304,11 +346,28 @@ footer p+p{margin-top:6px}
       <figure><img src="img/zeiss-1.jpg" alt="ZEISS 175 years installation: a woman moves a touch screen along a white timeline wall" loading="lazy"><figcaption><b>ZEISS, 175 Years of Seeing Beyond.</b> The screen does not repeat the wall, it animates it. Moving the screen navigates; touching it goes deeper.</figcaption></figure>
       <figure><img src="img/dayton-1.jpg" alt="Dayton Art Institute donor wall with a sliding screen" loading="lazy"><figcaption><b>Dayton Art Institute, donor wall.</b> A list of donors reframed as the museum's own history, launched for its 100th year.</figcaption></figure>
     </div>
-    <figure class="dark"><img src="img/takeaways.jpg" alt="Diagram of sliding-screen lessons: takeaways, what I learnt and what not to do" loading="lazy"><figcaption style="color:#9a9a9f">Synthesis: what to take, what I learnt and what to avoid. The biggest one: give people a reason to slide.</figcaption></figure>
+    <div class="lessons" role="figure" aria-label="Sliding-screen lessons from ZEISS, Dayton and DVSI">
+      <div class="root"><div><b>Sliding-screen lessons</b><span>ZEISS · Dayton · DVSI</span></div></div>
+      <div class="stem"></div>
+      <div class="branches">
+        <div class="lcol"><h4>Takeaways</h4><ul><li>Animate the print<small>ZEISS</small></li><li>Move to navigate<small>ZEISS</small></li><li>Reframe the brief<small>Dayton</small></li><li>Two threads<small>Dayton</small></li><li>Explore header<small>DVSI</small></li><li>The art continues<small>DVSI</small></li></ul></div>
+        <div class="lcol lrn"><h4>What I learnt</h4><ul><li>Give a reason to slide</li><li>One metaphor ties it together</li><li>The anniversary is the hook</li><li>Design for watchers too</li><li>Content as data (CMS)</li><li>Speakers allow a voice</li></ul></div>
+        <div class="lcol avoid"><h4>What not to do</h4><ul><li>Screen copies the wall</li><li>Walls of text and specs</li><li>Future split from the story</li><li>Dead screen, no invite</li><li>Built for one user only</li><li>All dates given equal weight</li></ul></div>
+      </div>
+    </div>
+    <p class="small" style="margin-top:-18px">Synthesis: what to take, what I learnt and what to avoid. The biggest one: give people a reason to slide.</p>
 
     <h3 style="margin:64px 0 12px">Content strategy: 36 milestones to 8 stops</h3>
     <div class="body col" style="margin-left:0"><p>I listed every milestone from c. 890 to 2037 and ran four filters, each with one question: does it give the city a new identity? Can it be one scene, backed by two or more sources? Are the stops evenly spread? Is there a moment to play?</p></div>
-    <figure class="dark"><img src="img/milestones.jpg" alt="Chart showing 36 milestones filtered to 14, then 10, then 8 final stops" loading="lazy"><figcaption style="color:#9a9a9f">Final 8: 1537 Founding · 1760 Garden City · 1905 Lights · 1909 Science · 1940 Factories · 1985 Silicon · 2007 Startups · 2037 Turns 500.</figcaption></figure>
+    <div class="funnel" role="figure" aria-label="36 milestones filtered to 14, then 10, then 8 final stops">
+      <div class="fgrid">
+        <div class="fcol long"><header><span class="lab">1 · Longlist</span><b>36</b><span>Every milestone, c. 890 to 2037</span></header><div class="chips"><div class="chip k-none"><b>c.890</b>First mention</div><div class="chip k-keep"><b>1537</b>Mud fort</div><div class="chip k-fold"><b>1600s</b>Watchtowers</div><div class="chip k-keep"><b>1760</b>Lalbagh</div><div class="chip k-fold"><b>1761</b>Stone fort</div><div class="chip k-none"><b>1791</b>Siege</div><div class="chip k-story"><b>1809</b>Cantonment</div><div class="chip k-story"><b>1831</b>Capital</div><div class="chip k-none"><b>1859/64</b>Rail line</div><div class="chip k-none"><b>1864</b>Telegraph</div><div class="chip k-fold"><b>1889</b>Glass House</div><div class="chip k-fold"><b>1898</b>Plague</div><div class="chip k-final"><b>1898</b>New suburbs</div><div class="chip k-fold"><b>1902</b>Hydro power</div><div class="chip k-keep"><b>1905</b>Street lights</div><div class="chip k-keep"><b>1909</b>IISc</div><div class="chip k-keep"><b>1940</b>HAL</div><div class="chip k-fold"><b>1948</b>ITI</div><div class="chip k-none"><b>1949</b>City corp.</div><div class="chip k-fold"><b>1953</b>HMT</div><div class="chip k-fold"><b>1954</b>BEL</div><div class="chip k-none"><b>1956</b>State capital</div><div class="chip k-fold"><b>1964</b>HAL renamed</div><div class="chip k-final"><b>1972</b>ISRO HQ</div><div class="chip k-none"><b>1976</b>BDA</div><div class="chip k-story"><b>1978</b>E-City</div><div class="chip k-keep"><b>1985</b>TI dish</div><div class="chip k-fold"><b>1991</b>Software park</div><div class="chip k-fold"><b>1992</b>Earth station</div><div class="chip k-fold"><b>1960+</b>Lost lakes</div><div class="chip k-keep"><b>2007</b>Flipkart</div><div class="chip k-none"><b>2008</b>Airport</div><div class="chip k-story"><b>2011</b>Metro</div><div class="chip k-none"><b>2023</b>Metro east</div><div class="chip k-none"><b>2025</b>Yellow Line</div><div class="chip k-keep"><b>2037</b>Turns 500</div></div></div>
+        <div class="fcol"><header><span class="lab">2 · Identity</span><b>14</b><span>A new city identity?</span></header><div class="chips"><div class="chip k-keep"><b>1537</b>Founding</div><div class="chip k-keep"><b>1760</b>Garden City</div><div class="chip k-story"><b>1809</b>Twin city</div><div class="chip k-story"><b>1831</b>Capital</div><div class="chip k-final"><b>1898</b>Planned city</div><div class="chip k-keep"><b>1905</b>Lights</div><div class="chip k-keep"><b>1909</b>Science</div><div class="chip k-keep"><b>1940</b>Factory city</div><div class="chip k-final"><b>1972</b>Space city</div><div class="chip k-story"><b>1978</b>Tech seed</div><div class="chip k-keep"><b>1985</b>Silicon</div><div class="chip k-keep"><b>2007</b>Startups</div><div class="chip k-story"><b>2011</b>Metro city</div><div class="chip k-keep"><b>2037</b>Turns 500</div></div></div>
+        <div class="fcol"><header><span class="lab">3 · Story</span><b>10</b><span>One scene? 2+ sources?</span></header><div class="chips"><div class="chip k-keep"><b>1537</b>Founding</div><div class="chip k-keep"><b>1760</b>Garden City</div><div class="chip k-final"><b>1898</b>Planned city</div><div class="chip k-keep"><b>1905</b>Lights</div><div class="chip k-keep"><b>1909</b>Science</div><div class="chip k-keep"><b>1940</b>Factory city</div><div class="chip k-final"><b>1972</b>Space city</div><div class="chip k-keep"><b>1985</b>Silicon</div><div class="chip k-keep"><b>2007</b>Startups</div><div class="chip k-keep"><b>2037</b>Turns 500</div></div></div>
+        <div class="fcol"><header><span class="lab">4 · Final</span><b>8</b><span>Even spread? A moment?</span></header><div class="chips"><div class="chip k-keep"><b>1537</b>Founding</div><div class="chip k-keep"><b>1760</b>Garden City</div><div class="chip k-keep"><b>1905</b>Lights</div><div class="chip k-keep"><b>1909</b>Science</div><div class="chip k-keep"><b>1940</b>Factories</div><div class="chip k-keep"><b>1985</b>Silicon</div><div class="chip k-keep"><b>2007</b>Startups</div><div class="chip k-keep"><b>2037</b>Turns 500</div></div></div>
+      </div>
+      <div class="legend"><span class="k-none"><i></i>No new identity (10)</span><span class="k-fold"><i></i>Folded into a stop (12)</span><span class="k-story"><i></i>Cut at story (4)</span><span class="k-final"><i></i>Cut at final (2)</span><span class="k-keep"><i></i>Final 8 stops</span></div>
+    </div>
   </div>
 </section>
 
