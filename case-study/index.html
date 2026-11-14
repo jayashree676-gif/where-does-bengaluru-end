@@ -107,10 +107,13 @@ section{padding:104px 0;border-top:1px solid var(--rule)}
 .tile:hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,.07)}
 .tile .lab{display:block;margin-bottom:12px}
 .tile p{font-size:16px}
-.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin-top:36px;padding-top:28px;border-top:1px solid var(--rule)}
-.stat b{display:block;font-family:var(--display);font-weight:400;font-size:clamp(40px,4.6vw,58px);line-height:1;font-variant-numeric:tabular-nums}
-.stat span{font-size:14px;color:var(--muted);display:block;margin-top:8px;line-height:1.4}
-.stat b span{display:inline;font-size:inherit;color:inherit;margin:0}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);margin-top:40px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.stat{padding:32px 24px 30px;border-left:1px solid var(--rule);display:flex;flex-direction:column;gap:14px}
+.stat:first-child{border-left:0;padding-left:0}
+.stat:last-child{padding-right:0}
+.sn{font-family:var(--display);font-size:clamp(44px,4.4vw,60px);line-height:1;font-variant-numeric:tabular-nums;display:flex;align-items:baseline;gap:6px;white-space:nowrap}
+.sn i{font-style:normal;font-family:var(--body);font-weight:400;font-size:.45em;color:var(--sand);transform:translateY(-.35em)}
+.stat p{font-size:14.5px;line-height:1.45;color:var(--muted);max-width:200px}
 
 /* the wall, drawn to scale */
 .wall{margin-top:8px;background:var(--card);border:1px solid #e3e3e5;border-radius:24px;padding:40px 34px 26px}
@@ -404,7 +407,7 @@ tbody tr:hover{background:var(--card)}
 .end h2{font-size:clamp(44px,6vw,80px)}
 footer{border-top:1px solid var(--rule);padding:28px 0 48px;font-size:14px;color:var(--muted)}
 footer p+p{margin-top:6px}
-@media (max-width:900px){.facts,.specs{grid-template-columns:repeat(2,1fr)}.tldr{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.quote{grid-template-columns:1fr}.quote img{width:72px}}
+@media (max-width:900px){.facts,.specs{grid-template-columns:repeat(2,1fr)}.tldr{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.stat{border-left:0;padding:24px 0;border-top:1px solid var(--rule)}.stat:nth-child(-n+2){border-top:0}.stat:nth-child(even){padding-left:20px;border-left:1px solid var(--rule)}.quote{grid-template-columns:1fr}.quote img{width:72px}}
 @media (max-width:560px){body{font-size:17px}.grid2,.facts,.specs{grid-template-columns:1fr}section{padding:68px 0}.hero{padding-top:40px}.lens{aspect-ratio:4/5}.stamps{grid-template-columns:repeat(3,1fr)}.wstop{width:34px;height:34px;margin:-17px 0 0 -17px;font-size:9px}}
 </style>
 </head>
@@ -447,11 +450,11 @@ footer p+p{margin-top:6px}
       <div class="tile rv"><span class="lab">The outcome</span><p>A working, shareable 3D experience that people open with no briefing. 9 versions in one week, with AI as a fast build partner and every design call kept with me.</p></div>
     </div>
     <div class="stats">
-      <div class="stat"><b><span data-count="36" data-from="0">36</span>→<span data-count="8" data-from="36">8</span></b><span>milestones filtered into stops</span></div>
-      <div class="stat"><b data-count="9">9</b><span>versions, from 2D prototype to 3D build</span></div>
-      <div class="stat"><b data-count="12">12</b><span>mid-fidelity wireframes to fix the story</span></div>
-      <div class="stat"><b data-count="7">7</b><span>stamps that unlock the future</span></div>
-      <div class="stat"><b><span data-count="40">40</span>+</b><span>review-and-refine loops on the live build</span></div>
+      <div class="stat rv"><div class="sn"><span data-count="36" data-from="0">36</span><i>→</i><span data-count="8" data-from="36">8</span></div><p>milestones filtered into stops</p></div>
+      <div class="stat rv"><div class="sn"><span data-count="9">9</span></div><p>versions, from 2D prototype to 3D build</p></div>
+      <div class="stat rv"><div class="sn"><span data-count="12">12</span></div><p>mid-fidelity wireframes to fix the story</p></div>
+      <div class="stat rv"><div class="sn"><span data-count="7">7</span></div><p>stamps that unlock the future</p></div>
+      <div class="stat rv"><div class="sn"><span data-count="40">40</span><i>+</i></div><p>review-and-refine loops on the live build</p></div>
     </div>
   </div>
 </section>
@@ -866,7 +869,7 @@ footer p+p{margin-top:6px}
 
   /* count up */
   function count(el){ const to=+el.dataset.count, from=+(el.dataset.from||0); tween(1300,e=>el.textContent=Math.round(from+(to-from)*e)); }
-  if(IO){ const cio=new IntersectionObserver(es=>es.forEach(en=>{ if(en.isIntersecting){ en.target.querySelectorAll('[data-count]').forEach(count); if(en.target.dataset.count) count(en.target); cio.unobserve(en.target);} }),{threshold:.5}); $$('.stat b').forEach(s=>cio.observe(s)); }
+  if(IO){ const cio=new IntersectionObserver(es=>es.forEach(en=>{ if(en.isIntersecting){ en.target.querySelectorAll('[data-count]').forEach(count); if(en.target.dataset.count) count(en.target); cio.unobserve(en.target);} }),{threshold:.5}); $$('.stat .sn').forEach(s=>cio.observe(s)); }
 
   /* hero lens */
   const lens=$('#lens'), fr=$('#lensFrame'); let lp=50, touched=false;
