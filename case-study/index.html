@@ -218,14 +218,15 @@ figcaption{font-size:14px;color:var(--muted);margin-top:10px;line-height:1.45}
 .hmw{display:grid;margin-top:44px}
 .hmw p{font-family:var(--display);font-size:clamp(24px,2.6vw,32px);line-height:1.22;padding:22px 0;border-top:1px solid var(--rule)}
 .hmw p span{font-family:var(--label);font-size:12.5px;letter-spacing:.14em;color:var(--muted);display:block;margin-bottom:8px}
-.journey{position:relative;display:grid;grid-template-columns:repeat(9,1fr);gap:8px;margin-top:22px;padding-top:120px}
+.journey{position:relative;display:grid;grid-template-columns:repeat(10,1fr);gap:8px;margin-top:22px;padding-top:120px}
 .journey svg{position:absolute;left:0;top:0;width:100%;height:110px;overflow:visible}
-.jstep{background:var(--card);border:1px solid #e3e3e5;border-radius:14px;padding:12px;font-size:13.5px;line-height:1.35;position:relative}
+.jstep{background:var(--card);border:1px solid #e3e3e5;border-radius:14px;padding:12px;font-size:13.5px;line-height:1.35;position:relative;display:flex;flex-direction:column;gap:6px}
+.jstep p{flex:1}
 .jstep i{display:block;font-style:normal;font-family:var(--display);font-size:20px;color:var(--muted);margin-bottom:4px}
-.jstep em{display:inline-block;margin-top:8px;font-style:normal;font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--archive)}
-.jphase{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.jstep em{align-self:flex-start;margin-top:auto;font-style:normal;font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--archive)}
+.jphase{display:grid;grid-template-columns:4fr 3fr 3fr;gap:8px;margin-top:10px}
 .jphase span{text-align:center;padding:8px;border-top:2px solid var(--ink);font-family:var(--label);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#555;font-weight:600}
-@media (max-width:900px){.journey{grid-template-columns:repeat(3,1fr);padding-top:0}.journey svg,.jphase{display:none}}
+@media (max-width:900px){.journey{grid-template-columns:repeat(2,1fr);padding-top:0}.journey svg,.jphase{display:none}}
 
 /* before / after */
 .ba{position:relative;aspect-ratio:16/10;border-radius:24px;overflow:hidden;border:1px solid #dcdcde;background:var(--paper);user-select:none;-webkit-user-select:none;touch-action:pan-y;cursor:ew-resize}
@@ -562,15 +563,16 @@ footer p+p{margin-top:6px}
     <div class="sub"><span class="lab">Web journey</span><h3>Meera, 10 minutes, no briefing</h3><p class="small">Design lead at an experience studio, opening the link between meetings. The line traces how she feels at each step.</p></div>
     <div class="journey rv" id="journey">
       <svg viewBox="0 0 900 110" preserveAspectRatio="none" aria-hidden="true"><path id="jpath" d="M50,78 C90,78 110,62 150,58 S230,30 250,28 S330,36 350,34 S430,20 450,18 S530,28 550,26 S630,14 650,12 S730,6 750,5 S830,3 850,2" fill="none" stroke="#1E1E1E" stroke-width="2" stroke-linecap="round" stroke-dasharray="1100" stroke-dashoffset="1100" vector-effect="non-scaling-stroke"/></svg>
-      <div class="jstep"><i>1</i>Lands on one line from the Watchtower.<br><em>Intrigued</em></div>
-      <div class="jstep"><i>2</i>Sees the frame and a drag hint.<br><em>Oriented</em></div>
-      <div class="jstep"><i>3</i>First drag: grey turns to colour.<br><em>Surprised</em></div>
-      <div class="jstep"><i>4</i>Snaps to a stop; the memory builds.<br><em>Hooked</em></div>
-      <div class="jstep"><i>5</i>Earns a stamp, reads the full story.<br><em>Engaged</em></div>
-      <div class="jstep"><i>6</i>Jumps years with the stamp bar.<br><em>In control</em></div>
-      <div class="jstep"><i>7</i>Unlocks 2037 with all 7 stamps.<br><em>Proud</em></div>
-      <div class="jstep"><i>8</i>Builds her Bengaluru in 3D.<br><em>Delighted</em></div>
-      <div class="jstep"><i>9</i>Walks it in VR, shares the link.<br><em>Convinced</em></div>
+      <div class="jstep"><i>1</i><p>Lands on one line from the Watchtower.</p><em>Intrigued</em></div>
+      <div class="jstep"><i>2</i><p>First-time walkthrough: coach marks show the key controls.</p><em>Guided</em></div>
+      <div class="jstep"><i>3</i><p>Sees the frame and a drag hint.</p><em>Oriented</em></div>
+      <div class="jstep"><i>4</i><p>First drag: grey turns to colour.</p><em>Surprised</em></div>
+      <div class="jstep"><i>5</i><p>Snaps to a stop; the memory builds.</p><em>Hooked</em></div>
+      <div class="jstep"><i>6</i><p>Earns a stamp, reads the full story.</p><em>Engaged</em></div>
+      <div class="jstep"><i>7</i><p>Jumps years with the stamp bar.</p><em>In control</em></div>
+      <div class="jstep"><i>8</i><p>Unlocks 2037 with all 7 stamps.</p><em>Proud</em></div>
+      <div class="jstep"><i>9</i><p>Builds her Bengaluru in 3D.</p><em>Delighted</em></div>
+      <div class="jstep"><i>10</i><p>Walks it in VR, shares the link.</p><em>Convinced</em></div>
     </div>
     <div class="jphase"><span>Getting hooked</span><span>Exploring</span><span>Owning it</span></div>
   </div>
