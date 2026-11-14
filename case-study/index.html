@@ -327,8 +327,8 @@ tbody tr:hover{background:var(--card)}
 @media (max-width:860px){.feat,.feat.flip{grid-template-columns:1fr}.feat.flip .txt{order:0}}
 
 /* cursor demo */
-.cdemo{position:relative;aspect-ratio:640/520;border-radius:20px;overflow:hidden;border:1px solid #dcdcde;background:var(--paper) url(img/dragcursor.jpg) center/cover;cursor:none}
-.cdemo .hot{position:absolute;left:59%;top:40%;width:12%;height:20%;border-radius:40px}
+.cdemo{position:relative;aspect-ratio:640/520;border-radius:20px;overflow:hidden;border:1px solid #dcdcde;background:var(--paper) url(img/dragscene.jpg) center/cover;cursor:none}
+.cdemo .hot{position:absolute;left:55%;top:38%;width:10%;height:24%;border-radius:40px}
 .cdemo .cring,.cdemo .cdot{position:absolute;left:0;top:0;pointer-events:none;border-radius:50%}
 .cdemo .cring{width:26px;height:26px;margin:-13px 0 0 -13px;border:1.5px solid var(--ink);transition:opacity .25s}
 .cdemo .cdot{width:6px;height:6px;margin:-3px 0 0 -3px;background:var(--ink);display:grid;place-items:center;color:#fff;font-size:12px;font-weight:600;overflow:hidden;transition:width .4s var(--ease),height .4s var(--ease),margin .4s var(--ease),opacity .25s}
@@ -338,7 +338,7 @@ tbody tr:hover{background:var(--card)}
 .cdemo.drag .cring{opacity:0}
 .cdemo.out .cring,.cdemo.out .cdot{opacity:0}
 .cdemo .ctag{position:absolute;right:14px;bottom:14px;background:rgba(255,255,255,.92);border-radius:999px;padding:7px 13px;font-size:13px;font-weight:600}
-@media (hover:none){.cdemo{cursor:auto}.cdemo .cring,.cdemo .cdot{display:none}}
+@media (hover:none){.cdemo{cursor:auto}}
 
 /* challenges */
 .chal{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
@@ -708,7 +708,7 @@ footer p+p{margin-top:6px}
 
     <div class="feat rv"><div class="txt"><span class="lab">The lens</span><h3>Slide to remember</h3><p>Each year shows one object in grey. Drag the frame over it and the full scene rebuilds in colour, tied to how far you slide. Let go and it snaps to the nearest stop.</p><p>Watch the stamp bar too: the year you are on gets a ring and a dot, live while you slide.</p></div><figure><div class="vid"><video src="img/clip-lens.mp4" poster="img/clip-lens.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Recording: sliding the frame from 1909 to 1940 to 1985"></video><span class="live">Recorded from the build</span></div></figure></div>
 
-    <div class="feat flip rv"><div class="txt"><span class="lab">Wayfinding</span><h3>A cursor that names the gesture</h3><p>Two quiet circles by default. Over the frame arrows, the centre dot grows into a black disc that says Drag, so the main interaction explains itself.</p><p class="hint">Move your mouse onto the frame arrow</p></div><figure><div class="cdemo out" id="cdemo"><div class="hot" id="hot"></div><div class="cring"></div><div class="cdot"><span>Drag</span></div><span class="ctag">Live replica</span></div></figure></div>
+    <div class="feat flip rv"><div class="txt"><span class="lab">Wayfinding</span><h3>A cursor that names the gesture</h3><p>Two quiet circles by default. Over the frame arrows, the centre dot grows into a black disc that says Drag, so the main interaction explains itself.</p><p class="hint">Plays on its own. Move your mouse in to try it</p></div><figure><div class="cdemo out" id="cdemo"><div class="hot" id="hot"></div><div class="cring"></div><div class="cdot"><span>Drag</span></div><span class="ctag">Live replica</span></div></figure></div>
 
     <div class="feat rv"><div class="txt"><span class="lab">Level 2</span><h3>The full story, then step inside</h3><p>Each stop opens into a chapter page with an index and a note on the history. It ends with two clear choices: go back to the timeline, or open the scene in VR.</p></div><figure><div class="zoom"><img src="img/story-end.jpg" alt="End of a chapter page with Back to the timeline and Open in VR buttons" loading="lazy"></div></figure></div>
 
@@ -973,8 +973,16 @@ footer p+p{margin-top:6px}
 
   /* cursor replica */
   const cd=$('#cdemo'), ring=cd.querySelector('.cring'), dot=cd.querySelector('.cdot'), hot=$('#hot');
-  cd.addEventListener('pointermove',e=>{ if(e.pointerType==='touch') return; const r=cd.getBoundingClientRect(); const x=e.clientX-r.left, y=e.clientY-r.top; ring.style.transform=dot.style.transform='translate('+x+'px,'+y+'px)'; cd.classList.remove('out'); const h=hot.getBoundingClientRect(); cd.classList.toggle('drag', e.clientX>h.left&&e.clientX<h.right&&e.clientY>h.top&&e.clientY<h.bottom); });
-  cd.addEventListener('pointerleave',()=>{ cd.classList.add('out'); cd.classList.remove('drag'); });
+  let live=false;
+  function place(x,y){ ring.style.transform=dot.style.transform='translate('+x+'px,'+y+'px)'; const r=cd.getBoundingClientRect(), h=hot.getBoundingClientRect(); const ax=x+r.left, ay=y+r.top; cd.classList.toggle('drag', ax>h.left&&ax<h.right&&ay>h.top&&ay<h.bottom); }
+  cd.addEventListener('pointermove',e=>{ if(e.pointerType==='touch') return; live=true; const r=cd.getBoundingClientRect(); cd.classList.remove('out'); place(e.clientX-r.left,e.clientY-r.top); });
+  cd.addEventListener('pointerleave',()=>{ live=false; });
+  /* plays like a GIF: a ghost cursor drifts onto the arrow, becomes the Drag disc, then moves off */
+  const PATH=[[.18,.78,0],[.42,.62,900],[.60,.50,1700],[.60,.50,3300],[.84,.30,4300],[.84,.30,4900],[.18,.78,6200]], T=6200;
+  const lerp=(a,b,k)=>a+(b-a)*k, ease=k=>k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+  let t0=performance.now(), seen=false;
+  function ghost(t){ if(!live && seen){ const w=cd.clientWidth, h=cd.clientHeight; let u=(t-t0)%T, i=0; while(i<PATH.length-2 && u>PATH[i+1][2]) i++; const a=PATH[i], b=PATH[i+1], k=b[2]>a[2]?ease(Math.min(1,(u-a[2])/(b[2]-a[2]))):1; cd.classList.remove('out'); place(lerp(a[0],b[0],k)*w, lerp(a[1],b[1],k)*h); } requestAnimationFrame(ghost); }
+  if(!RM){ if(IO){ new IntersectionObserver(es=>{ seen=es[0].isIntersecting; },{threshold:.3}).observe(cd); } else seen=true; requestAnimationFrame(ghost); }
 
   /* pipeline run */
   const nodes=$$('#pipe .node'), pnow=$('#pnow'); let pt=null;
