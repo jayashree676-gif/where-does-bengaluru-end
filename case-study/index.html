@@ -171,6 +171,22 @@ figcaption{font-size:14px;color:var(--muted);margin-top:10px;line-height:1.45}
 @media (max-width:760px){.trt{grid-template-columns:1fr}.ch{grid-template-columns:1fr}}
 
 
+
+/* wall vs website audiences */
+.par{display:grid;gap:12px}
+.par-head,.par-row{display:grid;grid-template-columns:1fr 36px 1fr 1.1fr;gap:16px;align-items:stretch}
+.par-head{padding:0 4px}
+.par-row>div{border-radius:18px;padding:20px 22px}
+.par-a{background:var(--paper);border:1px solid #e1e1e3;position:relative;padding-left:58px!important}
+.par-a i{position:absolute;left:20px;top:18px;font-style:normal;font-family:var(--display);font-size:24px;color:var(--sand)}
+.par-b{background:var(--card);border:1px solid #e1e1e3;border-left:3px solid var(--moss)!important}
+.par-d{background:transparent;border:1px dashed var(--rule)}
+.par-row b{font-family:var(--display);font-weight:400;font-size:22px;line-height:1.15;display:block;margin-bottom:6px}
+.par-row p{font-size:15px;line-height:1.5;color:#4a4a4e}
+.par-d p{color:var(--ink)}
+.par-link{display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:20px;padding:0!important}
+@media (max-width:900px){.par-head{display:none}.par-row{grid-template-columns:1fr;gap:8px;padding-bottom:12px;border-bottom:1px solid var(--rule)}.par-link{display:none}}
+
 /* lessons tree */
 .lessons{background:var(--paper);border:1px solid #e1e1e3;border-radius:24px;padding:32px;margin:36px 0}
 .lessons .root{display:flex;justify-content:center}
@@ -332,13 +348,15 @@ footer p+p{margin-top:6px}
 
     <div class="body col"><h3>Why this topic</h3><p>Bengaluru has clear eras and a built-in arc: green, then grey, then digital. And the 500th birthday in 2037 gives the installation a reason to exist, the same way anniversaries drove the best precedents I studied.</p></div>
 
-    <h3 style="margin:56px 0 18px">Five kinds of visitors</h3>
-    <div class="cards five">
-      <div class="card persona"><b>The curious resident</b><p class="small">Locals, 20 to 45, often in tech</p><dl><dt>Wants</dt><dd>To see their city in a new light</dd><dt>Design</dt><dd>Surprising facts, places they know, a guide with humour</dd></dl></div>
-      <div class="card persona"><b>The newcomer</b><p class="small">Moved here for work</p><dl><dt>Wants</dt><dd>To understand where they live and feel they belong</dd><dt>Design</dt><dd>Plain language, no assumed local knowledge</dd></dl></div>
-      <div class="card persona"><b>The visiting guest</b><p class="small">Delegates, NRIs, tourists</p><dl><dt>Wants</dt><dd>A quick, impressive overview</dd><dt>Design</dt><dd>The wall works alone; one signature moment is enough</dd></dl></div>
-      <div class="card persona"><b>The student group</b><p class="small">School and college visits</p><dl><dt>Wants</dt><dd>To learn while having fun, together</dd><dt>Design</dt><dd>Group-friendly moments and short readable text</dd></dl></div>
-      <div class="card persona"><b>The skimmer</b><p class="small">Passing by or waiting</p><dl><dt>Wants</dt><dd>Nothing yet; needs a hook</dd><dt>Design</dt><dd>An idle "slide me" state, big years, a bold line</dd></dl></div>
+    <h3 style="margin:56px 0 8px">Two audiences, one experience</h3>
+    <p class="small" style="margin-bottom:22px;max-width:760px">The wall is for people in the experience centre. The website is what reviewers and everyone else actually open. I paired each wall visitor with the web visitor who behaves the same way, so one design decision serves both.</p>
+    <div class="par">
+      <div class="par-head"><span class="lab">At the wall</span><span></span><span class="lab">On the website</span><span class="lab">What the design does</span></div>
+      <div class="par-row"><div class="par-a"><i>01</i><b>The curious resident</b><p>Locals, 20 to 45, often in tech. Want to see their city in a new light.</p></div><div class="par-link" aria-hidden="true">⟷</div><div class="par-b"><b>The Bengaluru local</b><p>Opens a link a friend shared. Wants the same surprise, on a laptop or phone.</p></div><div class="par-d"><p>Surprising facts, places they know, a narrator with humour. A Share button so the link travels.</p></div></div>
+      <div class="par-row"><div class="par-a"><i>02</i><b>The newcomer</b><p>Moved here for work. Wants to understand where they live.</p></div><div class="par-link" aria-hidden="true">⟷</div><div class="par-b"><b>The outside reviewer</b><p>Has never been to Bengaluru. Knows nothing about Kempe Gowda or Lalbagh.</p></div><div class="par-d"><p>Plain language and no assumed local knowledge. Every stop explains itself in one line.</p></div></div>
+      <div class="par-row"><div class="par-a"><i>03</i><b>The visiting guest</b><p>Delegates and tourists. Want a quick, impressive overview.</p></div><div class="par-link" aria-hidden="true">⟷</div><div class="par-b"><b>The hiring manager</b><p>Has 2 minutes between meetings. Decides fast whether to keep going.</p></div><div class="par-d"><p>A cinematic landing and one signature moment, the colour lens, inside the first drag.</p></div></div>
+      <div class="par-row"><div class="par-a"><i>04</i><b>The student group</b><p>School and college visits. Learn together, while having fun.</p></div><div class="par-link" aria-hidden="true">⟷</div><div class="par-b"><b>The design peer</b><p>Designers and students who want to see how it was made.</p></div><div class="par-d"><p>How it works, the wall view with real dimensions, story pages and this case study.</p></div></div>
+      <div class="par-row"><div class="par-a"><i>05</i><b>The skimmer</b><p>Passing by or waiting. Needs a hook before anything else.</p></div><div class="par-link" aria-hidden="true">⟷</div><div class="par-b"><b>The cold click</b><p>Opens the link with no context or briefing.</p></div><div class="par-d"><p>One line from the Watchtower, coach marks with a clear Next, and a cursor that says Drag.</p></div></div>
     </div>
 
     <h3 style="margin:64px 0 18px">Precedent study</h3>
