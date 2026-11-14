@@ -665,7 +665,7 @@ footer p+p{margin-top:6px}
       </div>
     </div>
 
-    <div class="sub"><span class="lab">Try the core loop</span><h3>Collect the 7 stamps <span class="hint" style="margin-left:8px">tap each one</span></h3><p class="small" style="max-width:700px">The mechanic in miniature. Each stamp starts grey and earns its colour. The 2037 button stays locked, and its tooltip tells you exactly what is missing.</p></div>
+    <div class="sub"><span class="lab">The core loop</span><h3>Collect the 7 stamps <span class="hint" style="margin-left:8px">plays on its own, tap to try</span></h3><p class="small" style="max-width:700px">The mechanic in miniature. Each stamp starts grey and earns its colour. The 2037 button stays locked, and its tooltip tells you exactly what is missing.</p></div>
     <div class="collect">
       <div class="stamps" id="stamps">
         <button class="stamp" data-i="0"><img src="img/a-heritage.png" alt="">Heritage</button>
@@ -952,9 +952,18 @@ footer p+p{margin-top:6px}
   function syncStamps(){ const n=got.size; pc.textContent=n+'/7'; dots.forEach((d,i)=>d.classList.toggle('on',i<n)); tip.textContent='Bring me all 7 stamps first to enable me. You have '+n+'.';
     const open=n===7; lock.classList.toggle('open',open); lock.setAttribute('aria-disabled',String(!open)); if(!open) ll.textContent='✦ Build Your Bangalore ✦';
     ptext.textContent=open?'All 7 collected. 2037 is unlocked, and the button is yours.':(n?'Keep going. The tooltip counts with you.':'Hover or tap the locked button to hear from the Watchtower.'); }
-  $$('#stamps .stamp[data-i]').forEach(b=>b.addEventListener('click',()=>{ const i=b.dataset.i; got.has(i)?got.delete(i):got.add(i); b.classList.toggle('got',got.has(i)); b.setAttribute('aria-pressed',String(got.has(i))); syncStamps(); }));
+  let auto=null, manual=false;
+  $$('#stamps .stamp[data-i]').forEach(b=>b.addEventListener('click',()=>{ if(!manual){ manual=true; clearTimeout(auto); } const i=b.dataset.i; got.has(i)?got.delete(i):got.add(i); b.classList.toggle('got',got.has(i)); b.setAttribute('aria-pressed',String(got.has(i))); syncStamps(); }));
   lock.addEventListener('click',()=>{ if(!lock.classList.contains('open')){ lock.classList.add('tipon'); setTimeout(()=>lock.classList.remove('tipon'),2000); } else { ll.textContent='✦ Your Bangalore is being built ✦'; } });
   syncStamps();
+  /* plays like a GIF: stamps colour in one by one, the button unlocks, then it starts again */
+  const sbtns=$$('#stamps .stamp[data-i]');
+  function setGot(i,on){ const b=sbtns[i]; on?got.add(String(i)):got.delete(String(i)); b.classList.toggle('got',on); syncStamps(); }
+  function autoStep(k){ if(manual) return;
+    if(k<7){ setGot(k,true); if(k===2){ lock.classList.add('tipon'); setTimeout(()=>lock.classList.remove('tipon'),1400); } auto=setTimeout(()=>autoStep(k+1),900); }
+    else if(k===7){ ll.textContent='✦ Your Bangalore is being built ✦'; auto=setTimeout(()=>autoStep(8),2200); }
+    else { for(let i=0;i<7;i++) setGot(i,false); auto=setTimeout(()=>autoStep(0),900); } }
+  if(!RM){ if(IO){ const so=new IntersectionObserver(es=>{ if(manual) return; if(es[0].isIntersecting){ if(!auto) autoStep(0); } else { clearTimeout(auto); auto=null; for(let i=0;i<7;i++) setGot(i,false); } },{threshold:.4}); so.observe($('#stamps')); } else autoStep(0); }
 
   /* cursor replica */
   const cd=$('#cdemo'), ring=cd.querySelector('.cring'), dot=cd.querySelector('.cdot'), hot=$('#hot');
