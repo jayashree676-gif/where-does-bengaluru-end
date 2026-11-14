@@ -739,41 +739,41 @@ footer p+p{margin-top:6px}
 <section id="ai" style="border-top:0;padding-top:40px">
   <div class="wrap">
     <div class="ai">
-      <div class="sec-head" style="grid-template-columns:120px 1fr"><div class="num">08</div><div><span class="lab">AI-native workflow</span><h2>AI as a build partner, with me in the loop</h2><p style="max-width:680px">An agentic AI workflow took this from research to a working 3D build in a week. The AI generated, coded and checked. I set direction, judged quality and made every design call.</p></div></div>
+      <div class="sec-head" style="grid-template-columns:120px 1fr"><div class="num">08</div><div><span class="lab">AI-native workflow</span><h2>How I used AI</h2><p style="max-width:680px">AI helped me go from research to a working 3D website in one week. AI did the heavy lifting: writing code and checking it. I made all the design decisions.</p></div></div>
 
       <div class="pipe" id="pipe">
-        <div class="node"><h4>Research synthesis</h4><p>LLM-assisted desk research, then my own cross-check. The "two or more sources" rule filtered the milestones.</p><div class="who"><span class="tag ai">LLM</span><span class="tag me">I verify</span></div></div>
-        <div class="node"><h4>Content strategy</h4><p>The AI as a sparring partner for the 36 to 8 filters and the narrator's voice. I wrote the rules and picked the stops.</p><div class="who"><span class="tag ai">Prompting</span><span class="tag me">I decide</span></div></div>
-        <div class="node"><h4>Rapid prototyping</h4><p>Natural-language prompts became working 2D and 3D prototypes in hours, so I could test feel before polish.</p><div class="who"><span class="tag ai">Vibe coding</span><span class="tag me">I test</span></div></div>
-        <div class="node"><h4>Design in Figma</h4><p>Wireframes, UI, characters and components, all mine. Figma is the source of truth.</p><div class="who"><span class="tag me">I design</span></div></div>
-        <div class="node"><h4>Design to code via MCP</h4><p>The Figma MCP server gave the coding agent direct access to frames, layout and tokens, so the build matched the design.</p><div class="who"><span class="tag ai">Figma MCP</span><span class="tag ai">Context</span></div></div>
-        <div class="node"><h4>Agentic coding</h4><p>Claude as an AI pair programmer in a cloud workspace: three.js scenes, GSAP motion, states and a single-file build.</p><div class="who"><span class="tag ai">Agent</span><span class="tag ai">Tool use</span></div></div>
-        <div class="node"><h4>Automated visual QA</h4><p>Headless Chromium rendered the WebGL scenes and took screenshots, so the agent checked its own work before I saw it.</p><div class="who"><span class="tag ai">Multimodal check</span></div></div>
-        <div class="node"><h4>Ship</h4><p>Each approved change was committed to GitHub with a clear message and published, so every version is traceable.</p><div class="who"><span class="tag ai">Git</span><span class="tag me">I approve</span></div></div>
+        <div class="node"><h4>Research</h4><p>AI helped me find facts about the city. I checked each one in at least two sources.</p><div class="who"><span class="tag ai">LLM</span><span class="tag me">I verify</span></div></div>
+        <div class="node"><h4>Picking the stops</h4><p>I talked ideas through with AI. I set the rules and chose the 8 stops myself.</p><div class="who"><span class="tag ai">Prompting</span><span class="tag me">I decide</span></div></div>
+        <div class="node"><h4>Quick prototypes</h4><p>I described what I wanted in plain words, and AI built test versions in hours.</p><div class="who"><span class="tag ai">Vibe coding</span><span class="tag me">I test</span></div></div>
+        <div class="node"><h4>Design in Figma</h4><p>I designed every screen, character and button myself in Figma.</p><div class="who"><span class="tag me">I design</span></div></div>
+        <div class="node"><h4>Figma to code</h4><p>A Figma connection (MCP) let AI read my designs directly, so the website matched them.</p><div class="who"><span class="tag ai">Figma MCP</span><span class="tag ai">Context</span></div></div>
+        <div class="node"><h4>Building it</h4><p>Claude wrote the code: the 3D scenes, the motion and every screen.</p><div class="who"><span class="tag ai">Agent</span><span class="tag ai">Tool use</span></div></div>
+        <div class="node"><h4>Checking the work</h4><p>AI took screenshots of the website to check its own work before showing me.</p><div class="who"><span class="tag ai">Multimodal check</span></div></div>
+        <div class="node"><h4>Publishing</h4><p>Every change I approved was saved to GitHub and put live.</p><div class="who"><span class="tag ai">Git</span><span class="tag me">I approve</span></div></div>
       </div>
       <div class="pctl"><button id="pplay">▶ Run the pipeline</button><span id="pnow">Every step, in order</span></div>
 
       <h3 style="margin-top:48px">The review loop</h3>
-      <p style="max-width:680px">I reviewed the live build like a creative director, pinning comments to exact elements. Each comment became one scoped task. Over 40 loops like this shaped the final build.</p>
+      <p style="max-width:680px">I left comments right on the live website, like a creative director. AI fixed one thing at a time. I did this more than 40 times.</p>
       <div class="loop">
         <div><b>I comment</b>"Highlight the year I'm on."</div><span>→</span>
-        <div><b>Agent scopes it</b>Changes only the stamp bar.</div><span>→</span>
-        <div><b>Agent verifies</b>Screenshots the result, fixes what broke.</div><span>→</span>
-        <div><b>I approve</b>It replies in the thread and ships.</div>
+        <div><b>AI makes the change</b>Only the stamp bar changes.</div><span>→</span>
+        <div><b>AI checks it</b>Takes a screenshot to make sure it works.</div><span>→</span>
+        <div><b>I approve</b>It goes live.</div>
       </div>
 
       <div class="split">
-        <div><span class="lab">Where AI helped</span><ul class="list" style="margin-top:10px"><li>Building and rebuilding versions in hours, not days</li><li>Turning Figma frames into working code</li><li>Catching layout bugs with automated screenshots</li><li>Keeping a clean, versioned history</li></ul></div>
-        <div><span class="lab">Where I made the call</span><ul class="list" style="margin-top:10px"><li>The topic, the 8 stops and the story arc</li><li>The lens, the stamps and the 2037 reward</li><li>Every visual, the characters and the voice</li><li>What to cut: Then &amp; Now, extra text, generic visuals</li></ul></div>
+        <div><span class="lab">Where AI helped</span><ul class="list" style="margin-top:10px"><li>Building new versions in hours, not days</li><li>Turning my Figma designs into code</li><li>Spotting mistakes using screenshots</li><li>Saving every version safely</li></ul></div>
+        <div><span class="lab">Where I made the call</span><ul class="list" style="margin-top:10px"><li>The topic, the 8 stops and the story</li><li>The colour frame, the stamps and the 2037 ending</li><li>Every visual, the characters and the voice</li><li>What to remove to keep it simple</li></ul></div>
       </div>
 
       <div class="lamp">
         <div>
           <span class="lab">AI inside the product</span>
           <h3 style="margin-top:10px">Mr. Lamp, a grounded assistant</h3>
-          <p>Visitors can ask the lantern about the city. In a museum, a wrong answer is worse than no answer, so I designed it as closed-domain question answering with guardrails.</p>
-          <ul class="list" style="margin-top:14px;color:#d6d6da"><li>Knowledge base: my own research document, compiled into the build</li><li>Retrieval: the question is matched to stops, years and topics</li><li>Grounding: answers come only from that document</li><li>Fallback: "I am not aware of it" instead of a guess</li></ul>
-          <p class="small" style="color:#8d8d93;margin-top:16px">Next: an LLM with retrieval-augmented generation (RAG) and citations, plus Kannada, Hindi and voice.</p>
+          <p>Visitors can ask the lantern questions about the city. A wrong answer is worse than no answer, so Mr. Lamp only answers from my research.</p>
+          <ul class="list" style="margin-top:14px;color:#d6d6da"><li>It knows only what is in my research document</li><li>It matches your question to a stop, a year or a topic</li><li>It answers only from that document</li><li>If it doesn't know, it says "I am not aware of it"</li></ul>
+          <p class="small" style="color:#8d8d93;margin-top:16px">Next: a smarter AI that still answers only from my research and shows its sources, plus Kannada, Hindi and voice.</p>
         </div>
         <div class="lamp-ui">
           <div class="lamp-hd"><img src="img/a-lamp.png" alt=""><b>ASK MR. LAMP</b><span class="small" style="margin-left:auto;color:#777">Interactive recreation</span></div>
@@ -784,24 +784,24 @@ footer p+p{margin-top:6px}
             <button data-q="3">Who is the best cricketer?</button>
           </div>
           <div class="trace" id="trace">
-            <div class="tr"><i>1</i><div>Intent and keyword match<small id="t1">Pick a question above</small></div></div>
-            <div class="tr"><i>2</i><div>Retrieve from the knowledge base<small id="t2">Curated, sourced passages only</small></div></div>
-            <div class="tr"><i>3</i><div>Confidence check<div class="conf" id="conf"><b></b></div><small id="t3">Below the threshold, it says so</small></div></div>
-            <div class="tr"><i>4</i><div>Answer in the narrator's voice<div class="ans" id="ans">…</div></div></div>
+            <div class="tr"><i>1</i><div>Understand the question<small id="t1">Pick a question above</small></div></div>
+            <div class="tr"><i>2</i><div>Find the answer in my research<small id="t2">Only checked facts</small></div></div>
+            <div class="tr"><i>3</i><div>How sure is it?<div class="conf" id="conf"><b></b></div><small id="t3">If not sure, it says so</small></div></div>
+            <div class="tr"><i>4</i><div>Answer in the Watchtower's voice<div class="ans" id="ans">…</div></div></div>
           </div>
         </div>
       </div>
 
-      <h3 style="margin-top:56px">The vocabulary, in plain words</h3>
+      <h3 style="margin-top:56px">AI words, explained simply</h3>
       <div class="gloss" id="gloss">
-        <button aria-expanded="true"><b>Agentic workflow</b><span>An AI that plans and takes multi-step actions with tools (code, browser, Git), not just chat replies.</span></button>
-        <button aria-expanded="false"><b>MCP (Model Context Protocol)</b><span>An open standard that lets AI tools connect to apps. Here it linked the agent to my Figma file.</span></button>
-        <button aria-expanded="false"><b>Context engineering</b><span>Giving the model the right inputs: Figma nodes, the brief, earlier decisions and constraints.</span></button>
-        <button aria-expanded="false"><b>Human in the loop</b><span>AI proposes, a person reviews and approves. Every change here passed my review.</span></button>
-        <button aria-expanded="false"><b>Grounding and RAG</b><span>Answering from a trusted source instead of the model's memory, to prevent hallucinations.</span></button>
-        <button aria-expanded="false"><b>Guardrails</b><span>Rules that keep AI output safe and on topic, such as the "I don't know" fallback.</span></button>
-        <button aria-expanded="false"><b>Multimodal QA</b><span>Using screenshots, not just code, to check that the output looks right.</span></button>
-        <button aria-expanded="false"><b>Vibe coding</b><span>Building software by describing what you want in natural language and iterating on the result.</span></button>
+        <button aria-expanded="true"><b>Agentic workflow</b><span>An AI that can do tasks step by step, like writing code and saving it, not just chat.</span></button>
+        <button aria-expanded="false"><b>MCP (Model Context Protocol)</b><span>A way for AI to connect to other apps. Here it let AI read my Figma file.</span></button>
+        <button aria-expanded="false"><b>Context engineering</b><span>Giving AI the right information, like my designs and the brief, so it does the right thing.</span></button>
+        <button aria-expanded="false"><b>Human in the loop</b><span>AI suggests, a person checks and approves. I checked every change.</span></button>
+        <button aria-expanded="false"><b>Grounding and RAG</b><span>The AI answers from a trusted source, so it doesn't make things up.</span></button>
+        <button aria-expanded="false"><b>Guardrails</b><span>Rules that keep AI safe and on topic, like saying "I don't know".</span></button>
+        <button aria-expanded="false"><b>Multimodal QA</b><span>Checking with pictures, not just code, that things look right.</span></button>
+        <button aria-expanded="false"><b>Vibe coding</b><span>Building software by describing what you want in plain words.</span></button>
       </div>
     </div>
   </div>
@@ -1003,10 +1003,10 @@ footer p+p{margin-top:6px}
   function ask(i){ lt.forEach(clearTimeout); lt=[]; qs.forEach((b,k)=>b.setAttribute('aria-pressed',String(k===i))); const k=KB[i];
     trs.forEach(t=>t.classList.remove('on')); conf.querySelector('b').style.width='0'; conf.classList.toggle('low',k.c<.5); ans.textContent='…';
     const d=RM?0:650;
-    lt.push(setTimeout(()=>{ trs[0].classList.add('on'); t1.textContent='Matched: '+k.m; },0));
-    lt.push(setTimeout(()=>{ trs[1].classList.add('on'); t2.textContent='Source: '+k.src; },d));
-    lt.push(setTimeout(()=>{ trs[2].classList.add('on'); conf.querySelector('b').style.width=Math.round(k.c*100)+'%'; t3.textContent='Confidence '+Math.round(k.c*100)+'% · '+(k.c<.5?'below the threshold, use the fallback':'above the threshold, answer'); },d*2));
-    lt.push(setTimeout(()=>{ trs[3].classList.add('on'); ans.innerHTML=k.a+'<small>'+(k.c<.5?'Guardrail: fallback answer':'Grounded in: '+k.src)+'</small>'; },d*3)); }
+    lt.push(setTimeout(()=>{ trs[0].classList.add('on'); t1.textContent='Looking for: '+k.m; },0));
+    lt.push(setTimeout(()=>{ trs[1].classList.add('on'); t2.textContent='Found in: '+k.src; },d));
+    lt.push(setTimeout(()=>{ trs[2].classList.add('on'); conf.querySelector('b').style.width=Math.round(k.c*100)+'%'; t3.textContent=Math.round(k.c*100)+'% sure · '+(k.c<.5?'not sure, so it won\'t guess':'sure enough to answer'); },d*2));
+    lt.push(setTimeout(()=>{ trs[3].classList.add('on'); ans.innerHTML=k.a+'<small>'+(k.c<.5?'Safety rule: no guessing':'From: '+k.src)+'</small>'; },d*3)); }
   qs.forEach((b,i)=>b.addEventListener('click',()=>ask(i)));
 
   /* glossary */
