@@ -202,6 +202,12 @@ figcaption{font-size:14px;color:var(--muted);margin-top:10px;line-height:1.45}
 .flegend{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:20px;font-size:14px;color:#4a4a4e;border-top:1px solid #ececee;padding-top:16px}
 .flegend span{display:inline-flex;gap:8px;align-items:center}
 .flegend i{width:12px;height:12px;border-radius:4px;display:inline-block}
+.fwhy{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+.fwhy div{background:var(--paper);border:1px solid #e3e3e5;border-radius:16px;padding:16px 18px;transition:background .3s,border-color .3s}
+.fwhy div.on{background:#eef2e6;border-color:#cfdab9}
+.fwhy .lab{display:block;margin-bottom:6px}
+.fwhy p{font-size:15px;line-height:1.5}
+@media (max-width:760px){.fwhy{grid-template-columns:1fr}}
 
 /* principles, hmw, journey */
 .princ{counter-reset:p;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
@@ -528,6 +534,11 @@ footer p+p{margin-top:6px}
       <div class="board" id="board"></div>
       <div class="flegend">
         <span><i style="background:#c9c9cc"></i>No new identity (10)</span><span><i style="background:var(--steel)"></i>Folded into a stop (12)</span><span><i style="background:var(--rust)"></i>Cut at story (4)</span><span><i style="background:var(--sand)"></i>Cut at final (2)</span><span><i style="background:var(--moss)"></i>Final 8 stops</span>
+      </div>
+      <div class="fwhy" id="fwhy">
+        <div data-w="1"><span class="lab">36 → 14 · Why</span><p>I kept only moments that changed what Bengaluru was known for. Smaller events, like a new rail line, were dropped or folded into a bigger stop.</p></div>
+        <div data-w="2"><span class="lab">14 → 10 · Why</span><p>Each stop had to work as one clear picture and be backed by at least two sources. Twin city, Capital, Tech seed and Metro city did not pass.</p></div>
+        <div data-w="3"><span class="lab">10 → 8 · Why</span><p>8 stops fit the 5.8 m wall, 725 mm apart. They had to be spread across time, each with something to do. Planned city and Space city were cut.</p></div>
       </div>
     </div>
   </div>
@@ -898,11 +909,11 @@ footer p+p{margin-top:6px}
   const M=[['c.890','First mention','',0],['1537','Mud fort','Founding',4],['1600s','Watchtowers','',1],['1760','Lalbagh','Garden City',4],['1761','Stone fort','',1],['1791','Siege','',0],['1809','Cantonment','Twin city',2],['1831','Capital','Capital',2],['1859/64','Rail line','',0],['1864','Telegraph','',0],['1889','Glass House','',1],['1898','Plague','',1],['1898','New suburbs','Planned city',3],['1902','Hydro power','',1],['1905','Street lights','Lights',4],['1909','IISc','Science',4],['1940','HAL','Factories',4],['1948','ITI','',1],['1949','City corp.','',0],['1953','HMT','',1],['1954','BEL','',1],['1956','State capital','',0],['1960+','Lost lakes','',1],['1964','HAL renamed','',1],['1972','ISRO HQ','Space city',3],['1976','BDA','',0],['1978','E-City','Tech seed',2],['1985','TI dish','Silicon',4],['1991','Software park','',1],['1992','Earth station','',1],['2007','Flipkart','Startups',4],['2008','Airport','',0],['2011','Metro','Metro city',2],['2023','Metro east','',0],['2025','Yellow Line','',0],['2037','Turns 500','Turns 500',4]];
   const board=$('#board'), fnum=$('#fnum'), flabel=$('#flabel'), fq=$('#fq');
   const chips=M.map(m=>{ const c=document.createElement('span'); c.className='mchip'; c.innerHTML='<b>'+m[0]+'</b><span>'+m[1]+'</span>'; board.appendChild(c); return c; });
-  const STAGE=[{n:36,l:'Every milestone, c. 890 to 2037',q:'Start: everything that ever happened.'},{n:14,l:'Each one gives the city a new identity',q:'Filter 1: does it give the city a new identity?'},{n:10,l:'One scene, two or more sources',q:'Filter 2: can it be one scene, backed by two or more sources?'},{n:8,l:'The final 8 stops',q:'Filter 3: are the stops evenly spread, with a moment to play?'}];
+  const STAGE=[{n:36,l:'Every milestone, c. 890 to 2037',q:'Start: everything that ever happened.'},{n:14,l:'Moments that changed the city',q:'Step 1: did it change what the city was known for?'},{n:10,l:'One scene, two or more sources',q:'Step 2: can it be one clear picture, with two or more sources?'},{n:8,l:'The final 8 stops',q:'Step 3: do 8 stops fit the wall, spread out, each with something to do?'}];
   const cutAt=[1,1,2,3,99]; let stage=0, timers=[];
   function setStage(s,instant){
     const prev=stage; stage=s; $$('.fsteps button[data-s]').forEach(b=>{ if(b.dataset.s!=='play') b.setAttribute('aria-pressed',String(+b.dataset.s===s)); });
-    fq.textContent=STAGE[s].q; flabel.textContent=STAGE[s].l;
+    fq.textContent=STAGE[s].q; flabel.textContent=STAGE[s].l; $$('#fwhy [data-w]').forEach(d=>d.classList.toggle('on',+d.dataset.w===s));
     chips.forEach((c,i)=>{ const m=M[i], cut=cutAt[m[3]], alive=s<cut;
       c.querySelector('span').textContent=(s>=1&&m[2])?m[2]:m[1];
       c.classList.toggle('keep',alive&&s>=1&&s<3); c.classList.toggle('final',alive&&s===3);
