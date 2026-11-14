@@ -11,184 +11,151 @@
 <style>
 :root{
   /* the project's own system: a grey archive where colour is earned */
-  --archive:#EAEAEA; --paper:#F4F4F3; --card:#FFFFFF; --rule:#CFCFD1; --muted:#76767A; --ink:#1E1E1E; --black:#000;
-  --sand:#C6A777; --moss:#839C4E; --canopy:#3C4718; --glow:#DAB383; --steel:#494E53; --blossom:#EDB1BF;
+  --archive:#EAEAEA; --paper:#F4F4F3; --card:#FFFFFF; --rule:#D3D3D5; --muted:#76767A; --ink:#1E1E1E; --black:#000;
+  --sand:#C6A777; --moss:#839C4E; --glow:#DAB383; --steel:#494E53; --rust:#A0522D; --blossom:#EDB1BF;
   --display:"Gloock","Noe Display",Georgia,serif; --body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif; --label:"Noto Sans","Inter",sans-serif;
-  /* layout: one reading column (680) inside a 1160 stage; images break out to the stage */
+  --ease:cubic-bezier(.22,1,.36,1);
+  /* layout: a 1160 stage, a 680 reading column, interactive pieces break out to the stage */
   --stage:1160px; --col:680px; color-scheme:light;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
 body{background:var(--archive);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.6;-webkit-font-smoothing:antialiased}
-img{max-width:100%;display:block}
+img,video{max-width:100%;display:block}
 a{color:inherit}
-a:focus-visible,button:focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:4px}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
+a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:6px}
 .wrap{max-width:var(--stage);margin:0 auto;padding:0 24px}
-.col{max-width:var(--col)}
-h1,h2,h3{font-family:var(--display);font-weight:400;text-wrap:balance;letter-spacing:-.01em;line-height:1.08}
-h1{font-size:clamp(48px,8vw,104px)}
-h2{font-size:clamp(34px,4.6vw,56px);margin-bottom:20px}
+h1,h2,h3{font-family:var(--display);font-weight:400;text-wrap:balance;letter-spacing:-.01em;line-height:1.06}
+h1{font-size:clamp(52px,8.4vw,112px)}
+h2{font-size:clamp(36px,4.8vw,60px);margin-bottom:18px}
 h3{font-size:clamp(24px,2.4vw,30px);margin-bottom:10px}
-h4{font-family:var(--body);font-size:17px;font-weight:600;margin-bottom:6px}
+h4{font-size:17px;font-weight:600;margin-bottom:6px}
 p+p{margin-top:14px}
-.lab{font-family:var(--label);font-weight:600;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-.lead{font-size:clamp(20px,2vw,24px);line-height:1.45;font-style:italic;color:#3a3a3d}
+.lab{font-family:var(--label);font-weight:600;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.lead{font-size:clamp(20px,2.1vw,25px);line-height:1.45;font-style:italic;color:#3a3a3d}
 .small{font-size:15px;color:var(--muted)}
+.hint{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-size:13px;font-weight:600;color:var(--muted);letter-spacing:0}
+.hint::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--sand);animation:ping 2s infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(198,167,119,.55)}70%{box-shadow:0 0 0 9px rgba(198,167,119,0)}100%{box-shadow:0 0 0 0 rgba(198,167,119,0)}}
 ul.list{list-style:none;display:grid;gap:8px}
 ul.list li{padding-left:22px;position:relative}
-ul.list li::before{content:"";position:absolute;left:2px;top:.72em;width:8px;height:1px;background:var(--ink)}
+ul.list li::before{content:"";position:absolute;left:2px;top:.72em;width:8px;height:1px;background:currentColor}
 
-/* top bar */
-.bar{position:sticky;top:0;z-index:10;background:rgba(234,234,234,.86);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
-.bar .wrap{display:flex;align-items:center;gap:20px;height:60px}
-.bar b{font-family:var(--display);font-weight:400;font-size:20px;white-space:nowrap}
-.bar nav{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-left:auto}
+/* reveal: content is visible at rest; motion only adds a small lift */
+.rv{transition:transform .9s var(--ease),opacity .9s var(--ease)}
+.js .rv.pre{transform:translateY(22px);opacity:.001}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}.js .rv.pre{transform:none;opacity:1}}
+
+/* top bar + progress */
+.bar{position:sticky;top:0;z-index:20;background:rgba(234,234,234,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--rule)}
+.bar .wrap{display:flex;align-items:center;gap:20px;height:58px}
+.bar b{font-family:var(--display);font-weight:400;font-size:19px;white-space:nowrap}
+.bar nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;margin-left:auto}
 .bar nav::-webkit-scrollbar{display:none}
-.bar nav a{font-size:14px;text-decoration:none;padding:7px 13px;border-radius:999px;white-space:nowrap;color:#444}
+.bar nav a{font-size:13.5px;text-decoration:none;padding:7px 12px;border-radius:999px;white-space:nowrap;color:#555;transition:background .2s,color .2s}
 .bar nav a:hover{background:var(--card);color:var(--ink)}
+.bar nav a.on{background:var(--ink);color:#fff}
+.prog{position:absolute;left:0;bottom:-1px;height:2px;width:100%;transform-origin:left;transform:scaleX(0);background:var(--ink)}
 
 /* hero */
-.hero{padding:72px 0 40px}
-.hero .lab{margin-bottom:22px}
-.hero .lead{margin-top:22px;max-width:760px}
-.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
-.btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-size:16px;font-weight:600;padding:13px 26px;border-radius:999px;border:1px solid var(--ink);transition:background .2s,color .2s}
+.hero{padding:64px 0 24px}
+.hero>.lab{margin-bottom:20px;display:block}
+.hero .lead{margin-top:20px;max-width:760px}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-size:16px;font-weight:600;padding:13px 26px;border-radius:999px;border:1px solid var(--ink);transition:background .25s,color .25s,transform .25s var(--ease)}
+.btn:hover{transform:translateY(-2px)}
 .btn.primary{background:var(--black);color:#fff;border-color:var(--black)}
-.btn.primary:hover{background:#333}
-.btn.ghost{background:transparent}
 .btn.ghost:hover{background:var(--ink);color:#fff}
-.hero-img{margin-top:48px;border-radius:28px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.12)}
-.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:20px;overflow:hidden;margin-top:40px}
+
+/* the lens: grey world, colour inside a draggable frame */
+.lens{position:relative;margin-top:44px;border-radius:30px;overflow:hidden;aspect-ratio:16/9;background:#cfcfcf;box-shadow:0 40px 90px rgba(0,0,0,.14);touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:ew-resize}
+.lens img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+.lens .grey{filter:grayscale(1) contrast(.85) brightness(1.08)}
+.lens .colour{clip-path:inset(6% var(--r,39%) 6% var(--l,39%) round 26px)}
+.lens .frame{position:absolute;top:6%;bottom:6%;left:var(--l,39%);right:var(--r,39%);border:2px solid rgba(255,255,255,.95);border-radius:26px;box-shadow:0 30px 60px rgba(0,0,0,.25);cursor:grab}
+.lens .frame:active{cursor:grabbing}
+.lens .frame::before,.lens .frame::after{content:"";position:absolute;top:50%;width:10px;height:64px;margin-top:-32px;border-radius:8px;background:rgba(255,255,255,.95);box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.lens .frame::before{left:-7px}.lens .frame::after{right:-7px}
+.lens .tag{position:absolute;left:24px;bottom:22px;background:rgba(255,255,255,.92);border-radius:999px;padding:9px 16px;font-size:14px;font-weight:600;display:flex;gap:10px;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.12);pointer-events:none}
+.lens .tag kbd{font-family:var(--body);font-size:12px;border:1px solid var(--rule);border-radius:6px;padding:1px 6px;color:var(--muted)}
+
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:20px;overflow:hidden;margin-top:36px}
 .facts div{background:var(--paper);padding:20px 22px}
 .facts .lab{margin-bottom:8px;display:block}
 .facts p{font-size:15px;line-height:1.5}
 
 /* sections */
-section{padding:96px 0;border-top:1px solid var(--rule)}
-.sec-head{display:grid;grid-template-columns:120px 1fr;gap:24px;margin-bottom:36px}
-.sec-head .num{font-family:var(--display);font-size:56px;line-height:1;color:var(--rule)}
+section{padding:104px 0;border-top:1px solid var(--rule)}
+.sec-head{display:grid;grid-template-columns:120px 1fr;gap:24px;margin-bottom:40px}
+.sec-head .num{font-family:var(--display);font-size:64px;line-height:1;color:transparent;-webkit-text-stroke:1px #a9a9ac}
 .sec-head .lab{margin-bottom:12px;display:block}
-@media (max-width:760px){.sec-head{grid-template-columns:1fr;gap:6px}.sec-head .num{font-size:40px}}
-.body{margin-left:144px}
-@media (max-width:760px){.body{margin-left:0}}
+.sec-head p.small{max-width:640px}
+@media (max-width:760px){.sec-head{grid-template-columns:1fr;gap:6px}.sec-head .num{font-size:44px}}
+.sub{margin:72px 0 18px}
+.sub>.lab{display:block;margin-bottom:8px}
 
-/* tldr */
+/* quote */
+.quote{display:grid;grid-template-columns:96px 1fr;gap:28px;align-items:center;margin:56px 0 0;padding:34px 36px;background:var(--card);border-radius:24px;border:1px solid #e3e3e5}
+.quote img{width:96px;height:auto}
+.quote p{font-style:italic;font-size:clamp(22px,2.4vw,30px);line-height:1.3;color:#2a2a2d}
+.quote small{display:block;margin-top:10px;font-style:normal;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-family:var(--label);font-weight:600}
+
+/* overview */
 .tldr{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.tile{background:var(--card);border-radius:20px;padding:26px;border:1px solid #e1e1e3}
-.tile .lab{display:block;margin-bottom:10px}
+.tile{background:var(--card);border-radius:22px;padding:28px;border:1px solid #e3e3e5;transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+.tile:hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,.07)}
+.tile .lab{display:block;margin-bottom:12px}
 .tile p{font-size:16px}
-.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin-top:28px}
-.stat b{display:block;font-family:var(--display);font-weight:400;font-size:48px;line-height:1;font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin-top:36px;padding-top:28px;border-top:1px solid var(--rule)}
+.stat b{display:block;font-family:var(--display);font-weight:400;font-size:clamp(40px,4.6vw,58px);line-height:1;font-variant-numeric:tabular-nums}
 .stat span{font-size:14px;color:var(--muted);display:block;margin-top:8px;line-height:1.4}
+.stat b span{display:inline;font-size:inherit;color:inherit;margin:0}
 
-/* figures */
-figure{margin:36px 0}
-figure img{border-radius:18px;background:var(--paper);border:1px solid #dcdcde}
-figcaption{font-size:14px;color:var(--muted);margin-top:10px;line-height:1.45}
-.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.grid2 figure,.grid3 figure{margin:0}
-.dark{background:#141414;border-radius:24px;padding:22px}
-.dark img{border:0;background:#141414}
+/* the wall, drawn to scale */
+.wall{margin-top:8px;background:var(--card);border:1px solid #e3e3e5;border-radius:24px;padding:40px 34px 26px}
+.wall-track{position:relative;height:150px;border-top:2px solid #9a9a9d;border-bottom:2px solid #9a9a9d;background:repeating-linear-gradient(90deg,transparent 0 calc(12.5% - 1px),#ececee calc(12.5% - 1px) 12.5%)}
+.wall-line{position:absolute;left:0;right:0;top:50%;height:1px;background:#bdbdc0}
+.wstop{position:absolute;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:var(--card);border:1px solid #bdbdc0;display:grid;place-items:center;font-size:11px;font-weight:600;color:#666;transition:background .3s,color .3s,border-color .3s,transform .4s var(--ease);cursor:default}
+.wstop.hit{background:var(--ink);color:#fff;border-color:var(--ink);transform:scale(1.12)}
+.wscreen{position:absolute;top:-24px;bottom:-24px;width:9%;margin-left:-4.5%;border:3px solid var(--ink);border-radius:12px;background:rgba(131,156,78,.14);box-shadow:0 12px 24px rgba(0,0,0,.12);left:6.25%;transition:left 1.3s var(--ease);pointer-events:none}
+.wscreen::before,.wscreen::after{content:"";position:absolute;top:50%;width:6px;height:34px;margin-top:-17px;background:var(--ink);border-radius:4px}
+.wscreen::before{left:-8px}.wscreen::after{right:-8px}
+.wall-dims{display:flex;justify-content:space-between;gap:10px;margin-top:34px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.wall-dims b{color:var(--ink);font-weight:600}
+.specs{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:16px}
+.spec{border-radius:16px;padding:16px 18px;background:var(--paper);border:1px solid #e3e3e5}
+.spec .lab{display:block;margin-bottom:6px}
+.spec p{font-size:15px;line-height:1.45}
 
-/* cards */
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
-.card{background:var(--card);border:1px solid #e1e1e3;border-radius:18px;padding:22px}
-.card p{font-size:15px;line-height:1.55}
-.card .lab{display:block;margin-bottom:8px}
-.cards.five{grid-template-columns:repeat(5,1fr)}
-@media (max-width:1100px){.cards.five{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}}
-.persona b{font-family:var(--display);font-weight:400;font-size:24px;display:block;margin-bottom:4px}
-.persona dl{display:grid;grid-template-columns:70px 1fr;gap:6px 10px;font-size:15px;margin-top:12px}
-.persona dt{color:var(--muted)}
-
-/* principles */
-.princ{counter-reset:p;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
-.princ div{background:var(--paper);border-radius:18px;padding:22px 22px 22px 70px;position:relative;border:1px solid #e1e1e3}
-.princ div::before{counter-increment:p;content:counter(p,decimal-leading-zero);position:absolute;left:22px;top:20px;font-family:var(--display);font-size:28px;color:var(--sand)}
-.princ p{font-size:15px;color:#4a4a4e;margin-top:4px}
-.hmw{display:grid;gap:12px;margin-top:28px}
-.hmw p{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.25;padding:18px 0;border-top:1px solid var(--rule)}
-.hmw p span{font-family:var(--label);font-size:13px;letter-spacing:.12em;color:var(--muted);display:block;margin-bottom:6px}
-
-/* journey */
-.journey{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.phase{background:var(--card);border-radius:18px;padding:22px;border:1px solid #e1e1e3}
-.phase ol{list-style:none;display:grid;gap:12px;margin-top:12px}
-.phase li{font-size:15px;line-height:1.45;display:grid;grid-template-columns:28px 1fr}
-.phase li i{font-style:normal;font-family:var(--display);color:var(--muted)}
-.phase .feel{display:inline-block;margin-top:4px;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--archive)}
-
-/* iteration timeline */
-.iter{display:grid;gap:0;margin-top:12px}
-.step{display:grid;grid-template-columns:150px 1fr;gap:28px;padding:40px 0;border-top:1px solid var(--rule)}
-.step .when{font-family:var(--label);font-size:13px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
-.step .when b{display:block;font-family:var(--display);font-weight:400;font-size:40px;letter-spacing:0;color:var(--ink);text-transform:none;line-height:1;margin-bottom:8px}
-.step .tri{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
-.step .tri div{font-size:15px;line-height:1.5}
-.step .tri .lab{display:block;margin-bottom:6px}
-.step figure{margin:24px 0 0}
-@media (max-width:860px){.step{grid-template-columns:1fr;gap:10px}.step .tri{grid-template-columns:1fr}}
-
-/* design system */
-.type-row{display:grid;grid-template-columns:1.2fr 1fr;gap:24px;align-items:end;padding:22px 0;border-top:1px solid var(--rule)}
-.type-row .sample{font-size:56px;line-height:1}
-.swatches{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
-.sw{border-radius:16px;overflow:hidden;border:1px solid #dcdcde;background:var(--card)}
-.sw i{display:block;height:74px}
-.sw span{display:block;padding:10px 12px;font-size:13px;line-height:1.35}
-.sw span b{display:block;font-size:14px}
-.assets{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
-.asset{background:var(--paper);border-radius:16px;padding:12px;text-align:center;font-size:13px;color:var(--muted);border:1px solid #e1e1e3}
-.asset img{aspect-ratio:1;object-fit:contain;margin:0 auto 8px;border:0;background:none}
-.voice{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.voice div{border-radius:16px;padding:18px 20px;font-size:16px}
-.voice .do{background:#e3e9d6}
-.voice .dont{background:#f1dfdc}
-.voice .lab{display:block;margin-bottom:6px;color:#555}
-
-/* features */
-.feat{display:grid;grid-template-columns:1fr 1.35fr;gap:40px;align-items:center;padding:44px 0;border-top:1px solid var(--rule)}
-.feat:nth-of-type(even){grid-template-columns:1.35fr 1fr}
-.feat:nth-of-type(even) .txt{order:2}
-.feat figure{margin:0}
-.feat .lab{display:block;margin-bottom:10px}
-.feat p{font-size:16px}
-@media (max-width:860px){.feat,.feat:nth-of-type(even){grid-template-columns:1fr}.feat:nth-of-type(even) .txt{order:0}}
-
-/* challenges */
-.chal{display:grid;gap:16px}
-.ch{background:var(--card);border:1px solid #e1e1e3;border-radius:20px;padding:26px 28px;display:grid;grid-template-columns:44px 1fr;gap:18px}
-.ch .n{font-family:var(--display);font-size:30px;color:var(--sand);line-height:1}
-.ch h3{font-size:24px}
-.trt{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:12px}
-.trt div{font-size:15px;line-height:1.5}
-.trt .lab{display:block;margin-bottom:6px}
-.trt div:nth-child(1) .lab{color:#a0522d}
-.trt div:nth-child(2) .lab{color:var(--steel)}
-.trt div:nth-child(3) .lab{color:#5c7a2c}
-@media (max-width:760px){.trt{grid-template-columns:1fr}.ch{grid-template-columns:1fr}}
-
-
-
-/* wall vs website audiences */
+/* two audiences */
 .par{display:grid;gap:12px}
 .par-head,.par-row{display:grid;grid-template-columns:1fr 36px 1fr 1.1fr;gap:16px;align-items:stretch}
 .par-head{padding:0 4px}
-.par-row>div{border-radius:18px;padding:20px 22px}
+.par-row>div{border-radius:18px;padding:20px 22px;transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+.par-row:hover>div:not(.par-link){transform:translateY(-3px);box-shadow:0 14px 30px rgba(0,0,0,.06)}
 .par-a{background:var(--paper);border:1px solid #e1e1e3;position:relative;padding-left:58px!important}
 .par-a i{position:absolute;left:20px;top:18px;font-style:normal;font-family:var(--display);font-size:24px;color:var(--sand)}
 .par-b{background:var(--card);border:1px solid #e1e1e3;border-left:3px solid var(--moss)!important}
-.par-d{background:transparent;border:1px dashed var(--rule)}
+.par-d{border:1px dashed #c4c4c7}
 .par-row b{font-family:var(--display);font-weight:400;font-size:22px;line-height:1.15;display:block;margin-bottom:6px}
 .par-row p{font-size:15px;line-height:1.5;color:#4a4a4e}
 .par-d p{color:var(--ink)}
 .par-link{display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:20px;padding:0!important}
 @media (max-width:900px){.par-head{display:none}.par-row{grid-template-columns:1fr;gap:8px;padding-bottom:12px;border-bottom:1px solid var(--rule)}.par-link{display:none}}
 
+/* figures */
+figure{margin:32px 0}
+figure img,figure video{border-radius:18px;background:var(--paper);border:1px solid #dcdcde}
+figcaption{font-size:14px;color:var(--muted);margin-top:10px;line-height:1.45}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.grid2 figure{margin:0}
+.zoom{overflow:hidden;border-radius:18px}
+.zoom img{transition:transform .8s var(--ease)}
+.zoom:hover img{transform:scale(1.03)}
+
 /* lessons tree */
-.lessons{background:var(--paper);border:1px solid #e1e1e3;border-radius:24px;padding:32px;margin:36px 0}
+.lessons{background:var(--paper);border:1px solid #e1e1e3;border-radius:24px;padding:32px;margin:36px 0 10px}
 .lessons .root{display:flex;justify-content:center}
 .lessons .root div{background:var(--card);border:1px solid var(--rule);border-radius:16px;padding:14px 26px;text-align:center}
 .lessons .root b{font-family:var(--display);font-weight:400;font-size:24px;display:block}
@@ -196,84 +163,249 @@ figcaption{font-size:14px;color:var(--muted);margin-top:10px;line-height:1.45}
 .lessons .stem{width:1px;height:22px;background:var(--rule);margin:0 auto}
 .lessons .branches{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;position:relative;padding-top:22px}
 .lessons .branches::before{content:"";position:absolute;top:0;left:16.66%;right:16.66%;height:1px;background:var(--rule)}
-.lcol{position:relative;--c:var(--moss);--t:#eef2e6}
+.lcol{position:relative;--c:var(--moss)}
 .lcol::before{content:"";position:absolute;top:-22px;left:50%;width:1px;height:22px;background:var(--rule)}
-.lcol.lrn{--c:var(--steel);--t:#e8eaec}
-.lcol.avoid{--c:#A0522D;--t:#f5e9e3}
+.lcol.lrn{--c:var(--steel)}
+.lcol.avoid{--c:var(--rust)}
 .lcol h4{font-family:var(--label);font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--c);border-radius:12px;padding:12px 16px;margin:0 0 12px;text-align:center}
 .lcol ul{list-style:none;display:grid;gap:8px;padding-left:14px;border-left:1px solid var(--c);margin-left:10px}
-.lcol li{background:var(--card);border:1px solid #e1e1e3;border-left:3px solid var(--c);border-radius:10px;padding:10px 14px;font-size:15px;line-height:1.35;position:relative;display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.lcol li{background:var(--card);border:1px solid #e1e1e3;border-left:3px solid var(--c);border-radius:10px;padding:10px 14px;font-size:15px;line-height:1.35;position:relative;display:flex;justify-content:space-between;gap:10px;align-items:baseline;transition:transform .25s var(--ease)}
+.lcol li:hover{transform:translateX(4px)}
 .lcol li::before{content:"";position:absolute;left:-15px;top:50%;width:14px;height:1px;background:var(--c)}
 .lcol li small{font-family:var(--label);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
 @media (max-width:860px){.lessons{padding:22px}.lessons .branches{grid-template-columns:1fr}.lessons .branches::before,.lcol::before{display:none}}
 
-/* milestone funnel */
-.funnel{background:var(--paper);border:1px solid #e1e1e3;border-radius:24px;padding:32px;margin:28px 0 36px;overflow-x:auto}
-.fgrid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:20px;min-width:860px}
-.fcol header{border-bottom:1px solid var(--rule);padding-bottom:12px;margin-bottom:14px}
-.fcol header .lab{display:block}
-.fcol header b{font-family:var(--display);font-weight:400;font-size:44px;line-height:1.05;display:block;font-variant-numeric:tabular-nums}
-.fcol header span{font-size:14px;color:var(--muted)}
-.chips{display:grid;gap:6px}
-.fcol.long .chips{grid-template-columns:1fr 1fr}
-.chip{font-size:14px;line-height:1.2;padding:8px 10px;border-radius:8px;background:var(--card);border:1px solid #e1e1e3;border-left:3px solid var(--k);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.chip b{font-weight:600;margin-right:6px}
-.k-none{--k:#B9B9BC;color:#77777b}
-.k-fold{--k:var(--steel)}
-.k-story{--k:#A0522D}
-.k-final{--k:var(--sand)}
-.k-keep{--k:var(--moss);background:#eef2e6;border-color:#d7e0c4}
-.legend{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:22px;font-size:14px;color:#4a4a4e;min-width:860px}
-.legend span{display:inline-flex;align-items:center;gap:8px}
-.legend i{width:14px;height:14px;border-radius:4px;background:var(--k);display:inline-block}
-.legend .k-keep i{background:var(--moss)}
+/* the filter: 36 to 8 */
+.filter{background:var(--card);border:1px solid #e3e3e5;border-radius:26px;padding:28px 30px 30px;margin-top:22px}
+.ftop{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:18px}
+.fcount b{font-family:var(--display);font-weight:400;font-size:76px;line-height:.9;font-variant-numeric:tabular-nums;display:block}
+.fcount span{font-size:15px;color:var(--muted)}
+.fsteps{display:flex;gap:4px;flex-wrap:wrap;background:var(--paper);padding:5px;border-radius:999px;border:1px solid #e3e3e5}
+.fsteps button{padding:9px 16px;border-radius:999px;font-size:14px;font-weight:600;color:#555;transition:background .25s,color .25s}
+.fsteps button:hover{background:#e7e7e9}
+.fsteps button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.fsteps button span{opacity:.6;font-weight:500;margin-left:6px}
+.fsteps .play{background:var(--moss);color:#fff}
+.fsteps .play:hover{background:#6f8641}
+.fq{font-family:var(--display);font-size:24px;margin-bottom:16px;min-height:1.3em}
+.board{display:flex;flex-wrap:wrap;gap:8px}
+.mchip{display:inline-flex;gap:7px;align-items:baseline;padding:9px 13px;border-radius:10px;background:var(--paper);border:1px solid #e3e3e5;font-size:14.5px;line-height:1.2;transition:opacity .45s var(--ease),transform .45s var(--ease),background .35s,border-color .35s,color .35s,max-width .5s var(--ease),padding .5s var(--ease),margin .5s var(--ease);max-width:260px;white-space:nowrap;overflow:hidden}
+.mchip b{font-weight:600;font-variant-numeric:tabular-nums}
+.mchip.keep{background:#eef2e6;border-color:#cfdab9}
+.mchip.final{background:var(--moss);border-color:var(--moss);color:#fff;font-size:16px;padding:12px 16px}
+.mchip.cutting{background:#f5e6df;border-color:#e3b9a6;text-decoration:line-through;text-decoration-color:var(--rust)}
+.mchip.gone{opacity:0;transform:scale(.85);max-width:0;padding-left:0;padding-right:0;border-width:0;margin-right:-8px}
+.flegend{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:20px;font-size:14px;color:#4a4a4e;border-top:1px solid #ececee;padding-top:16px}
+.flegend span{display:inline-flex;gap:8px;align-items:center}
+.flegend i{width:12px;height:12px;border-radius:4px;display:inline-block}
 
-/* ai pipeline */
-.ai{background:#151515;color:#ECECEC;border-radius:32px;padding:56px 48px;margin-top:8px}
-.ai h2,.ai h3{color:#fff}
-.ai .lab{color:#9a9a9f}
-.ai p{color:#cfcfd3}
-.pipe{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:36px;counter-reset:s}
-.node{background:#222;border:1px solid #333;border-radius:18px;padding:18px;position:relative}
-.node::before{counter-increment:s;content:counter(s,decimal-leading-zero);font-family:var(--display);font-size:22px;color:var(--glow);display:block;margin-bottom:8px}
-.node h4{color:#fff;font-size:16px}
-.node p{font-size:14px;line-height:1.5;color:#b9b9be}
-.node .who{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-.tag{font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:999px;background:#2e2e2e;color:#ddd;border:1px solid #3a3a3a}
-.tag.me{background:var(--glow);color:#1a1a1a;border-color:var(--glow)}
-.tag.ai{background:#33405a;color:#dfe7ff;border-color:#43537a}
-.loop{margin-top:22px;border:1px dashed #555;border-radius:18px;padding:18px 20px;font-size:15px;color:#cfcfd3}
-.loop b{color:#fff}
-.split{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:36px}
-.split div{background:#202020;border-radius:18px;padding:22px;border:1px solid #333}
-.split ul.list li::before{background:#888}
-.split li{font-size:15px;color:#d6d6da}
-.gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:20px}
-.gloss div{background:#1d1d1d;border:1px solid #2f2f2f;border-radius:14px;padding:14px 16px}
-.gloss b{color:#fff;font-size:15px;display:block;margin-bottom:4px}
-.gloss span{font-size:14px;color:#b4b4b9;line-height:1.5;display:block}
-.lamp{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start;margin-top:40px}
-.flow{display:grid;gap:8px;margin-top:14px}
-.flow div{background:#222;border:1px solid #333;border-radius:12px;padding:10px 14px;font-size:14px;color:#ddd}
-.flow div small{display:block;color:#999;font-size:12.5px}
-.flow .arrow{background:none;border:0;padding:0 0 0 18px;color:#666;font-size:14px}
-@media (max-width:900px){.pipe{grid-template-columns:repeat(2,1fr)}.split,.lamp{grid-template-columns:1fr}.ai{padding:36px 22px}}
+/* principles, hmw, journey */
+.princ{counter-reset:p;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.princ div{background:var(--paper);border-radius:18px;padding:22px 22px 22px 72px;position:relative;border:1px solid #e3e3e5;transition:background .3s,transform .35s var(--ease)}
+.princ div:hover{background:var(--card);transform:translateY(-3px)}
+.princ div::before{counter-increment:p;content:counter(p,decimal-leading-zero);position:absolute;left:22px;top:19px;font-family:var(--display);font-size:30px;color:var(--sand)}
+.princ p{font-size:15px;color:#4a4a4e;margin-top:4px}
+.hmw{display:grid;margin-top:44px}
+.hmw p{font-family:var(--display);font-size:clamp(24px,2.6vw,32px);line-height:1.22;padding:22px 0;border-top:1px solid var(--rule)}
+.hmw p span{font-family:var(--label);font-size:12.5px;letter-spacing:.14em;color:var(--muted);display:block;margin-bottom:8px}
+.journey{position:relative;display:grid;grid-template-columns:repeat(9,1fr);gap:8px;margin-top:22px;padding-top:120px}
+.journey svg{position:absolute;left:0;top:0;width:100%;height:110px;overflow:visible}
+.jstep{background:var(--card);border:1px solid #e3e3e5;border-radius:14px;padding:12px;font-size:13.5px;line-height:1.35;position:relative}
+.jstep i{display:block;font-style:normal;font-family:var(--display);font-size:20px;color:var(--muted);margin-bottom:4px}
+.jstep em{display:inline-block;margin-top:8px;font-style:normal;font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--archive)}
+.jphase{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.jphase span{text-align:center;padding:8px;border-top:2px solid var(--ink);font-family:var(--label);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#555;font-weight:600}
+@media (max-width:900px){.journey{grid-template-columns:repeat(3,1fr);padding-top:0}.journey svg,.jphase{display:none}}
 
-/* compare table */
+/* before / after */
+.ba{position:relative;aspect-ratio:16/10;border-radius:24px;overflow:hidden;border:1px solid #dcdcde;background:var(--paper);user-select:none;-webkit-user-select:none;touch-action:pan-y;cursor:ew-resize}
+.ba img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;border:0;border-radius:0}
+.ba .after{clip-path:inset(0 0 0 var(--x,50%))}
+.ba .knob{position:absolute;top:0;bottom:0;left:var(--x,50%);width:2px;margin-left:-1px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.15);pointer-events:none}
+.ba .knob::after{content:"⟷";position:absolute;top:50%;left:50%;width:48px;height:48px;margin:-24px 0 0 -24px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:18px;box-shadow:0 8px 20px rgba(0,0,0,.2)}
+.ba .bl{position:absolute;top:16px;padding:7px 13px;border-radius:999px;background:rgba(0,0,0,.72);color:#fff;font-size:13px;font-weight:600;pointer-events:none}
+.ba .bl.l{left:16px}.ba .bl.r{right:16px}
+
+/* iterations */
+.vtabs{display:flex;gap:6px;flex-wrap:wrap;margin:44px 0 0}
+.vtabs button{padding:10px 18px;border-radius:999px;border:1px solid var(--rule);background:var(--card);font-size:14px;font-weight:600;color:#555;transition:background .25s,color .25s,border-color .25s}
+.vtabs button:hover{border-color:var(--ink)}
+.vtabs button[aria-selected="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.vpanel{display:grid;grid-template-columns:1fr 1.25fr;gap:36px;align-items:start;margin-top:16px;background:var(--card);border:1px solid #e3e3e5;border-radius:26px;padding:32px}
+.vpanel[hidden]{display:none}
+.vpanel .when{font-family:var(--label);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.vpanel h3{margin:8px 0 18px}
+.vpanel dl{display:grid;gap:14px}
+.vpanel dt{font-family:var(--label);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.vpanel dd{font-size:15.5px;line-height:1.5;margin-top:3px}
+.vpanel dd.noticed{background:#fbf6ee;border-left:3px solid var(--sand);padding:10px 14px;border-radius:0 10px 10px 0}
+.vpanel figure{margin:0}
+.vpanel .imgs{display:grid;gap:12px}
+.vpanel .imgs img{border-radius:14px;border:1px solid #e3e3e5}
+.vpanel.show{animation:fadein .5s var(--ease)}
+@keyframes fadein{from{opacity:.2;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (max-width:860px){.vpanel{grid-template-columns:1fr;padding:22px}}
 .tbl{overflow-x:auto;margin-top:12px}
 table{border-collapse:collapse;width:100%;min-width:640px;font-size:15px}
 th,td{text-align:left;padding:14px 12px;border-top:1px solid var(--rule);vertical-align:top}
-th{font-family:var(--label);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+th{font-family:var(--label);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
 td:first-child{font-weight:600}
+tbody tr{transition:background .2s}
+tbody tr:hover{background:var(--card)}
+
+/* design system */
+.type-row{display:grid;grid-template-columns:1.2fr 1fr;gap:24px;align-items:end;padding:22px 0;border-top:1px solid var(--rule)}
+.type-row .sample{font-size:60px;line-height:1}
+.swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.sw{border-radius:16px;overflow:hidden;border:1px solid #dcdcde;background:var(--card);text-align:left;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.sw:hover{transform:translateY(-3px);box-shadow:0 12px 24px rgba(0,0,0,.08)}
+.sw i{display:block;height:70px}
+.sw span{display:block;padding:9px 12px;font-size:13px;line-height:1.35}
+.sw span b{display:block;font-size:14px}
+.sw.copied span::after{content:" · copied";color:var(--moss);font-weight:600}
+.collect{display:grid;grid-template-columns:1.5fr 1fr;gap:24px;align-items:stretch}
+.stamps{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stamp{position:relative;background:var(--paper);border:1px solid #e3e3e5;border-radius:18px;padding:12px 10px 10px;text-align:center;font-size:12.5px;color:var(--muted);line-height:1.3;transition:transform .35s var(--ease),background .3s,border-color .3s}
+.stamp img{aspect-ratio:1;width:100%;object-fit:contain;filter:grayscale(1) opacity(.5);transition:filter .6s var(--ease),transform .6s var(--ease);margin-bottom:6px}
+.stamp:hover{transform:translateY(-3px)}
+.stamp:hover img{filter:grayscale(.6) opacity(.8)}
+.stamp.got{background:var(--card);border-color:var(--sand);color:var(--ink)}
+.stamp.got img{filter:none;transform:scale(1.06)}
+.stamp.got::after{content:"✓";position:absolute;top:8px;right:10px;width:22px;height:22px;border-radius:50%;background:var(--moss);color:#fff;font-size:12px;display:grid;place-items:center}
+.stamp.static{cursor:default;background:var(--card)}
+.stamp.static img{filter:none}
+.stamp.static:hover{transform:none}
+.unlock{background:var(--card);border:1px solid #e3e3e5;border-radius:22px;padding:26px;display:flex;flex-direction:column;justify-content:space-between;gap:18px}
+.passport{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.passport i{width:26px;height:26px;border-radius:50%;border:1px dashed #b5b5b8;transition:background .4s,border-color .4s,transform .4s var(--ease)}
+.passport i.on{background:var(--moss);border:1px solid var(--moss);transform:scale(1.08)}
+.passport b{font-family:var(--display);font-weight:400;font-size:40px;margin-right:8px;font-variant-numeric:tabular-nums}
+.lockbtn{position:relative;align-self:flex-start;padding:14px 26px;border-radius:999px;font-weight:600;font-size:16px;background:#d6d6d6;color:#8c8c8c;cursor:not-allowed;transition:background .4s,color .4s,transform .3s var(--ease)}
+.lockbtn.open{background:var(--black);color:#fff;cursor:pointer}
+.lockbtn.open:hover{transform:translateY(-2px)}
+.tip{position:absolute;left:50%;bottom:calc(100% + 12px);transform:translateX(-50%) translateY(6px);width:max-content;max-width:260px;background:#fff;color:var(--ink);font-size:14px;font-weight:500;line-height:1.4;padding:10px 14px;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.16);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s var(--ease);text-align:left}
+.tip::after{content:"";position:absolute;left:50%;top:100%;margin-left:-6px;border:6px solid transparent;border-top-color:#fff}
+.lockbtn:hover .tip,.lockbtn:focus-visible .tip,.lockbtn.tipon .tip{opacity:1;transform:translateX(-50%)}
+.lockbtn.open .tip{display:none}
+.voice{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.voice div{border-radius:16px;padding:18px 20px;font-size:16px}
+.voice .do{background:#e8eddc}
+.voice .dont{background:#f3e3df}
+.voice .lab{display:block;margin-bottom:6px;color:#555}
+@media (max-width:900px){.collect{grid-template-columns:1fr}.swatches{grid-template-columns:repeat(2,1fr)}.voice{grid-template-columns:1fr}.type-row{grid-template-columns:1fr}}
+
+/* final product */
+.feat{display:grid;grid-template-columns:1fr 1.4fr;gap:44px;align-items:center;padding:48px 0;border-top:1px solid var(--rule)}
+.feat:first-of-type{border-top:0;padding-top:0}
+.feat.flip{grid-template-columns:1.4fr 1fr}
+.feat.flip .txt{order:2}
+.feat figure{margin:0}
+.feat .txt>.lab{display:block;margin-bottom:10px}
+.feat p{font-size:16px}
+.vid{position:relative;border-radius:20px;overflow:hidden;border:1px solid #dcdcde;background:#ddd}
+.vid video{border:0;border-radius:0;width:100%}
+.vid .live{position:absolute;top:14px;left:14px;padding:6px 11px;border-radius:999px;background:rgba(0,0,0,.7);color:#fff;font-size:12px;font-weight:600;display:flex;gap:7px;align-items:center}
+.vid .live::before{content:"";width:7px;height:7px;border-radius:50%;background:#ff5a4f;animation:blink 1.6s infinite}
+@keyframes blink{50%{opacity:.25}}
+@media (max-width:860px){.feat,.feat.flip{grid-template-columns:1fr}.feat.flip .txt{order:0}}
+
+/* cursor demo */
+.cdemo{position:relative;aspect-ratio:640/520;border-radius:20px;overflow:hidden;border:1px solid #dcdcde;background:var(--paper) url(img/dragcursor.jpg) center/cover;cursor:none}
+.cdemo .hot{position:absolute;left:59%;top:40%;width:12%;height:20%;border-radius:40px}
+.cdemo .cring,.cdemo .cdot{position:absolute;left:0;top:0;pointer-events:none;border-radius:50%}
+.cdemo .cring{width:26px;height:26px;margin:-13px 0 0 -13px;border:1.5px solid var(--ink);transition:opacity .25s}
+.cdemo .cdot{width:6px;height:6px;margin:-3px 0 0 -3px;background:var(--ink);display:grid;place-items:center;color:#fff;font-size:12px;font-weight:600;overflow:hidden;transition:width .4s var(--ease),height .4s var(--ease),margin .4s var(--ease),opacity .25s}
+.cdemo .cdot span{opacity:0;transform:scale(.4);transition:opacity .2s,transform .4s var(--ease)}
+.cdemo.drag .cdot{width:76px;height:76px;margin:-38px 0 0 -38px}
+.cdemo.drag .cdot span{opacity:1;transform:none;transition-delay:.08s}
+.cdemo.drag .cring{opacity:0}
+.cdemo.out .cring,.cdemo.out .cdot{opacity:0}
+.cdemo .ctag{position:absolute;right:14px;bottom:14px;background:rgba(255,255,255,.92);border-radius:999px;padding:7px 13px;font-size:13px;font-weight:600}
+@media (hover:none){.cdemo{cursor:auto}.cdemo .cring,.cdemo .cdot{display:none}}
+
+/* challenges */
+.chal{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.ch{background:var(--card);border:1px solid #e3e3e5;border-radius:22px;padding:26px 28px;transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+.ch:hover{transform:translateY(-4px);box-shadow:0 22px 44px rgba(0,0,0,.07)}
+.ch .top{display:flex;gap:14px;align-items:baseline;margin-bottom:14px}
+.ch .n{font-family:var(--display);font-size:30px;color:var(--sand);line-height:1}
+.ch h3{font-size:23px;margin:0}
+.trt{display:grid;gap:10px}
+.trt div{font-size:15px;line-height:1.5;display:grid;grid-template-columns:92px 1fr;gap:12px}
+.trt .lab{font-size:11px;padding-top:4px}
+.trt div:nth-child(1) .lab{color:var(--rust)}
+.trt div:nth-child(2) .lab{color:var(--steel)}
+.trt div:nth-child(3) .lab{color:#5c7a2c}
+@media (max-width:860px){.chal{grid-template-columns:1fr}.trt div{grid-template-columns:1fr;gap:2px}}
+
+/* ai */
+.ai{background:#141414;color:#ECECEC;border-radius:34px;padding:60px 52px}
+.ai h2,.ai h3{color:#fff}
+.ai .lab{color:#9a9a9f}
+.ai p{color:#cfcfd3}
+.ai .sec-head .num{-webkit-text-stroke-color:#555}
+.pipe{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:8px;counter-reset:s}
+.node{background:#1e1e1e;border:1px solid #303030;border-radius:18px;padding:18px;position:relative;transition:border-color .4s,background .4s,transform .4s var(--ease)}
+.node::before{counter-increment:s;content:counter(s,decimal-leading-zero);font-family:var(--display);font-size:22px;color:#5a5a5a;display:block;margin-bottom:8px;transition:color .4s}
+.node.lit{border-color:var(--glow);background:#24211a;transform:translateY(-4px)}
+.node.lit::before{color:var(--glow)}
+.node h4{color:#fff;font-size:16px}
+.node p{font-size:14px;line-height:1.5;color:#b9b9be}
+.node .who{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.tag{font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:999px;background:#2b2b2b;color:#ddd;border:1px solid #3a3a3a}
+.tag.me{background:var(--glow);color:#1a1a1a;border-color:var(--glow)}
+.tag.ai{background:#2f3b52;color:#dfe7ff;border-color:#405074}
+.pctl{display:flex;gap:12px;align-items:center;margin-top:16px;font-size:14px;color:#aaa}
+.pctl button{padding:9px 16px;border-radius:999px;border:1px solid #555;color:#eee;font-size:13px;font-weight:600;transition:background .2s}
+.pctl button:hover{background:#2a2a2a}
+.loop{margin-top:20px;display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;gap:10px;align-items:center}
+.loop div{background:#1e1e1e;border:1px solid #303030;border-radius:14px;padding:14px;font-size:14px;color:#ddd;line-height:1.4}
+.loop div b{display:block;color:#fff;font-size:14.5px;margin-bottom:2px}
+.loop>span{color:#666;font-size:18px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:30px}
+.split div{background:#1c1c1c;border-radius:18px;padding:22px;border:1px solid #303030}
+.split li{font-size:15px;color:#d6d6da}
+.lamp{display:grid;grid-template-columns:.9fr 1.1fr;gap:28px;align-items:start;margin-top:56px;padding-top:44px;border-top:1px solid #2c2c2c}
+.lamp-ui{background:#1c1c1c;border:1px solid #333;border-radius:24px;padding:20px}
+.lamp-hd{display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid #2e2e2e}
+.lamp-hd img{width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(218,179,131,.5))}
+.lamp-hd b{font-family:var(--label);font-size:13px;letter-spacing:.14em;color:#fff}
+.qs{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+.qs button{padding:8px 13px;border-radius:999px;background:#262626;border:1px solid #3a3a3a;font-size:13.5px;color:#e6e6e6;transition:background .2s,border-color .2s}
+.qs button:hover,.qs button[aria-pressed="true"]{background:#33301f;border-color:var(--glow)}
+.trace{display:grid;gap:10px}
+.tr{display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start;font-size:14px;color:#ccc;opacity:.3;transition:opacity .4s}
+.tr.on{opacity:1}
+.tr i{width:22px;height:22px;border-radius:50%;border:1px solid #555;display:grid;place-items:center;font-style:normal;font-size:11px;color:#999;transition:background .3s,color .3s}
+.tr.on i{background:var(--glow);border-color:var(--glow);color:#1a1a1a}
+.tr small{display:block;color:#8d8d93;font-size:12.5px}
+.conf{height:6px;border-radius:6px;background:#2c2c2c;margin-top:6px;overflow:hidden}
+.conf b{display:block;height:100%;width:0;background:var(--glow);transition:width .7s var(--ease)}
+.conf.low b{background:#c0644a}
+.ans{margin-top:8px;background:#000;border-radius:16px 16px 16px 4px;padding:14px 16px;font-size:15px;line-height:1.5;color:#eee;min-height:52px}
+.ans small{display:block;color:#888;font-size:12px;margin-top:6px}
+.gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px;margin-top:20px;align-items:start}
+.gloss button{text-align:left;background:#1c1c1c;border:1px solid #2f2f2f;border-radius:14px;padding:14px 16px;transition:border-color .25s,background .25s}
+.gloss button:hover,.gloss button[aria-expanded="true"]{border-color:#555;background:#222}
+.gloss b{color:#fff;font-size:15px;display:flex;justify-content:space-between;gap:10px}
+.gloss b::after{content:"+";color:#777}
+.gloss button[aria-expanded="true"] b::after{content:"−"}
+.gloss span{font-size:14px;color:#b4b4b9;line-height:1.5;display:block;margin-top:6px}
+.js .gloss button[aria-expanded="false"] span{display:none}
+@media (max-width:900px){.pipe{grid-template-columns:repeat(2,1fr)}.split,.lamp{grid-template-columns:1fr}.ai{padding:36px 22px}.loop{grid-template-columns:1fr}.loop>span{display:none}}
 
 /* closing */
-.learn{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
-.end{padding:96px 0 120px;text-align:left}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid #e3e3e5;border-radius:20px;padding:22px;transition:transform .35s var(--ease)}
+.card:hover{transform:translateY(-3px)}
+.card p{font-size:15px;line-height:1.55}
+.card .lab{display:block;margin-bottom:8px}
+.end{padding:110px 0 120px}
+.end h2{font-size:clamp(44px,6vw,80px)}
 footer{border-top:1px solid var(--rule);padding:28px 0 48px;font-size:14px;color:var(--muted)}
 footer p+p{margin-top:6px}
-
-@media (max-width:900px){.facts{grid-template-columns:repeat(2,1fr)}.tldr,.journey{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.grid3{grid-template-columns:1fr 1fr}.voice{grid-template-columns:1fr}.type-row{grid-template-columns:1fr}}
-@media (max-width:560px){body{font-size:17px}.grid2,.grid3{grid-template-columns:1fr}.facts{grid-template-columns:1fr}section{padding:64px 0}.hero{padding-top:44px}}
+@media (max-width:900px){.facts,.specs{grid-template-columns:repeat(2,1fr)}.tldr{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.quote{grid-template-columns:1fr}.quote img{width:72px}}
+@media (max-width:560px){body{font-size:17px}.grid2,.facts,.specs{grid-template-columns:1fr}section{padding:68px 0}.hero{padding-top:40px}.lens{aspect-ratio:4/5}.stamps{grid-template-columns:repeat(3,1fr)}.wstop{width:34px;height:34px;margin:-17px 0 0 -17px;font-size:9px}}
 </style>
 </head>
 <body>
@@ -281,23 +413,31 @@ footer p+p{margin-top:6px}
 <header class="bar">
   <div class="wrap">
     <b>Where does Bengaluru end?</b>
-    <nav aria-label="Case study sections">
-      <a href="#overview">Overview</a><a href="#research">Research</a><a href="#define">Define</a><a href="#iterate">Iterations</a><a href="#system">Design system</a><a href="#product">Final product</a><a href="#challenges">Challenges</a><a href="#ai">AI workflow</a><a href="#impact">Impact</a><a href="#learnings">Learnings</a>
+    <nav aria-label="Case study sections" id="nav">
+      <a href="#overview">Overview</a><a href="#brief">Brief</a><a href="#research">Research</a><a href="#define">Define</a><a href="#iterate">Iterations</a><a href="#system">Design system</a><a href="#product">Product</a><a href="#challenges">Challenges</a><a href="#ai">AI workflow</a><a href="#learnings">Learnings</a>
     </nav>
   </div>
+  <div class="prog" id="prog"></div>
 </header>
 
 <main>
 <div class="wrap hero" id="top">
-  <p class="lab">Case study · Experience design · Digital slider · 3D web · AI-assisted build</p>
+  <span class="lab">Case study · Experience design · Digital slider · 3D web · AI-assisted build</span>
   <h1>Where does Bengaluru end?</h1>
   <p class="lead">500 years of a city on a 5.8 metre wall. A movable touch screen becomes a lens that brings each memory back in colour, and visitors earn the right to design the city's future.</p>
   <div class="cta-row">
     <a class="btn primary" href="https://jayashree676-gif.github.io/where-does-bengaluru-end/" target="_blank" rel="noopener">✦ Try the live experience ✦</a>
     <a class="btn ghost" href="https://claude.ai/artifact/GefoSEU8TkX1NkvSqCdfM4" target="_blank" rel="noopener">Full research document</a>
   </div>
-  <div class="hero-img"><img src="img/fig-landing.jpg" alt="Landing screen: a stone watchtower with a lantern on a misty hill above the Bengaluru skyline, titled Watch Tower, The Bangalore Tale" width="1440" height="900"></div>
-  <div class="facts">
+
+  <div class="lens" id="lens">
+    <img class="grey" src="img/fig-landing.jpg" alt="" width="1440" height="900">
+    <img class="colour" src="img/fig-landing.jpg" alt="The landing scene: a stone watchtower with a lantern on a misty hill above the Bengaluru skyline" width="1440" height="900">
+    <div class="frame" id="lensFrame" tabindex="0" role="slider" aria-label="Drag the frame to bring the scene back in colour" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"></div>
+    <div class="tag">Drag the frame. The whole idea in one gesture <kbd>← →</kbd></div>
+  </div>
+
+  <div class="facts rv">
     <div><span class="lab">My role</span><p>Solo designer. Research, content strategy, UX, UI, interaction, creative direction and a working front-end prototype.</p></div>
     <div><span class="lab">Timeline</span><p>7 days for the assignment (30 Oct to 6 Nov 2026), then 2 days of refinement.</p></div>
     <div><span class="lab">Context</span><p>Design assignment for DVSI, an experience design studio in Bengaluru. Brief: a Digital Slider experience for an experience centre.</p></div>
@@ -310,16 +450,16 @@ footer p+p{margin-top:6px}
   <div class="wrap">
     <div class="sec-head"><div class="num">00</div><div><span class="lab">Overview</span><h2>The short version</h2></div></div>
     <div class="tldr">
-      <div class="tile"><span class="lab">The challenge</span><p>A 5800 × 1400 mm printed timeline with a 55" touch screen that slides along it. The screen has to reveal deeper stories as it moves, and the whole thing has to work for a passer-by in 5 seconds and a curious visitor for 10 minutes.</p></div>
-      <div class="tile"><span class="lab">What I did</span><p>Cut 36 milestones down to 8 stops. Designed the screen as a colour lens over a grey archive, a stamp passport that turns exploring into a mission, and a 2037 finale where visitors build their own Bengaluru. Then built it as a 3D web simulation.</p></div>
-      <div class="tile"><span class="lab">The outcome</span><p>A working, shareable experience that reviewers open with no briefing. 9 design iterations in one week, each one driven by a problem I found in the previous version, with AI as a fast build partner and every design call kept with me.</p></div>
+      <div class="tile rv"><span class="lab">The challenge</span><p>A 5800 × 1400 mm printed timeline with a 55" touch screen that slides along it. It has to work for a passer-by in 5 seconds and a curious visitor for 10 minutes.</p></div>
+      <div class="tile rv"><span class="lab">What I did</span><p>Cut 36 milestones down to 8 stops. Designed the screen as a colour lens over a grey archive, a stamp passport that turns exploring into a mission, and a 2037 finale where visitors build their own Bengaluru.</p></div>
+      <div class="tile rv"><span class="lab">The outcome</span><p>A working, shareable 3D experience that people open with no briefing. 9 versions in one week, with AI as a fast build partner and every design call kept with me.</p></div>
     </div>
     <div class="stats">
-      <div class="stat"><b>36→8</b><span>milestones filtered into stops</span></div>
-      <div class="stat"><b>9</b><span>versions, from 2D prototype to 3D build</span></div>
-      <div class="stat"><b>12</b><span>mid-fidelity wireframes to fix the story</span></div>
-      <div class="stat"><b>7</b><span>stamps that unlock the future</span></div>
-      <div class="stat"><b>40+</b><span>review-and-refine loops on the live build</span></div>
+      <div class="stat"><b><span data-count="36" data-from="0">36</span>→<span data-count="8" data-from="36">8</span></b><span>milestones filtered into stops</span></div>
+      <div class="stat"><b data-count="9">9</b><span>versions, from 2D prototype to 3D build</span></div>
+      <div class="stat"><b data-count="12">12</b><span>mid-fidelity wireframes to fix the story</span></div>
+      <div class="stat"><b data-count="7">7</b><span>stamps that unlock the future</span></div>
+      <div class="stat"><b><span data-count="40">40</span>+</b><span>review-and-refine loops on the live build</span></div>
     </div>
   </div>
 </section>
@@ -327,16 +467,19 @@ footer p+p{margin-top:6px}
 <!-- 01 BRIEF -->
 <section id="brief">
   <div class="wrap">
-    <div class="sec-head"><div class="num">01</div><div><span class="lab">The brief</span><h2>A physical installation, simulated on the web</h2></div></div>
-    <div class="body col">
-      <p>The brief asked for a large-format timeline graphic and the UI for a movable touch screen that acts as a window into the story. Content, navigation and storytelling were open. I chose to tell the story of my own city, Bengaluru, which turns 500 in 2037.</p>
-      <p>Because reviewers would only see it on a laptop, I also had to make a physical installation feel real inside a browser.</p>
+    <div class="sec-head"><div class="num">01</div><div><span class="lab">The brief</span><h2>A physical installation, simulated on the web</h2><p class="small">The brief asked for a large-format timeline graphic and the UI for a movable touch screen that acts as a window into the story. I chose my own city, Bengaluru, which turns 500 in 2037. Reviewers would only see it on a laptop, so the installation also had to feel real inside a browser.</p></div></div>
+    <div class="wall rv" id="wall">
+      <div class="wall-track">
+        <div class="wall-line"></div>
+        <div class="wscreen" id="wscreen"></div>
+      </div>
+      <div class="wall-dims"><span><b>0 mm</b></span><span>8 stops, <b>725 mm</b> apart. Hover a stop to move the screen.</span><span><b>5800 mm</b></span></div>
     </div>
-    <div class="cards" style="margin-top:36px">
-      <div class="card"><span class="lab">Wall</span><p><b>5800 × 1400 mm</b>, about 4:1. It must read on its own from 3 m.</p></div>
-      <div class="card"><span class="lab">Screen</span><p><b>55" portrait, 1080 × 1920 px</b>. Touch targets in the lower two thirds.</p></div>
-      <div class="card"><span class="lab">Rhythm</span><p>The wall is about 8.5 screen widths long, so <b>8 stops, 725 mm apart</b>.</p></div>
-      <div class="card"><span class="lab">States</span><p>Idle, sliding, arrived, deep dive and timeout, planned before any screen.</p></div>
+    <div class="specs">
+      <div class="spec rv"><span class="lab">Wall</span><p><b>5800 × 1400 mm</b>, about 4:1. Must read on its own from 3 m.</p></div>
+      <div class="spec rv"><span class="lab">Screen</span><p><b>55" portrait, 1080 × 1920 px</b>. Touch targets in the lower two thirds.</p></div>
+      <div class="spec rv"><span class="lab">Rhythm</span><p>The wall is about 8.5 screen widths long, so <b>8 stops</b>.</p></div>
+      <div class="spec rv"><span class="lab">States</span><p>Idle, sliding, arrived, deep dive and timeout, planned before any screen.</p></div>
     </div>
   </div>
 </section>
@@ -344,27 +487,24 @@ footer p+p{margin-top:6px}
 <!-- 02 RESEARCH -->
 <section id="research">
   <div class="wrap">
-    <div class="sec-head"><div class="num">02</div><div><span class="lab">Research</span><h2>Who it is for, what works, and what to cut</h2></div></div>
+    <div class="sec-head"><div class="num">02</div><div><span class="lab">Research</span><h2>Who it is for, what works, and what to cut</h2><p class="small">Bengaluru has clear eras and a built-in arc: green, then grey, then digital. The 500th birthday gives the installation a reason to exist, the same way anniversaries drove the best precedents I studied.</p></div></div>
 
-    <div class="body col"><h3>Why this topic</h3><p>Bengaluru has clear eras and a built-in arc: green, then grey, then digital. And the 500th birthday in 2037 gives the installation a reason to exist, the same way anniversaries drove the best precedents I studied.</p></div>
-
-    <h3 style="margin:56px 0 8px">Two audiences, one experience</h3>
-    <p class="small" style="margin-bottom:22px;max-width:760px">The wall is for people in the experience centre. The website is what reviewers and everyone else actually open. I paired each wall visitor with the web visitor who behaves the same way, so one design decision serves both.</p>
+    <div class="sub" style="margin-top:0"><span class="lab">Audience</span><h3>Two audiences, one experience</h3><p class="small" style="max-width:760px">The wall is for people in the experience centre. The website is what reviewers and everyone else actually open. I paired each wall visitor with the web visitor who behaves the same way, so one design decision serves both.</p></div>
     <div class="par">
       <div class="par-head"><span class="lab">At the wall</span><span></span><span class="lab">On the website</span><span class="lab">What the design does</span></div>
-      <div class="par-row"><div class="par-a"><i>01</i><b>The curious resident</b><p>Locals, 20 to 45, often in tech. Want to see their city in a new light.</p></div><div class="par-link" aria-hidden="true">⟷</div><div class="par-b"><b>The Bengaluru local</b><p>Opens a link a friend shared. Wants the same surprise, on a laptop or phone.</p></div><div class="par-d"><p>Surprising facts, places they know, a narrator with humour. A Share button so the link travels.</p></div></div>
-      <div class="par-row"><div class="par-a"><i>02</i><b>The newcomer</b><p>Moved here for work. Wants to understand where they live.</p></div><div class="par-link" aria-hidden="true">⟷</div><div class="par-b"><b>The outside reviewer</b><p>Has never been to Bengaluru. Knows nothing about Kempe Gowda or Lalbagh.</p></div><div class="par-d"><p>Plain language and no assumed local knowledge. Every stop explains itself in one line.</p></div></div>
-      <div class="par-row"><div class="par-a"><i>03</i><b>The visiting guest</b><p>Delegates and tourists. Want a quick, impressive overview.</p></div><div class="par-link" aria-hidden="true">⟷</div><div class="par-b"><b>The hiring manager</b><p>Has 2 minutes between meetings. Decides fast whether to keep going.</p></div><div class="par-d"><p>A cinematic landing and one signature moment, the colour lens, inside the first drag.</p></div></div>
-      <div class="par-row"><div class="par-a"><i>04</i><b>The student group</b><p>School and college visits. Learn together, while having fun.</p></div><div class="par-link" aria-hidden="true">⟷</div><div class="par-b"><b>The design peer</b><p>Designers and students who want to see how it was made.</p></div><div class="par-d"><p>How it works, the wall view with real dimensions, story pages and this case study.</p></div></div>
-      <div class="par-row"><div class="par-a"><i>05</i><b>The skimmer</b><p>Passing by or waiting. Needs a hook before anything else.</p></div><div class="par-link" aria-hidden="true">⟷</div><div class="par-b"><b>The cold click</b><p>Opens the link with no context or briefing.</p></div><div class="par-d"><p>One line from the Watchtower, coach marks with a clear Next, and a cursor that says Drag.</p></div></div>
+      <div class="par-row rv"><div class="par-a"><i>01</i><b>The curious resident</b><p>Locals, 20 to 45, often in tech. Want to see their city in a new light.</p></div><div class="par-link" aria-hidden="true">⟷</div><div class="par-b"><b>The Bengaluru local</b><p>Opens a link a friend shared. Wants the same surprise, on a laptop or phone.</p></div><div class="par-d"><p>Surprising facts, places they know, a narrator with humour. A Share button so the link travels.</p></div></div>
+      <div class="par-row rv"><div class="par-a"><i>02</i><b>The newcomer</b><p>Moved here for work. Wants to understand where they live.</p></div><div class="par-link" aria-hidden="true">⟷</div><div class="par-b"><b>The outside reviewer</b><p>Has never been to Bengaluru. Knows nothing about Kempe Gowda or Lalbagh.</p></div><div class="par-d"><p>Plain language and no assumed local knowledge. Every stop explains itself in one line.</p></div></div>
+      <div class="par-row rv"><div class="par-a"><i>03</i><b>The visiting guest</b><p>Delegates and tourists. Want a quick, impressive overview.</p></div><div class="par-link" aria-hidden="true">⟷</div><div class="par-b"><b>The hiring manager</b><p>Has 2 minutes between meetings. Decides fast whether to keep going.</p></div><div class="par-d"><p>A cinematic landing and one signature moment, the colour lens, inside the first drag.</p></div></div>
+      <div class="par-row rv"><div class="par-a"><i>04</i><b>The student group</b><p>School and college visits. Learn together, while having fun.</p></div><div class="par-link" aria-hidden="true">⟷</div><div class="par-b"><b>The design peer</b><p>Designers and students who want to see how it was made.</p></div><div class="par-d"><p>How it works, the wall view with real dimensions, story pages and this case study.</p></div></div>
+      <div class="par-row rv"><div class="par-a"><i>05</i><b>The skimmer</b><p>Passing by or waiting. Needs a hook before anything else.</p></div><div class="par-link" aria-hidden="true">⟷</div><div class="par-b"><b>The cold click</b><p>Opens the link with no context or briefing.</p></div><div class="par-d"><p>One line from the Watchtower, coach marks with a clear Next, and a cursor that says Drag.</p></div></div>
     </div>
 
-    <h3 style="margin:64px 0 18px">Precedent study</h3>
+    <div class="sub"><span class="lab">Precedents</span><h3>What the best sliding screens do</h3></div>
     <div class="grid2">
-      <figure><img src="img/zeiss-1.jpg" alt="ZEISS 175 years installation: a woman moves a touch screen along a white timeline wall" loading="lazy"><figcaption><b>ZEISS, 175 Years of Seeing Beyond.</b> The screen does not repeat the wall, it animates it. Moving the screen navigates; touching it goes deeper.</figcaption></figure>
-      <figure><img src="img/dayton-1.jpg" alt="Dayton Art Institute donor wall with a sliding screen" loading="lazy"><figcaption><b>Dayton Art Institute, donor wall.</b> A list of donors reframed as the museum's own history, launched for its 100th year.</figcaption></figure>
+      <figure class="rv"><div class="zoom"><img src="img/zeiss-1.jpg" alt="ZEISS 175 years installation: a woman moves a touch screen along a white timeline wall" loading="lazy"></div><figcaption><b>ZEISS, 175 Years of Seeing Beyond.</b> The screen does not repeat the wall, it animates it. Moving navigates; touching goes deeper.</figcaption></figure>
+      <figure class="rv"><div class="zoom"><img src="img/dayton-1.jpg" alt="Dayton Art Institute donor wall with a sliding screen" loading="lazy"></div><figcaption><b>Dayton Art Institute, donor wall.</b> A donor list reframed as the museum's own history, launched for its 100th year.</figcaption></figure>
     </div>
-    <div class="lessons" role="figure" aria-label="Sliding-screen lessons from ZEISS, Dayton and DVSI">
+    <div class="lessons rv" role="figure" aria-label="Sliding-screen lessons from ZEISS, Dayton and DVSI">
       <div class="root"><div><b>Sliding-screen lessons</b><span>ZEISS · Dayton · DVSI</span></div></div>
       <div class="stem"></div>
       <div class="branches">
@@ -373,18 +513,24 @@ footer p+p{margin-top:6px}
         <div class="lcol avoid"><h4>What not to do</h4><ul><li>Screen copies the wall</li><li>Walls of text and specs</li><li>Future split from the story</li><li>Dead screen, no invite</li><li>Built for one user only</li><li>All dates given equal weight</li></ul></div>
       </div>
     </div>
-    <p class="small" style="margin-top:-18px">Synthesis: what to take, what I learnt and what to avoid. The biggest one: give people a reason to slide.</p>
 
-    <h3 style="margin:64px 0 12px">Content strategy: 36 milestones to 8 stops</h3>
-    <div class="body col" style="margin-left:0"><p>I listed every milestone from c. 890 to 2037 and ran four filters, each with one question: does it give the city a new identity? Can it be one scene, backed by two or more sources? Are the stops evenly spread? Is there a moment to play?</p></div>
-    <div class="funnel" role="figure" aria-label="36 milestones filtered to 14, then 10, then 8 final stops">
-      <div class="fgrid">
-        <div class="fcol long"><header><span class="lab">1 · Longlist</span><b>36</b><span>Every milestone, c. 890 to 2037</span></header><div class="chips"><div class="chip k-none"><b>c.890</b>First mention</div><div class="chip k-keep"><b>1537</b>Mud fort</div><div class="chip k-fold"><b>1600s</b>Watchtowers</div><div class="chip k-keep"><b>1760</b>Lalbagh</div><div class="chip k-fold"><b>1761</b>Stone fort</div><div class="chip k-none"><b>1791</b>Siege</div><div class="chip k-story"><b>1809</b>Cantonment</div><div class="chip k-story"><b>1831</b>Capital</div><div class="chip k-none"><b>1859/64</b>Rail line</div><div class="chip k-none"><b>1864</b>Telegraph</div><div class="chip k-fold"><b>1889</b>Glass House</div><div class="chip k-fold"><b>1898</b>Plague</div><div class="chip k-final"><b>1898</b>New suburbs</div><div class="chip k-fold"><b>1902</b>Hydro power</div><div class="chip k-keep"><b>1905</b>Street lights</div><div class="chip k-keep"><b>1909</b>IISc</div><div class="chip k-keep"><b>1940</b>HAL</div><div class="chip k-fold"><b>1948</b>ITI</div><div class="chip k-none"><b>1949</b>City corp.</div><div class="chip k-fold"><b>1953</b>HMT</div><div class="chip k-fold"><b>1954</b>BEL</div><div class="chip k-none"><b>1956</b>State capital</div><div class="chip k-fold"><b>1964</b>HAL renamed</div><div class="chip k-final"><b>1972</b>ISRO HQ</div><div class="chip k-none"><b>1976</b>BDA</div><div class="chip k-story"><b>1978</b>E-City</div><div class="chip k-keep"><b>1985</b>TI dish</div><div class="chip k-fold"><b>1991</b>Software park</div><div class="chip k-fold"><b>1992</b>Earth station</div><div class="chip k-fold"><b>1960+</b>Lost lakes</div><div class="chip k-keep"><b>2007</b>Flipkart</div><div class="chip k-none"><b>2008</b>Airport</div><div class="chip k-story"><b>2011</b>Metro</div><div class="chip k-none"><b>2023</b>Metro east</div><div class="chip k-none"><b>2025</b>Yellow Line</div><div class="chip k-keep"><b>2037</b>Turns 500</div></div></div>
-        <div class="fcol"><header><span class="lab">2 · Identity</span><b>14</b><span>A new city identity?</span></header><div class="chips"><div class="chip k-keep"><b>1537</b>Founding</div><div class="chip k-keep"><b>1760</b>Garden City</div><div class="chip k-story"><b>1809</b>Twin city</div><div class="chip k-story"><b>1831</b>Capital</div><div class="chip k-final"><b>1898</b>Planned city</div><div class="chip k-keep"><b>1905</b>Lights</div><div class="chip k-keep"><b>1909</b>Science</div><div class="chip k-keep"><b>1940</b>Factory city</div><div class="chip k-final"><b>1972</b>Space city</div><div class="chip k-story"><b>1978</b>Tech seed</div><div class="chip k-keep"><b>1985</b>Silicon</div><div class="chip k-keep"><b>2007</b>Startups</div><div class="chip k-story"><b>2011</b>Metro city</div><div class="chip k-keep"><b>2037</b>Turns 500</div></div></div>
-        <div class="fcol"><header><span class="lab">3 · Story</span><b>10</b><span>One scene? 2+ sources?</span></header><div class="chips"><div class="chip k-keep"><b>1537</b>Founding</div><div class="chip k-keep"><b>1760</b>Garden City</div><div class="chip k-final"><b>1898</b>Planned city</div><div class="chip k-keep"><b>1905</b>Lights</div><div class="chip k-keep"><b>1909</b>Science</div><div class="chip k-keep"><b>1940</b>Factory city</div><div class="chip k-final"><b>1972</b>Space city</div><div class="chip k-keep"><b>1985</b>Silicon</div><div class="chip k-keep"><b>2007</b>Startups</div><div class="chip k-keep"><b>2037</b>Turns 500</div></div></div>
-        <div class="fcol"><header><span class="lab">4 · Final</span><b>8</b><span>Even spread? A moment?</span></header><div class="chips"><div class="chip k-keep"><b>1537</b>Founding</div><div class="chip k-keep"><b>1760</b>Garden City</div><div class="chip k-keep"><b>1905</b>Lights</div><div class="chip k-keep"><b>1909</b>Science</div><div class="chip k-keep"><b>1940</b>Factories</div><div class="chip k-keep"><b>1985</b>Silicon</div><div class="chip k-keep"><b>2007</b>Startups</div><div class="chip k-keep"><b>2037</b>Turns 500</div></div></div>
+    <div class="sub"><span class="lab">Content strategy</span><h3>36 milestones to 8 stops</h3><p class="small" style="max-width:700px">I listed every milestone from c. 890 to 2037 and ran three filters, one question each. Press Play, or step through, and watch the list shrink.</p></div>
+    <div class="filter rv" id="filter">
+      <div class="ftop">
+        <div class="fcount"><b id="fnum">36</b><span id="flabel">Every milestone, c. 890 to 2037</span></div>
+        <div class="fsteps" role="group" aria-label="Filter stage">
+          <button aria-pressed="true" data-s="0">Longlist<span>36</span></button>
+          <button aria-pressed="false" data-s="1">Identity<span>14</span></button>
+          <button aria-pressed="false" data-s="2">Story<span>10</span></button>
+          <button aria-pressed="false" data-s="3">Final<span>8</span></button>
+          <button class="play" data-s="play">▶ Play</button>
+        </div>
       </div>
-      <div class="legend"><span class="k-none"><i></i>No new identity (10)</span><span class="k-fold"><i></i>Folded into a stop (12)</span><span class="k-story"><i></i>Cut at story (4)</span><span class="k-final"><i></i>Cut at final (2)</span><span class="k-keep"><i></i>Final 8 stops</span></div>
+      <p class="fq" id="fq">Start: everything that ever happened.</p>
+      <div class="board" id="board"></div>
+      <div class="flegend">
+        <span><i style="background:#c9c9cc"></i>No new identity (10)</span><span><i style="background:var(--steel)"></i>Folded into a stop (12)</span><span><i style="background:var(--rust)"></i>Cut at story (4)</span><span><i style="background:var(--sand)"></i>Cut at final (2)</span><span><i style="background:var(--moss)"></i>Final 8 stops</span>
+      </div>
     </div>
   </div>
 </section>
@@ -394,74 +540,83 @@ footer p+p{margin-top:6px}
   <div class="wrap">
     <div class="sec-head"><div class="num">03</div><div><span class="lab">Define</span><h2>Principles I designed against</h2></div></div>
     <div class="princ">
-      <div><h4>The wall reads alone from 3 m</h4><p>A year and one object per stop. Five seconds to get it.</p></div>
-      <div><h4>The screen is a lens, not a copy</h4><p>Grey archive outside, colour inside. The slide itself tells the story.</p></div>
-      <div><h4>Learn by doing</h4><p>No manual, no menu to read. Every control teaches itself on first use.</p></div>
-      <div><h4>Colour is the reward</h4><p>The interface stays quiet so the restored memories carry the colour.</p></div>
-      <div><h4>One voice</h4><p>The Watchtower narrates in first person. Honest about being a narrator.</p></div>
-      <div><h4>Effort earns the future</h4><p>Stamps unlock 2037, and 2037 is something you build, not something you read.</p></div>
+      <div class="rv"><h4>The wall reads alone from 3 m</h4><p>A year and one object per stop. Five seconds to get it.</p></div>
+      <div class="rv"><h4>The screen is a lens, not a copy</h4><p>Grey archive outside, colour inside. The slide itself tells the story.</p></div>
+      <div class="rv"><h4>Learn by doing</h4><p>No manual, no menu to read. Every control teaches itself on first use.</p></div>
+      <div class="rv"><h4>Colour is the reward</h4><p>The interface stays quiet so the restored memories carry the colour.</p></div>
+      <div class="rv"><h4>One voice</h4><p>The Watchtower narrates in first person, and is honest about being a narrator.</p></div>
+      <div class="rv"><h4>Effort earns the future</h4><p>Stamps unlock 2037, and 2037 is something you build, not something you read.</p></div>
     </div>
     <div class="hmw">
-      <p><span>HOW MIGHT WE · 01</span>How might we give a passer-by a reason to touch the screen at all?</p>
-      <p><span>HOW MIGHT WE · 02</span>How might we make moving the screen feel like uncovering, not scrolling?</p>
-      <p><span>HOW MIGHT WE · 03</span>How might we end a history timeline with a decision, not a full stop?</p>
+      <p class="rv"><span>HOW MIGHT WE · 01</span>How might we give a passer-by a reason to touch the screen at all?</p>
+      <p class="rv"><span>HOW MIGHT WE · 02</span>How might we make moving the screen feel like uncovering, not scrolling?</p>
+      <p class="rv"><span>HOW MIGHT WE · 03</span>How might we end a history timeline with a decision, not a full stop?</p>
     </div>
 
-    <h3 style="margin:64px 0 8px">Web journey: Meera, 10 minutes, no briefing</h3>
-    <p class="small" style="margin-bottom:20px">Design lead at an experience studio, opening the link between meetings. She is the reviewer the web version has to win.</p>
-    <div class="journey">
-      <div class="phase"><span class="lab">Getting hooked</span><ol><li><i>1</i><span>Lands on one line from the Watchtower.<br><span class="feel">Intrigued</span></span></li><li><i>2</i><span>Sees the frame and a drag hint.<br><span class="feel">Oriented</span></span></li><li><i>3</i><span>First drag: grey turns to colour inside the frame.<br><span class="feel">Surprised</span></span></li></ol></div>
-      <div class="phase"><span class="lab">Exploring</span><ol><li><i>4</i><span>Snaps to a stop; the memory builds itself.<br><span class="feel">Hooked</span></span></li><li><i>5</i><span>Earns a stamp, reads the full story.<br><span class="feel">Engaged</span></span></li><li><i>6</i><span>Jumps between years with the stamp bar.<br><span class="feel">In control</span></span></li></ol></div>
-      <div class="phase"><span class="lab">Owning it</span><ol><li><i>7</i><span>Unlocks 2037 with all 7 stamps.<br><span class="feel">Proud</span></span></li><li><i>8</i><span>Builds her Bengaluru and sees it in 3D.<br><span class="feel">Delighted</span></span></li><li><i>9</i><span>Walks it in VR, shares the link.<br><span class="feel">Convinced</span></span></li></ol></div>
+    <div class="sub"><span class="lab">Web journey</span><h3>Meera, 10 minutes, no briefing</h3><p class="small">Design lead at an experience studio, opening the link between meetings. The line traces how she feels at each step.</p></div>
+    <div class="journey rv" id="journey">
+      <svg viewBox="0 0 900 110" preserveAspectRatio="none" aria-hidden="true"><path id="jpath" d="M50,78 C90,78 110,62 150,58 S230,30 250,28 S330,36 350,34 S430,20 450,18 S530,28 550,26 S630,14 650,12 S730,6 750,5 S830,3 850,2" fill="none" stroke="#1E1E1E" stroke-width="2" stroke-linecap="round" stroke-dasharray="1100" stroke-dashoffset="1100" vector-effect="non-scaling-stroke"/></svg>
+      <div class="jstep"><i>1</i>Lands on one line from the Watchtower.<br><em>Intrigued</em></div>
+      <div class="jstep"><i>2</i>Sees the frame and a drag hint.<br><em>Oriented</em></div>
+      <div class="jstep"><i>3</i>First drag: grey turns to colour.<br><em>Surprised</em></div>
+      <div class="jstep"><i>4</i>Snaps to a stop; the memory builds.<br><em>Hooked</em></div>
+      <div class="jstep"><i>5</i>Earns a stamp, reads the full story.<br><em>Engaged</em></div>
+      <div class="jstep"><i>6</i>Jumps years with the stamp bar.<br><em>In control</em></div>
+      <div class="jstep"><i>7</i>Unlocks 2037 with all 7 stamps.<br><em>Proud</em></div>
+      <div class="jstep"><i>8</i>Builds her Bengaluru in 3D.<br><em>Delighted</em></div>
+      <div class="jstep"><i>9</i>Walks it in VR, shares the link.<br><em>Convinced</em></div>
     </div>
+    <div class="jphase"><span>Getting hooked</span><span>Exploring</span><span>Owning it</span></div>
   </div>
 </section>
 
 <!-- 04 ITERATIONS -->
 <section id="iterate">
   <div class="wrap">
-    <div class="sec-head"><div class="num">04</div><div><span class="lab">Ideate and iterate</span><h2>Nine versions in one week</h2><p class="small">Each version ended with something I noticed. That observation set the next version.</p></div></div>
-    <div class="iter">
+    <div class="sec-head"><div class="num">04</div><div><span class="lab">Ideate and iterate</span><h2>Nine versions in one week</h2><p class="small">Each version ended with something I noticed, and that observation set the next version. Drag the divider to compare the first prototype with the final build.</p></div></div>
 
-      <div class="step"><div class="when"><b>v1–2</b>30 Oct</div><div>
-        <h3>Prove the slide before adding content</h3>
-        <div class="tri"><div><span class="lab">What I did</span>A 2D prototype: drag the screen on rails with weight and momentum, snap to the nearest stop, colour inside the screen.</div><div><span class="lab">Why</span>If the slide feels cheap, no story will save it. Separating mechanics from content kept the topic swappable.</div><div><span class="lab">What I noticed</span>On a laptop the screen is 12% of the wall. I added a Follow view that locks the camera to the screen.</div></div>
-        <figure><img src="img/2d-howitworks.jpg" alt="Early 2D prototype with an x-ray overlay showing 8 stops, 725 mm apart, on the 5.8 m wall" loading="lazy"><figcaption>"How it works" overlay: the real stop grid and dimensions drawn over the wall.</figcaption></figure>
-      </div></div>
-
-      <div class="step"><div class="when"><b>v3</b>1–2 Nov</div><div>
-        <h3>A guide, hooks and a reward</h3>
-        <div class="tri"><div><span class="lab">What I did</span>Added the Watchtower as a guide, a "next stop" teaser, stamps to collect and a 2037 city builder. Removed Then &amp; Now.</div><div><span class="lab">Why</span>No briefing means the guide teaches by doing. Building the future gives a feeling of "I did something".</div><div><span class="lab">What I noticed</span>The goal was unclear. 8 stops and 7 stamps did not add up, and cards competed with the wall.</div></div>
-        <div class="grid2" style="margin-top:24px"><figure><img src="img/2d-follow-1760.jpg" alt="2D version at 1760 with story card and earn stamp button" loading="lazy"></figure><figure><img src="img/2d-builder.jpg" alt="2D city builder grid for 2037" loading="lazy"></figure></div>
-      </div></div>
-
-      <div class="step"><div class="when"><b>v4</b>2 Nov</div><div>
-        <h3>Stop coding, fix the story in wireframes</h3>
-        <div class="tri"><div><span class="lab">What I did</span>12 mid-fidelity wireframes: a mission briefing, a stamp bar on every screen, a locked 2037 that lists what is missing.</div><div><span class="lab">Why</span>Wireframes are faster to change than code. 2037 became the reward, not a stop, so 7 stamps finally add up.</div><div><span class="lab">Decision</span>Web frame 1440 × 900 for reviewers, with the real 1080 × 1920 screen inside at one third scale.</div></div>
-        <figure class="dark"><img src="img/wf-0.jpg" alt="Wireframes: intro, mission briefing and first look at the whole wall" loading="lazy"></figure>
-        <div class="grid3"><figure class="dark" style="padding:10px;margin:0"><img src="img/wf-1.jpg" alt="Wireframes: sliding, stop overview, hands-on moment" loading="lazy"></figure><figure class="dark" style="padding:10px;margin:0"><img src="img/wf-2.jpg" alt="Wireframes: stamp earned, deep dive, stamp passport" loading="lazy"></figure><figure class="dark" style="padding:10px;margin:0"><img src="img/wf-3.jpg" alt="Wireframes: 2037 locked, city builder, your city" loading="lazy"></figure></div>
-      </div></div>
-
-      <div class="step"><div class="when"><b>v5–6</b>3 Nov</div><div>
-        <h3>From photo cards to one object per year</h3>
-        <div class="tri"><div><span class="lab">Tried</span>Photo cards on a wavy timeline. It read like a blog, not an installation, and the frame had nothing to reveal.</div><div><span class="lab">Then</span>A 3D miniature world: each year shows only the year and one hero object. Sliding the frame builds the memory around it.</div><div><span class="lab">What I noticed</span>Stamps came just by arriving, so they felt empty. And the look was not my visual language yet.</div></div>
-        <div class="grid2" style="margin-top:24px"><figure><img src="img/wire-wall.jpg" alt="Visual exploration with photo cards along a wave line" loading="lazy"><figcaption>Exploration: photo cards on a wave line.</figcaption></figure><figure><img src="img/3d-1537.jpg" alt="3D version: the frame on 1537, the mud fort builds itself in colour" loading="lazy"><figcaption>3D: the mud fort builds itself inside the frame.</figcaption></figure></div>
-      </div></div>
-
-      <div class="step"><div class="when"><b>v7–8</b>3–5 Nov</div><div>
-        <h3>My own UI, then onboarding</h3>
-        <div class="tri"><div><span class="lab">What I did</span>Redesigned every screen in Figma: a cinematic landing, a glass frame with side handles, a stamp passport, a full story page and coach marks.</div><div><span class="lab">Why</span>The first impression decides if Meera stays. A calm grey world lets colour in the frame stand out.</div><div><span class="lab">What I noticed</span>Many controls at once: nav, handles, VR, stamps, lantern. That led to a skippable, step-by-step walkthrough.</div></div>
-        <div class="grid2" style="margin-top:24px"><figure><img src="img/fig-1537.jpg" alt="Figma screen at 1537: chapter on the left, glass frame with a 3D object in the middle, Watchtower quote on the right" loading="lazy"></figure><figure><img src="img/fig-coach-nav.jpg" alt="Coach mark explaining the top navigation" loading="lazy"></figure></div>
-      </div></div>
-
-      <div class="step"><div class="when"><b>v9</b>4–8 Nov</div><div>
-        <h3>Final build from my Figma screens</h3>
-        <div class="tri"><div><span class="lab">What I did</span>Built the web app straight from Figma at 1440 × 900 with golden-hour 3D scenes that come alive when the frame lands.</div><div><span class="lab">Then</span>Reviewed it like a creative director, one comment at a time: hero scale, CTA states, the 2037 reward, VR, cursor and wayfinding.</div><div><span class="lab">Result</span>A single shareable link that runs the whole journey, from landing to building and walking your own 2037.</div></div>
-        <figure><img src="img/fin-stop3.jpg" alt="Final build mid-drag: grey world outside, colour inside the frame" loading="lazy"><figcaption>Mid-drag: the world stays grey and only the frame is in colour, so the lens idea is never lost.</figcaption></figure>
-      </div></div>
+    <div class="ba rv" id="ba" style="--x:50%" role="slider" tabindex="0" aria-label="Compare first prototype and final build" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+      <img src="img/2d-howitworks.jpg" alt="Version 1: a flat 2D prototype with a dimension overlay on the wall" loading="lazy">
+      <img class="after" src="img/fin-stop3.jpg" alt="Version 9: the final 3D build, grey world with colour inside the frame" loading="lazy">
+      <div class="knob"></div>
+      <span class="bl l">v1 · 30 Oct</span><span class="bl r">v9 · final</span>
     </div>
 
-    <h3 style="margin:56px 0 8px">What changed from first version to final</h3>
+    <div class="vtabs" role="tablist" aria-label="Versions" id="vtabs">
+      <button role="tab" aria-selected="true" aria-controls="v1">v1–2 · The slide</button>
+      <button role="tab" aria-selected="false" aria-controls="v3" tabindex="-1">v3 · Guide and reward</button>
+      <button role="tab" aria-selected="false" aria-controls="v4" tabindex="-1">v4 · Wireframes</button>
+      <button role="tab" aria-selected="false" aria-controls="v5" tabindex="-1">v5–6 · 3D objects</button>
+      <button role="tab" aria-selected="false" aria-controls="v7" tabindex="-1">v7–8 · My own UI</button>
+      <button role="tab" aria-selected="false" aria-controls="v9" tabindex="-1">v9 · Final build</button>
+    </div>
+
+    <div class="vpanel" id="v1" role="tabpanel">
+      <div><span class="when">30 Oct</span><h3>Prove the slide before adding content</h3><dl><dt>What I did</dt><dd>A 2D prototype: drag the screen on rails with weight and momentum, snap to the nearest stop, colour inside the screen.</dd><dt>Why</dt><dd>If the slide feels cheap, no story will save it. Separating mechanics from content kept the topic swappable.</dd><dt>What I noticed</dt><dd class="noticed">On a laptop the screen is 12% of the wall. So I added a Follow view that locks the camera to the screen.</dd></dl></div>
+      <figure><img src="img/2d-howitworks.jpg" alt="Early 2D prototype with an overlay showing 8 stops, 725 mm apart" loading="lazy"><figcaption>"How it works": the real stop grid and dimensions drawn over the wall.</figcaption></figure>
+    </div>
+    <div class="vpanel" id="v3" role="tabpanel" hidden>
+      <div><span class="when">1–2 Nov</span><h3>A guide, hooks and a reward</h3><dl><dt>What I did</dt><dd>Added the Watchtower as a guide, a "next stop" teaser, stamps to collect and a 2037 city builder. Removed Then &amp; Now.</dd><dt>Why</dt><dd>No briefing means the guide teaches by doing. Building the future gives a feeling of "I did something".</dd><dt>What I noticed</dt><dd class="noticed">The goal was unclear. 8 stops and 7 stamps did not add up, and cards competed with the wall.</dd></dl></div>
+      <div class="imgs"><img src="img/2d-follow-1760.jpg" alt="2D version at 1760 with a story card and an earn stamp button" loading="lazy"><img src="img/2d-builder.jpg" alt="2D city builder grid for 2037" loading="lazy"></div>
+    </div>
+    <div class="vpanel" id="v4" role="tabpanel" hidden>
+      <div><span class="when">2 Nov</span><h3>Stop coding, fix the story in wireframes</h3><dl><dt>What I did</dt><dd>12 mid-fidelity wireframes: a mission briefing, a stamp bar on every screen, a locked 2037 that lists what is missing.</dd><dt>Why</dt><dd>Wireframes are faster to change than code. 2037 became the reward, not a stop, so 7 stamps finally add up.</dd><dt>Decision</dt><dd class="noticed">Web frame 1440 × 900 for reviewers, with the real 1080 × 1920 screen inside at one third scale.</dd></dl></div>
+      <div class="imgs"><img src="img/wf-0.jpg" alt="Wireframes: intro, mission briefing and first look at the wall" loading="lazy"><img src="img/wf-1.jpg" alt="Wireframes: sliding, stop overview, hands-on moment" loading="lazy"><img src="img/wf-3.jpg" alt="Wireframes: 2037 locked, city builder, your city" loading="lazy"></div>
+    </div>
+    <div class="vpanel" id="v5" role="tabpanel" hidden>
+      <div><span class="when">3 Nov</span><h3>From photo cards to one object per year</h3><dl><dt>Tried</dt><dd>Photo cards on a wavy timeline. It read like a blog, not an installation, and the frame had nothing to reveal.</dd><dt>Then</dt><dd>A 3D miniature world: each year shows only the year and one hero object. Sliding the frame builds the memory around it.</dd><dt>What I noticed</dt><dd class="noticed">Stamps came just by arriving, so they felt empty. And the look was not my visual language yet.</dd></dl></div>
+      <div class="imgs"><img src="img/wire-wall.jpg" alt="Exploration with photo cards along a wave line" loading="lazy"><img src="img/3d-1537.jpg" alt="3D version: the mud fort builds itself inside the frame" loading="lazy"></div>
+    </div>
+    <div class="vpanel" id="v7" role="tabpanel" hidden>
+      <div><span class="when">3–5 Nov</span><h3>My own UI, then onboarding</h3><dl><dt>What I did</dt><dd>Redesigned every screen in Figma: a cinematic landing, a glass frame with side handles, a stamp passport, a full story page and coach marks.</dd><dt>Why</dt><dd>The first impression decides if Meera stays. A calm grey world lets colour in the frame stand out.</dd><dt>What I noticed</dt><dd class="noticed">Many controls at once: nav, handles, VR, stamps, lantern. That led to a skippable step-by-step walkthrough.</dd></dl></div>
+      <div class="imgs"><img src="img/fig-1537.jpg" alt="Figma screen at 1537 with the glass frame and a 3D object" loading="lazy"><img src="img/fig-coach-nav.jpg" alt="Coach mark explaining the top navigation" loading="lazy"></div>
+    </div>
+    <div class="vpanel" id="v9" role="tabpanel" hidden>
+      <div><span class="when">4–8 Nov</span><h3>Final build from my Figma screens</h3><dl><dt>What I did</dt><dd>Built the web app straight from Figma at 1440 × 900, with golden-hour 3D scenes that come alive when the frame lands.</dd><dt>Then</dt><dd>Reviewed it like a creative director, one comment at a time: hero scale, CTA states, the 2037 reward, VR, cursor and wayfinding.</dd><dt>Result</dt><dd class="noticed">One shareable link runs the whole journey, from landing to building and walking your own 2037.</dd></dl></div>
+      <div class="imgs"><img src="img/fin-stop3.jpg" alt="Final build mid-drag: grey world outside, colour inside the frame" loading="lazy"></div>
+    </div>
+
+    <div class="sub"><span class="lab">Summary</span><h3>What changed from first to final</h3></div>
     <div class="tbl"><table>
       <thead><tr><th>Area</th><th>First version</th><th>Final</th><th>Why</th></tr></thead>
       <tbody>
@@ -470,7 +625,7 @@ footer p+p{margin-top:6px}
         <tr><td>Goal</td><td>8 stamps, loosely explained</td><td>7 stamps unlock building 2037, stated up front</td><td>It did not add up</td></tr>
         <tr><td>Deep dive</td><td>Story, Then &amp; Now, In numbers</td><td>One full story page, plus Open in VR</td><td>Then &amp; Now added no value</td></tr>
         <tr><td>Guidance</td><td>Speech bubbles</td><td>Coach marks plus an assistant you can ask</td><td>More controls needed a real introduction</td></tr>
-        <tr><td>2037</td><td>A grid you fill in</td><td>Your plan rendered as a 3D city you can walk in VR</td><td>The reward should feel like yours</td></tr>
+        <tr><td>2037</td><td>A grid you fill in</td><td>Your plan as a 3D city you can walk in VR</td><td>The reward should feel like yours</td></tr>
       </tbody>
     </table></div>
   </div>
@@ -479,71 +634,73 @@ footer p+p{margin-top:6px}
 <!-- 05 DESIGN SYSTEM -->
 <section id="system">
   <div class="wrap">
-    <div class="sec-head"><div class="num">05</div><div><span class="lab">Creative direction</span><h2>A grey archive, with colour you earn</h2></div></div>
+    <div class="sec-head"><div class="num">05</div><div><span class="lab">Creative direction</span><h2>A grey archive, with colour you earn</h2><p class="small">The interface is almost colourless, like an old photograph. Colour only comes from the memories you restore.</p></div></div>
     <div class="grid2" style="align-items:start">
       <div>
         <h3>Typography</h3>
         <div class="type-row"><div class="sample" style="font-family:var(--display)">1537</div><div class="small"><b style="color:var(--ink)">Noe Display, Bold.</b> The storyteller: years, titles, headlines.</div></div>
-        <div class="type-row"><div class="sample" style="font-family:var(--body);font-style:italic;font-size:30px">“Before me, there was a chieftain with a plan.”</div><div class="small"><b style="color:var(--ink)">Inter.</b> The voice and the interface. Italic is always the narrator speaking.</div></div>
+        <div class="type-row"><div class="sample" style="font-family:var(--body);font-style:italic;font-size:28px;line-height:1.25">“Before me, there was a chieftain with a plan.”</div><div class="small"><b style="color:var(--ink)">Inter.</b> The voice and the interface. Italic is always the narrator.</div></div>
         <div class="type-row"><div class="sample lab" style="font-size:15px;color:var(--ink)">Chapter 01 · The founding</div><div class="small"><b style="color:var(--ink)">Noto Sans, caps.</b> Signposts that tell you where you are.</div></div>
       </div>
       <div>
-        <h3>Colour</h3>
-        <p class="small" style="margin-bottom:14px">The interface is almost colourless, like an old photograph. Colour only comes from the 3D memories.</p>
-        <div class="swatches">
-          <div class="sw"><i style="background:#EAEAEA"></i><span><b>Archive grey</b>#EAEAEA</span></div>
-          <div class="sw"><i style="background:#1E1E1E"></i><span><b>Ink</b>#1E1E1E</span></div>
-          <div class="sw"><i style="background:#8E8E8E"></i><span><b>Muted</b>#8E8E8E</span></div>
-          <div class="sw"><i style="background:#C6A777"></i><span><b>Sandstone</b>#C6A777</span></div>
-          <div class="sw"><i style="background:#839C4E"></i><span><b>Moss</b>#839C4E</span></div>
-          <div class="sw"><i style="background:#DAB383"></i><span><b>Lamp glow</b>#DAB383</span></div>
-          <div class="sw"><i style="background:#EDB1BF"></i><span><b>Blossom</b>#EDB1BF</span></div>
-          <div class="sw"><i style="background:#494E53"></i><span><b>Steel</b>#494E53</span></div>
+        <h3>Colour <span class="hint" style="margin-left:8px">click a swatch to copy</span></h3>
+        <div class="swatches" id="swatches">
+          <button class="sw" data-hex="#EAEAEA"><i style="background:#EAEAEA"></i><span><b>Archive grey</b>#EAEAEA</span></button>
+          <button class="sw" data-hex="#1E1E1E"><i style="background:#1E1E1E"></i><span><b>Ink</b>#1E1E1E</span></button>
+          <button class="sw" data-hex="#8E8E8E"><i style="background:#8E8E8E"></i><span><b>Muted</b>#8E8E8E</span></button>
+          <button class="sw" data-hex="#C6A777"><i style="background:#C6A777"></i><span><b>Sandstone</b>#C6A777</span></button>
+          <button class="sw" data-hex="#839C4E"><i style="background:#839C4E"></i><span><b>Moss</b>#839C4E</span></button>
+          <button class="sw" data-hex="#DAB383"><i style="background:#DAB383"></i><span><b>Lamp glow</b>#DAB383</span></button>
+          <button class="sw" data-hex="#EDB1BF"><i style="background:#EDB1BF"></i><span><b>Blossom</b>#EDB1BF</span></button>
+          <button class="sw" data-hex="#494E53"><i style="background:#494E53"></i><span><b>Steel</b>#494E53</span></button>
         </div>
       </div>
     </div>
 
-    <h3 style="margin:64px 0 16px">Characters and stamps</h3>
-    <div class="assets">
-      <div class="asset"><img src="img/a-watchtower.png" alt="" loading="lazy">The Watchtower · narrator</div>
-      <div class="asset"><img src="img/a-lamp.png" alt="" loading="lazy">Mr. Lamp · assistant</div>
-      <div class="asset"><img src="img/a-heritage.png" alt="" loading="lazy">1537 · Heritage</div>
-      <div class="asset"><img src="img/a-trees.png" alt="" loading="lazy">1760 · Trees</div>
-      <div class="asset"><img src="img/a-cleanpower.png" alt="" loading="lazy">1905 · Clean power</div>
-      <div class="asset"><img src="img/a-labs.png" alt="" loading="lazy">1909 · Labs</div>
-      <div class="asset"><img src="img/a-techpark.png" alt="" loading="lazy">1985 · Tech park</div>
-      <div class="asset"><img src="img/a-startup.png" alt="" loading="lazy">2007 · Startup street</div>
-      <div class="asset"><img src="img/a-build.png" alt="" loading="lazy">2037 · Build your own</div>
+    <div class="sub"><span class="lab">Try the core loop</span><h3>Collect the 7 stamps <span class="hint" style="margin-left:8px">tap each one</span></h3><p class="small" style="max-width:700px">The mechanic in miniature. Each stamp starts grey and earns its colour. The 2037 button stays locked, and its tooltip tells you exactly what is missing.</p></div>
+    <div class="collect">
+      <div class="stamps" id="stamps">
+        <button class="stamp" data-i="0"><img src="img/a-heritage.png" alt="">Heritage</button>
+        <button class="stamp" data-i="1"><img src="img/a-trees.png" alt="">Trees</button>
+        <button class="stamp" data-i="2"><img src="img/a-cleanpower.png" alt="">Clean power</button>
+        <button class="stamp" data-i="3"><img src="img/a-labs.png" alt="">Labs</button>
+        <button class="stamp" data-i="4"><img src="img/a-techpark.png" alt="">Tech park</button>
+        <button class="stamp" data-i="5"><img src="img/a-startup.png" alt="">Startup street</button>
+        <button class="stamp" data-i="6"><img src="img/a-build.png" alt="">Build</button>
+        <div class="stamp static"><img src="img/a-watchtower.png" alt="">The Watchtower</div>
+      </div>
+      <div class="unlock">
+        <div><span class="lab">Stamp passport</span><div class="passport" id="passport" style="margin-top:10px"><b id="pcount">0/7</b><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+        <p class="small" id="ptext">Hover or tap the locked button to hear from the Watchtower.</p>
+        <button class="lockbtn" id="lockbtn" aria-disabled="true"><span id="locklabel">✦ Build Your Bangalore ✦</span><span class="tip" id="tip" role="tooltip">Bring me all 7 stamps first to enable me. You have 0.</span></button>
+      </div>
     </div>
 
-    <h3 style="margin:64px 0 16px">Tone of voice</h3>
-    <div class="body col" style="margin-left:0"><p>The Watchtower talks like an old friend: first person, warm, a little witty, one scene per line, and every line ends with something to do.</p></div>
-    <div class="voice" style="margin-top:18px">
-      <div class="do"><span class="lab">Do</span>“Slide the frame over it and the whole memory comes back.”</div>
-      <div class="dont"><span class="lab">Don't</span>“Use the slider control to navigate to the next timeline section.”</div>
-      <div class="do"><span class="lab">Do</span>“A sultan plants a garden.”</div>
-      <div class="dont"><span class="lab">Don't</span>“Chapter 2: Development of Lalbagh Botanical Garden (1760).”</div>
+    <div class="sub"><span class="lab">Tone of voice</span><h3>The Watchtower talks like an old friend</h3><p class="small">First person, warm, a little witty. One scene per line, and every line ends with something to do.</p></div>
+    <div class="voice">
+      <div class="do rv"><span class="lab">Do</span>“Slide the frame over it and the whole memory comes back.”</div>
+      <div class="dont rv"><span class="lab">Don't</span>“Use the slider control to navigate to the next timeline section.”</div>
+      <div class="do rv"><span class="lab">Do</span>“A sultan plants a garden.”</div>
+      <div class="dont rv"><span class="lab">Don't</span>“Chapter 2: Development of Lalbagh Botanical Garden (1760).”</div>
     </div>
-    <figure><img src="img/components.jpg" alt="UI components: action buttons, lantern launcher, stamp states, pills and the stamp passport bar" loading="lazy" style="max-width:560px"><figcaption>Components: action bubbles, lantern launcher, stamp states and the stamp passport bar.</figcaption></figure>
+    <div class="quote rv"><img src="img/a-watchtower.png" alt="The Watchtower character"><p>“They built me to mark where Bengaluru would end. I've been wrong ever since.”<small>The Watchtower · opening line</small></p></div>
   </div>
 </section>
 
-<!-- 06 FINAL PRODUCT -->
+<!-- 06 PRODUCT -->
 <section id="product">
   <div class="wrap">
     <div class="sec-head"><div class="num">06</div><div><span class="lab">The final product</span><h2>Key moments, and the thinking behind each</h2></div></div>
 
-    <div class="feat"><div class="txt"><span class="lab">The lens</span><h3>Slide to remember</h3><p>Each year shows one object in grey. Drag the frame over it and the full scene rebuilds in colour, tied to how far you slide. Let go and it snaps to the nearest stop.</p></div><figure><img src="img/stop1985.jpg" alt="1985 stop: the bullock cart carrying a satellite dish fills the frame in colour" loading="lazy"><figcaption>1985: the bullock cart carrying the dish, scaled up so the story and the visual say the same thing.</figcaption></figure></div>
+    <div class="feat rv"><div class="txt"><span class="lab">The lens</span><h3>Slide to remember</h3><p>Each year shows one object in grey. Drag the frame over it and the full scene rebuilds in colour, tied to how far you slide. Let go and it snaps to the nearest stop.</p><p>Watch the stamp bar too: the year you are on gets a ring and a dot, live while you slide.</p></div><figure><div class="vid"><video src="img/clip-lens.mp4" poster="img/clip-lens.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Recording: sliding the frame from 1909 to 1940 to 1985"></video><span class="live">Recorded from the build</span></div></figure></div>
 
-    <div class="feat"><div class="txt"><span class="lab">Wayfinding</span><h3>Always know where you are</h3><p>The stamp passport lives on every screen. The year the frame is on gets a thicker ring and a dot, live while you slide, so you know which stamp you are collecting.</p><p>Over the frame arrows, the cursor's centre dot grows into a "Drag" disc, so the main interaction names itself.</p></div><figure><img src="img/dragcursor.jpg" alt="Close-up: the cursor becomes a black disc reading Drag over the frame arrow" loading="lazy"><figcaption>Default cursor: two quiet circles. On the frame arrows: a Drag disc.</figcaption></figure></div>
+    <div class="feat flip rv"><div class="txt"><span class="lab">Wayfinding</span><h3>A cursor that names the gesture</h3><p>Two quiet circles by default. Over the frame arrows, the centre dot grows into a black disc that says Drag, so the main interaction explains itself.</p><p class="hint">Move your mouse onto the frame arrow</p></div><figure><div class="cdemo out" id="cdemo"><div class="hot" id="hot"></div><div class="cring"></div><div class="cdot"><span>Drag</span></div><span class="ctag">Live replica</span></div></figure></div>
 
-    <div class="feat"><div class="txt"><span class="lab">Level 2</span><h3>The full story, then step inside</h3><p>Each stop opens into a chapter page with an in-page index and a note on the history. It ends with two clear choices: go back to the timeline, or open the scene in VR.</p></div><figure><img src="img/story-end.jpg" alt="End of a chapter page with Back to the timeline and Open in VR buttons" loading="lazy"></figure></div>
+    <div class="feat rv"><div class="txt"><span class="lab">Level 2</span><h3>The full story, then step inside</h3><p>Each stop opens into a chapter page with an index and a note on the history. It ends with two clear choices: go back to the timeline, or open the scene in VR.</p></div><figure><div class="zoom"><img src="img/story-end.jpg" alt="End of a chapter page with Back to the timeline and Open in VR buttons" loading="lazy"></div></figure></div>
 
-    <div class="feat"><div class="txt"><span class="lab">Earned reward</span><h3>2037 stays locked until you earn it</h3><p>At 2037 the button reads "Build Your Bangalore" but stays disabled. Hover or tap it and the Watchtower tells you exactly what is missing: "Bring me all 7 stamps first to enable me. You have 3."</p><p>A locked state that teaches, instead of one that just blocks.</p></div><figure style="max-width:440px;margin:0 auto"><img src="img/locked2037.jpg" alt="Disabled Build Your Bangalore button with a tooltip explaining how many stamps are needed" loading="lazy"></figure></div>
+    <div class="feat flip rv"><div class="txt"><span class="lab">The finale</span><h3>Build the Bengaluru you want</h3><p>Every stamp you earned becomes a block. Place them on the grid, then View Your Bangalore. The 2037 scene, grey until now, is replaced by your plan in full colour.</p></div><figure><div class="grid2"><div class="zoom"><img src="img/builder.jpg" alt="Build your Bangalore screen with stamps placed on an isometric grid" loading="lazy"></div><div class="zoom"><img src="img/city2037.jpg" alt="The visitor's own 2037 city in 3D inside the frame" loading="lazy"></div></div><figcaption>Place your stamps, and your plan becomes 2037.</figcaption></figure></div>
 
-    <div class="feat"><div class="txt"><span class="lab">The finale</span><h3>Build the Bengaluru you want</h3><p>Every stamp you earned becomes a block. Place them on the grid, then View Your Bangalore. The 2037 scene, grey until now, is replaced by your plan in full colour.</p></div><div class="grid2"><figure><img src="img/builder.jpg" alt="Build your Bangalore screen with stamps placed on an isometric grid" loading="lazy"><figcaption>Place your stamps.</figcaption></figure><figure><img src="img/city2037.jpg" alt="The visitor's own 2037 city rendered in 3D inside the frame at the 2037 stop" loading="lazy"><figcaption>Your plan becomes 2037.</figcaption></figure></div></div>
-
-    <div class="feat"><div class="txt"><span class="lab">Immersion</span><h3>Walk your city in VR</h3><p>The VR view lets you look around any scene. At 2037 it shows your own city, with a way back to keep building. Exit VR sits in the same top-right spot on every screen.</p></div><figure><img src="img/vr2037.jpg" alt="VR view walking through the visitor's 2037 city, with Exit VR view top right and Build Your Own Bangalore at the bottom" loading="lazy"></figure></div>
+    <div class="feat rv"><div class="txt"><span class="lab">Immersion</span><h3>Walk your city in VR</h3><p>The VR view lets you look around any scene. At 2037 it shows your own city, with a way back to keep building. Exit VR sits in the same top-right spot on every screen.</p></div><figure><div class="vid"><video src="img/clip-vr.mp4" poster="img/clip-vr.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Recording: looking around the visitor's 2037 city in VR"></video><span class="live">Recorded from the build</span></div></figure></div>
   </div>
 </section>
 
@@ -552,35 +709,44 @@ footer p+p{margin-top:6px}
   <div class="wrap">
     <div class="sec-head"><div class="num">07</div><div><span class="lab">Challenges and problem solving</span><h2>Tension, resolution, outcome</h2></div></div>
     <div class="chal">
-      <div class="ch"><div class="n">01</div><div><h3>The screen disappears on a laptop</h3><div class="trt"><div><span class="lab">Tension</span>Showing the whole 5.8 m wall leaves the screen at about 170 px wide. Nothing inside it is readable.</div><div><span class="lab">Resolution</span>Two views: a Wall view for context and a Follow view where the camera locks onto the screen.</div><div><span class="lab">Outcome</span>Reviewers see both the installation and the UI at a readable size.</div></div></div></div>
-      <div class="ch"><div class="n">02</div><div><h3>A smooth slide, but no reason to slide</h3><div class="trt"><div><span class="lab">Tension</span>The prototype felt good, but with no story it was a tech demo.</div><div><span class="lab">Resolution</span>A narrator, a mission and a stamp passport. Every stop gives you something to collect.</div><div><span class="lab">Outcome</span>Exploring became a goal with a visible finish line.</div></div></div></div>
-      <div class="ch"><div class="n">03</div><div><h3>The goal did not add up</h3><div class="trt"><div><span class="lab">Tension</span>8 stops but 7 stamps, and nobody knew what stamps were for.</div><div><span class="lab">Resolution</span>I paused code and fixed the story in 12 wireframes. 2037 became the reward, not a stop.</div><div><span class="lab">Outcome</span>One sentence explains the whole thing: bring 7 memories back, unlock the future.</div></div></div></div>
-      <div class="ch"><div class="n">04</div><div><h3>The hero object got lost</h3><div class="trt"><div><span class="lab">Tension</span>The 1985 story is about a satellite dish arriving on a bullock cart, but in 3D the cart was a small detail among buildings.</div><div><span class="lab">Resolution</span>As creative director I cut the scene to just the cart and its cargo, scaled to fill the frame.</div><div><span class="lab">Outcome</span>The story and the visual now say the same thing at a glance.</div></div></div></div>
-      <div class="ch"><div class="n">05</div><div><h3>A tour that skipped itself</h3><div class="trt"><div><span class="lab">Tension</span>Tapping anywhere advanced the coach marks, so people skipped steps by accident.</div><div><span class="lab">Resolution</span>A clear Next button beside Skip. Only Next moves forward, with keyboard focus on it.</div><div><span class="lab">Outcome</span>The walkthrough moves at the visitor's pace.</div></div></div></div>
-      <div class="ch"><div class="n">06</div><div><h3>A locked button that only said no</h3><div class="trt"><div><span class="lab">Tension</span>A disabled button gives no clue how to enable it.</div><div><span class="lab">Resolution</span>A tooltip in the narrator's voice with a live count of stamps.</div><div><span class="lab">Outcome</span>The blocked state becomes the next instruction.</div></div></div></div>
-      <div class="ch"><div class="n">07</div><div><h3>The reward felt generic</h3><div class="trt"><div><span class="lab">Tension</span>Building a grid and seeing a summary card did not feel like your city.</div><div><span class="lab">Resolution</span>2037 stays grey until you build. Your exact plan then becomes the 3D scene, and you can walk it in VR.</div><div><span class="lab">Outcome</span>The finale is personal, visible and shareable.</div></div></div></div>
-      <div class="ch"><div class="n">08</div><div><h3>An assistant that might invent history</h3><div class="trt"><div><span class="lab">Tension</span>A chat assistant in a history exhibit is a hallucination risk.</div><div><span class="lab">Resolution</span>Mr. Lamp answers only from a curated knowledge document, and says so when it does not know.</div><div><span class="lab">Outcome</span>Curious visitors can ask anything without the exhibit making things up.</div></div></div></div>
+      <div class="ch rv"><div class="top"><span class="n">01</span><h3>The screen disappears on a laptop</h3></div><div class="trt"><div><span class="lab">Tension</span>Showing the whole 5.8 m wall leaves the screen about 170 px wide.</div><div><span class="lab">Resolution</span>A Wall view for context and a Follow view that locks onto the screen.</div><div><span class="lab">Outcome</span>Reviewers see the installation and a readable UI.</div></div></div>
+      <div class="ch rv"><div class="top"><span class="n">02</span><h3>A smooth slide, no reason to slide</h3></div><div class="trt"><div><span class="lab">Tension</span>The prototype felt good, but with no story it was a tech demo.</div><div><span class="lab">Resolution</span>A narrator, a mission and a stamp passport.</div><div><span class="lab">Outcome</span>Exploring became a goal with a visible finish line.</div></div></div>
+      <div class="ch rv"><div class="top"><span class="n">03</span><h3>The goal did not add up</h3></div><div class="trt"><div><span class="lab">Tension</span>8 stops but 7 stamps, and nobody knew what stamps were for.</div><div><span class="lab">Resolution</span>Paused code, fixed the story in 12 wireframes. 2037 became the reward.</div><div><span class="lab">Outcome</span>One sentence explains it: bring 7 memories back, unlock the future.</div></div></div>
+      <div class="ch rv"><div class="top"><span class="n">04</span><h3>The hero object got lost</h3></div><div class="trt"><div><span class="lab">Tension</span>1985 is about a dish arriving on a bullock cart, but the cart was a small detail.</div><div><span class="lab">Resolution</span>Cut the scene to the cart and its cargo, scaled to fill the frame.</div><div><span class="lab">Outcome</span>The story and the visual say the same thing at a glance.</div></div></div>
+      <div class="ch rv"><div class="top"><span class="n">05</span><h3>A tour that skipped itself</h3></div><div class="trt"><div><span class="lab">Tension</span>Tapping anywhere advanced the coach marks, so people skipped steps.</div><div><span class="lab">Resolution</span>A clear Next beside Skip. Only Next moves forward.</div><div><span class="lab">Outcome</span>The walkthrough moves at the visitor's pace.</div></div></div>
+      <div class="ch rv"><div class="top"><span class="n">06</span><h3>A locked button that only said no</h3></div><div class="trt"><div><span class="lab">Tension</span>A disabled button gives no clue how to enable it.</div><div><span class="lab">Resolution</span>A tooltip in the narrator's voice with a live stamp count.</div><div><span class="lab">Outcome</span>The blocked state becomes the next instruction.</div></div></div>
+      <div class="ch rv"><div class="top"><span class="n">07</span><h3>The reward felt generic</h3></div><div class="trt"><div><span class="lab">Tension</span>A grid and a summary card did not feel like your city.</div><div><span class="lab">Resolution</span>2037 stays grey until you build, then your plan becomes the 3D scene.</div><div><span class="lab">Outcome</span>The finale is personal, visible and shareable.</div></div></div>
+      <div class="ch rv"><div class="top"><span class="n">08</span><h3>An assistant that might invent history</h3></div><div class="trt"><div><span class="lab">Tension</span>A chat assistant in a history exhibit is a hallucination risk.</div><div><span class="lab">Resolution</span>Mr. Lamp answers only from a curated knowledge document.</div><div><span class="lab">Outcome</span>Visitors can ask anything without the exhibit making things up.</div></div></div>
     </div>
   </div>
 </section>
 
-<!-- 08 AI WORKFLOW -->
+<!-- 08 AI -->
 <section id="ai" style="border-top:0;padding-top:40px">
   <div class="wrap">
     <div class="ai">
-      <div class="sec-head" style="grid-template-columns:120px 1fr"><div class="num" style="color:#3a3a3a">08</div><div><span class="lab">AI-native workflow</span><h2>AI as a build partner, with me in the loop</h2><p style="max-width:680px">I used an agentic AI workflow to go from research to a working 3D build in a week. The AI generated, coded and checked. I set direction, judged quality and made every design call.</p></div></div>
+      <div class="sec-head" style="grid-template-columns:120px 1fr"><div class="num">08</div><div><span class="lab">AI-native workflow</span><h2>AI as a build partner, with me in the loop</h2><p style="max-width:680px">An agentic AI workflow took this from research to a working 3D build in a week. The AI generated, coded and checked. I set direction, judged quality and made every design call.</p></div></div>
 
-      <div class="pipe">
-        <div class="node"><h4>Research synthesis</h4><p>LLM-assisted desk research across sources, then my own cross-check. The "two or more sources" rule filtered the milestones.</p><div class="who"><span class="tag ai">LLM</span><span class="tag me">I verify</span></div></div>
+      <div class="pipe" id="pipe">
+        <div class="node"><h4>Research synthesis</h4><p>LLM-assisted desk research, then my own cross-check. The "two or more sources" rule filtered the milestones.</p><div class="who"><span class="tag ai">LLM</span><span class="tag me">I verify</span></div></div>
         <div class="node"><h4>Content strategy</h4><p>The AI as a sparring partner for the 36 to 8 filters and the narrator's voice. I wrote the rules and picked the stops.</p><div class="who"><span class="tag ai">Prompting</span><span class="tag me">I decide</span></div></div>
-        <div class="node"><h4>Rapid prototyping</h4><p>Natural-language prompts turned into working 2D and 3D prototypes in hours, so I could test feel before polish.</p><div class="who"><span class="tag ai">Vibe coding</span><span class="tag me">I test</span></div></div>
+        <div class="node"><h4>Rapid prototyping</h4><p>Natural-language prompts became working 2D and 3D prototypes in hours, so I could test feel before polish.</p><div class="who"><span class="tag ai">Vibe coding</span><span class="tag me">I test</span></div></div>
         <div class="node"><h4>Design in Figma</h4><p>Wireframes, UI, characters and components, all mine. Figma is the source of truth.</p><div class="who"><span class="tag me">I design</span></div></div>
-        <div class="node"><h4>Design to code via MCP</h4><p>The Figma MCP server gave the coding agent direct access to frames, layout and tokens by node ID, so the build matched the design.</p><div class="who"><span class="tag ai">Figma MCP</span><span class="tag ai">Context</span></div></div>
-        <div class="node"><h4>Agentic coding</h4><p>Claude worked as an AI pair programmer in a cloud workspace: three.js scenes, GSAP motion, states and a single-file build.</p><div class="who"><span class="tag ai">Agent</span><span class="tag ai">Tool use</span></div></div>
-        <div class="node"><h4>Automated visual QA</h4><p>Headless Chromium (Playwright) rendered the WebGL scenes and took screenshots, so the agent checked its own work before I saw it.</p><div class="who"><span class="tag ai">Multimodal check</span></div></div>
+        <div class="node"><h4>Design to code via MCP</h4><p>The Figma MCP server gave the coding agent direct access to frames, layout and tokens, so the build matched the design.</p><div class="who"><span class="tag ai">Figma MCP</span><span class="tag ai">Context</span></div></div>
+        <div class="node"><h4>Agentic coding</h4><p>Claude as an AI pair programmer in a cloud workspace: three.js scenes, GSAP motion, states and a single-file build.</p><div class="who"><span class="tag ai">Agent</span><span class="tag ai">Tool use</span></div></div>
+        <div class="node"><h4>Automated visual QA</h4><p>Headless Chromium rendered the WebGL scenes and took screenshots, so the agent checked its own work before I saw it.</p><div class="who"><span class="tag ai">Multimodal check</span></div></div>
         <div class="node"><h4>Ship</h4><p>Each approved change was committed to GitHub with a clear message and published, so every version is traceable.</p><div class="who"><span class="tag ai">Git</span><span class="tag me">I approve</span></div></div>
       </div>
-      <div class="loop"><b>The review loop.</b> I reviewed the live build like a creative director, leaving comments pinned to exact elements ("make the bullock cart the hero", "only Next should advance", "highlight the year I'm on"). Each comment went to the agent as a scoped task. It changed only that, verified it, replied in the thread and pushed. Over 40 loops like this shaped the final build.</div>
+      <div class="pctl"><button id="pplay">▶ Run the pipeline</button><span id="pnow">Every step, in order</span></div>
+
+      <h3 style="margin-top:48px">The review loop</h3>
+      <p style="max-width:680px">I reviewed the live build like a creative director, pinning comments to exact elements. Each comment became one scoped task. Over 40 loops like this shaped the final build.</p>
+      <div class="loop">
+        <div><b>I comment</b>"Highlight the year I'm on."</div><span>→</span>
+        <div><b>Agent scopes it</b>Changes only the stamp bar.</div><span>→</span>
+        <div><b>Agent verifies</b>Screenshots the result, fixes what broke.</div><span>→</span>
+        <div><b>I approve</b>It replies in the thread and ships.</div>
+      </div>
 
       <div class="split">
         <div><span class="lab">Where AI helped</span><ul class="list" style="margin-top:10px"><li>Building and rebuilding versions in hours, not days</li><li>Turning Figma frames into working code</li><li>Catching layout bugs with automated screenshots</li><li>Keeping a clean, versioned history</li></ul></div>
@@ -591,69 +757,65 @@ footer p+p{margin-top:6px}
         <div>
           <span class="lab">AI inside the product</span>
           <h3 style="margin-top:10px">Mr. Lamp, a grounded assistant</h3>
-          <p>Visitors can ask the lantern anything about the city. In a museum, a wrong answer is worse than no answer, so I designed it as closed-domain question answering with guardrails.</p>
-          <ul class="list" style="margin-top:14px"><li style="color:#d6d6da">Knowledge base: my own research document, compiled into the build</li><li style="color:#d6d6da">Retrieval: the question is matched to stops, years and topics, then the best passage is returned</li><li style="color:#d6d6da">Grounding: answers come only from that document</li><li style="color:#d6d6da">Fallback: "I am not aware of it" instead of a guess</li><li style="color:#d6d6da">Designed states: mission, search, result and chat</li></ul>
+          <p>Visitors can ask the lantern about the city. In a museum, a wrong answer is worse than no answer, so I designed it as closed-domain question answering with guardrails.</p>
+          <ul class="list" style="margin-top:14px;color:#d6d6da"><li>Knowledge base: my own research document, compiled into the build</li><li>Retrieval: the question is matched to stops, years and topics</li><li>Grounding: answers come only from that document</li><li>Fallback: "I am not aware of it" instead of a guess</li></ul>
+          <p class="small" style="color:#8d8d93;margin-top:16px">Next: an LLM with retrieval-augmented generation (RAG) and citations, plus Kannada, Hindi and voice.</p>
         </div>
-        <div>
-          <div class="flow">
-            <div>Visitor asks<small>"Who built the first aeroplane factory?"</small></div>
-            <div class="arrow">↓</div>
-            <div>Intent and keyword matching<small>Year, stop, topic and synonym tags score each passage</small></div>
-            <div class="arrow">↓</div>
-            <div>Retrieve from the knowledge base<small>Curated, sourced facts only</small></div>
-            <div class="arrow">↓</div>
-            <div>Confidence check<small>Below the threshold, say "I am not aware of it"</small></div>
-            <div class="arrow">↓</div>
-            <div>Answer in the narrator's voice<small>The question is shown above its answer</small></div>
+        <div class="lamp-ui">
+          <div class="lamp-hd"><img src="img/a-lamp.png" alt=""><b>ASK MR. LAMP</b><span class="small" style="margin-left:auto;color:#777">Interactive recreation</span></div>
+          <div class="qs" id="qs">
+            <button data-q="0">Who planted Lalbagh?</button>
+            <button data-q="1">When did the lights come on?</button>
+            <button data-q="2">What came on a bullock cart?</button>
+            <button data-q="3">Who is the best cricketer?</button>
           </div>
-          <p class="small" style="color:#9a9a9f;margin-top:12px">Next step: swap the matcher for an LLM with retrieval-augmented generation (RAG) and citations, plus Kannada, Hindi and voice.</p>
+          <div class="trace" id="trace">
+            <div class="tr"><i>1</i><div>Intent and keyword match<small id="t1">Pick a question above</small></div></div>
+            <div class="tr"><i>2</i><div>Retrieve from the knowledge base<small id="t2">Curated, sourced passages only</small></div></div>
+            <div class="tr"><i>3</i><div>Confidence check<div class="conf" id="conf"><b></b></div><small id="t3">Below the threshold, it says so</small></div></div>
+            <div class="tr"><i>4</i><div>Answer in the narrator's voice<div class="ans" id="ans">…</div></div></div>
+          </div>
         </div>
       </div>
 
-      <h3 style="margin-top:48px">The vocabulary, in plain words</h3>
-      <div class="gloss">
-        <div><b>Agentic workflow</b><span>An AI that plans and takes multi-step actions with tools (code, browser, Git), not just chat replies.</span></div>
-        <div><b>MCP (Model Context Protocol)</b><span>An open standard that lets AI tools connect to apps. Here it linked the agent to my Figma file.</span></div>
-        <div><b>Context engineering</b><span>Giving the model the right inputs: Figma nodes, the brief, earlier decisions and constraints.</span></div>
-        <div><b>Human in the loop</b><span>AI proposes, a person reviews and approves. Every change here passed my review.</span></div>
-        <div><b>Grounding and RAG</b><span>Answering from a trusted source instead of the model's memory, to prevent hallucinations.</span></div>
-        <div><b>Guardrails</b><span>Rules that keep AI output safe and on topic, such as the "I don't know" fallback.</span></div>
-        <div><b>Multimodal QA</b><span>Using screenshots, not just code, to check that the output looks right.</span></div>
-        <div><b>Vibe coding</b><span>Building software by describing what you want in natural language and iterating on the result.</span></div>
+      <h3 style="margin-top:56px">The vocabulary, in plain words</h3>
+      <div class="gloss" id="gloss">
+        <button aria-expanded="true"><b>Agentic workflow</b><span>An AI that plans and takes multi-step actions with tools (code, browser, Git), not just chat replies.</span></button>
+        <button aria-expanded="false"><b>MCP (Model Context Protocol)</b><span>An open standard that lets AI tools connect to apps. Here it linked the agent to my Figma file.</span></button>
+        <button aria-expanded="false"><b>Context engineering</b><span>Giving the model the right inputs: Figma nodes, the brief, earlier decisions and constraints.</span></button>
+        <button aria-expanded="false"><b>Human in the loop</b><span>AI proposes, a person reviews and approves. Every change here passed my review.</span></button>
+        <button aria-expanded="false"><b>Grounding and RAG</b><span>Answering from a trusted source instead of the model's memory, to prevent hallucinations.</span></button>
+        <button aria-expanded="false"><b>Guardrails</b><span>Rules that keep AI output safe and on topic, such as the "I don't know" fallback.</span></button>
+        <button aria-expanded="false"><b>Multimodal QA</b><span>Using screenshots, not just code, to check that the output looks right.</span></button>
+        <button aria-expanded="false"><b>Vibe coding</b><span>Building software by describing what you want in natural language and iterating on the result.</span></button>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 09 IMPACT -->
-<section id="impact">
-  <div class="wrap">
-    <div class="sec-head"><div class="num">09</div><div><span class="lab">Outcome</span><h2>What I delivered</h2></div></div>
-    <div class="cards">
-      <div class="card"><span class="lab">Experience</span><p>A live 3D web simulation of the full installation: 8 stops, 7 stamps, story pages, VR and a city builder, in one link.</p></div>
-      <div class="card"><span class="lab">Design</span><p>Research, journey map, 12 wireframes, final UI, characters, stamp set and component states in Figma.</p></div>
-      <div class="card"><span class="lab">Process</span><p>A research and process document that shows every version, decision and trade-off.</p></div>
-      <div class="card"><span class="lab">Speed</span><p>Research to a working build in 7 days, with 9 versions explored instead of the usual one or two.</p></div>
-    </div>
-    <div class="body col" style="margin-top:36px;margin-left:0"><p>No usability data yet, so I am not claiming metrics. The direction is clear: each version removed a reason for a first-time visitor to get lost, and the test plan below is how I will measure it.</p></div>
-  </div>
-</section>
-
-<!-- 10 LEARNINGS -->
+<!-- 09 -->
 <section id="learnings">
   <div class="wrap">
-    <div class="sec-head"><div class="num">10</div><div><span class="lab">Reflection</span><h2>What I learnt</h2></div></div>
-    <div class="learn">
-      <div class="card"><h4>Start with the physical numbers</h4><p>Wall size, screen size and stop count decided the whole structure.</p></div>
-      <div class="card"><h4>Prove the interaction early</h4><p>A rough slide told me more than any static screen.</p></div>
-      <div class="card"><h4>Story before visuals</h4><p>Fixing "7 stamps, build 2037" in wireframes made every later screen easier.</p></div>
-      <div class="card"><h4>Cut what doesn't add value</h4><p>Less on screen meant the frame and the memories stood out.</p></div>
-      <div class="card"><h4>Make the reward feel earned</h4><p>A reward needs a small action, and an ending that is yours.</p></div>
-      <div class="card"><h4>AI speeds up iteration, I make the calls</h4><p>AI let me explore far more in a week. Judgement on what to keep stayed with me.</p></div>
+    <div class="sec-head"><div class="num">09</div><div><span class="lab">Outcome and reflection</span><h2>What I delivered, and what I learnt</h2></div></div>
+    <div class="cards">
+      <div class="card rv"><span class="lab">Experience</span><p>A live 3D web simulation of the full installation: 8 stops, 7 stamps, story pages, VR and a city builder, in one link.</p></div>
+      <div class="card rv"><span class="lab">Design</span><p>Research, journey map, 12 wireframes, final UI, characters, stamp set and component states in Figma.</p></div>
+      <div class="card rv"><span class="lab">Process</span><p>A research and process document that shows every version, decision and trade-off.</p></div>
+      <div class="card rv"><span class="lab">Speed</span><p>Research to a working build in 7 days, with 9 versions explored instead of the usual one or two.</p></div>
+    </div>
+    <p class="small" style="margin-top:22px;max-width:700px">No usability data yet, so I am not claiming metrics. Each version removed a reason for a first-time visitor to get lost, and the test plan below is how I will measure it.</p>
+
+    <div class="sub"><span class="lab">Learnings</span><h3>Six things I would tell myself on day one</h3></div>
+    <div class="cards">
+      <div class="card rv"><h4>Start with the physical numbers</h4><p>Wall size, screen size and stop count decided the whole structure.</p></div>
+      <div class="card rv"><h4>Prove the interaction early</h4><p>A rough slide told me more than any static screen.</p></div>
+      <div class="card rv"><h4>Story before visuals</h4><p>Fixing "7 stamps, build 2037" in wireframes made every later screen easier.</p></div>
+      <div class="card rv"><h4>Cut what doesn't add value</h4><p>Less on screen meant the frame and the memories stood out.</p></div>
+      <div class="card rv"><h4>Make the reward feel earned</h4><p>A reward needs a small action, and an ending that is yours.</p></div>
+      <div class="card rv"><h4>AI speeds up iteration, I make the calls</h4><p>AI let me explore far more in a week. Judgement on what to keep stayed with me.</p></div>
     </div>
 
-    <h3 style="margin:64px 0 12px">Next: test my own bias</h3>
-    <div class="body col" style="margin-left:0"><p>I designed it, so I know where everything is. Before calling it done, 5 to 6 people who have never seen it will try it with no briefing, thinking aloud.</p></div>
+    <div class="sub"><span class="lab">Next</span><h3>Test my own bias</h3><p class="small" style="max-width:700px">I designed it, so I know where everything is. Next, 5 to 6 people who have never seen it will try it with no briefing, thinking aloud.</p></div>
     <div class="tbl"><table>
       <thead><tr><th>Task</th><th>What I want to learn</th></tr></thead>
       <tbody>
@@ -670,7 +832,7 @@ footer p+p{margin-top:6px}
 </section>
 
 <div class="wrap end">
-  <p class="lab">Thanks for reading</p>
+  <span class="lab">Thanks for reading</span>
   <h2 style="margin-top:12px">Slide the frame yourself.</h2>
   <div class="cta-row">
     <a class="btn primary" href="https://jayashree676-gif.github.io/where-does-bengaluru-end/" target="_blank" rel="noopener">✦ Open the experience ✦</a>
@@ -686,5 +848,142 @@ footer p+p{margin-top:6px}
     <p>Precedent images belong to ZEISS and the Dayton Art Institute and are shown for research. Vehicle models: "Traffic" by Villanueva-Jonatan-32621, CC BY 4.0. The Watchtower is a narrator, not a historical source.</p>
   </div>
 </footer>
+
+<script>
+(function(){
+  document.documentElement.classList.add('js');
+  const RM=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const IO='IntersectionObserver' in window;
+  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const tween=(d,fn)=>{ if(RM){fn(1);return;} const t0=performance.now(); (function f(t){ const k=clamp((t-t0)/d,0,1); fn(1-Math.pow(1-k,3)); if(k<1) requestAnimationFrame(f); })(t0); };
+
+  /* reveal on scroll: visible at rest, lifts in when observed */
+  if(IO && !RM){
+    const io=new IntersectionObserver(es=>es.forEach(en=>{ if(en.isIntersecting){ en.target.classList.remove('pre'); io.unobserve(en.target);} }),{rootMargin:'0px 0px -6% 0px'});
+    $$('.rv').forEach(e=>{ if(e.getBoundingClientRect().top>innerHeight){ e.classList.add('pre'); io.observe(e); } });
+  }
+
+  /* progress bar + active nav */
+  const prog=$('#prog'), links=$$('#nav a'), secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+  let raf=0; function onScroll(){ if(raf) return; raf=requestAnimationFrame(()=>{ raf=0;
+    const h=document.documentElement.scrollHeight-innerHeight; prog.style.transform='scaleX('+(h>0?scrollY/h:0)+')';
+    let cur=-1; secs.forEach((s,i)=>{ if(s && s.getBoundingClientRect().top<innerHeight*.35) cur=i; });
+    links.forEach((a,i)=>a.classList.toggle('on',i===cur)); }); }
+  addEventListener('scroll',onScroll,{passive:true}); onScroll();
+
+  /* count up */
+  function count(el){ const to=+el.dataset.count, from=+(el.dataset.from||0); tween(1300,e=>el.textContent=Math.round(from+(to-from)*e)); }
+  if(IO){ const cio=new IntersectionObserver(es=>es.forEach(en=>{ if(en.isIntersecting){ en.target.querySelectorAll('[data-count]').forEach(count); if(en.target.dataset.count) count(en.target); cio.unobserve(en.target);} }),{threshold:.5}); $$('.stat b').forEach(s=>cio.observe(s)); }
+
+  /* hero lens */
+  const lens=$('#lens'), fr=$('#lensFrame'); let lp=50, touched=false;
+  function setLens(p){ lp=clamp(p,12,88); const w=lens.clientWidth<600?40:22; const l=lp-w/2; lens.style.setProperty('--l',l+'%'); lens.style.setProperty('--r',(100-l-w)+'%'); fr.setAttribute('aria-valuenow',Math.round(lp)); }
+  let dragging=false, off=0;
+  lens.addEventListener('pointerdown',e=>{ touched=true; dragging=true; lens.setPointerCapture(e.pointerId); const r=lens.getBoundingClientRect(); const px=(e.clientX-r.left)/r.width*100; off=(e.target===fr)?px-lp:0; setLens(px-off); });
+  lens.addEventListener('pointermove',e=>{ if(!dragging) return; const r=lens.getBoundingClientRect(); setLens((e.clientX-r.left)/r.width*100-off); });
+  ['pointerup','pointercancel'].forEach(t=>lens.addEventListener(t,()=>dragging=false));
+  fr.addEventListener('keydown',e=>{ if(e.key==='ArrowLeft'||e.key==='ArrowRight'){ touched=true; setLens(lp+(e.key==='ArrowRight'?4:-4)); e.preventDefault(); } });
+  setLens(50);
+  /* idle hint: the frame drifts until someone touches it */
+  if(!RM){ const t0=performance.now(); (function drift(t){ if(touched) return; setLens(50+Math.sin((t-t0)/1400)*14); requestAnimationFrame(drift); })(t0); }
+  addEventListener('resize',()=>setLens(lp));
+
+  /* wall diagram: the screen glides stop to stop */
+  const track=$('#wall .wall-track'), wsc=$('#wscreen'); const years=['1537','1760','1905','1909','1940','1985','2007','2037']; const stops=[]; let wi=0, wallHover=false;
+  years.forEach((y,i)=>{ const d=document.createElement('div'); d.className='wstop'; d.style.left=(6.25+i*12.5)+'%'; d.textContent=y; track.appendChild(d); stops.push(d);
+    d.addEventListener('mouseenter',()=>{ wallHover=true; goWall(i); }); d.addEventListener('mouseleave',()=>wallHover=false); });
+  function goWall(i){ wi=i; stops.forEach((s,k)=>s.classList.toggle('hit',k===i)); wsc.style.left=(6.25+i*12.5)+'%'; }
+  goWall(0); if(!RM) setInterval(()=>{ if(!wallHover) goWall((wi+1)%8); },1900);
+
+  /* 36 to 8 filter. fate: 0 no new identity, 1 folded, 2 cut at story, 3 cut at final, 4 final */
+  const M=[['c.890','First mention','',0],['1537','Mud fort','Founding',4],['1600s','Watchtowers','',1],['1760','Lalbagh','Garden City',4],['1761','Stone fort','',1],['1791','Siege','',0],['1809','Cantonment','Twin city',2],['1831','Capital','Capital',2],['1859/64','Rail line','',0],['1864','Telegraph','',0],['1889','Glass House','',1],['1898','Plague','',1],['1898','New suburbs','Planned city',3],['1902','Hydro power','',1],['1905','Street lights','Lights',4],['1909','IISc','Science',4],['1940','HAL','Factories',4],['1948','ITI','',1],['1949','City corp.','',0],['1953','HMT','',1],['1954','BEL','',1],['1956','State capital','',0],['1960+','Lost lakes','',1],['1964','HAL renamed','',1],['1972','ISRO HQ','Space city',3],['1976','BDA','',0],['1978','E-City','Tech seed',2],['1985','TI dish','Silicon',4],['1991','Software park','',1],['1992','Earth station','',1],['2007','Flipkart','Startups',4],['2008','Airport','',0],['2011','Metro','Metro city',2],['2023','Metro east','',0],['2025','Yellow Line','',0],['2037','Turns 500','Turns 500',4]];
+  const board=$('#board'), fnum=$('#fnum'), flabel=$('#flabel'), fq=$('#fq');
+  const chips=M.map(m=>{ const c=document.createElement('span'); c.className='mchip'; c.innerHTML='<b>'+m[0]+'</b><span>'+m[1]+'</span>'; board.appendChild(c); return c; });
+  const STAGE=[{n:36,l:'Every milestone, c. 890 to 2037',q:'Start: everything that ever happened.'},{n:14,l:'Each one gives the city a new identity',q:'Filter 1: does it give the city a new identity?'},{n:10,l:'One scene, two or more sources',q:'Filter 2: can it be one scene, backed by two or more sources?'},{n:8,l:'The final 8 stops',q:'Filter 3: are the stops evenly spread, with a moment to play?'}];
+  const cutAt=[1,1,2,3,99]; let stage=0, timers=[];
+  function setStage(s,instant){
+    const prev=stage; stage=s; $$('.fsteps button[data-s]').forEach(b=>{ if(b.dataset.s!=='play') b.setAttribute('aria-pressed',String(+b.dataset.s===s)); });
+    fq.textContent=STAGE[s].q; flabel.textContent=STAGE[s].l;
+    chips.forEach((c,i)=>{ const m=M[i], cut=cutAt[m[3]], alive=s<cut;
+      c.querySelector('span').textContent=(s>=1&&m[2])?m[2]:m[1];
+      c.classList.toggle('keep',alive&&s>=1&&s<3); c.classList.toggle('final',alive&&s===3);
+      if(alive){ c.classList.remove('gone','cutting'); }
+      else if(!instant && !RM && cut>prev && !c.classList.contains('gone')){ c.classList.add('cutting'); timers.push(setTimeout(()=>{ if(stage>=cut) c.classList.add('gone'); },700)); }
+      else { c.classList.add('gone'); c.classList.remove('cutting'); }
+    });
+    const from=+fnum.textContent, to=STAGE[s].n; if(instant) fnum.textContent=to; else tween(900,e=>fnum.textContent=Math.round(from+(to-from)*e));
+  }
+  $$('.fsteps button').forEach(b=>b.addEventListener('click',()=>{ timers.forEach(clearTimeout); timers=[];
+    if(b.dataset.s==='play'){ setStage(0,true); [1,2,3].forEach((s,k)=>timers.push(setTimeout(()=>setStage(s),(k+1)*1700))); return; }
+    const s=+b.dataset.s; setStage(s, s<stage); }));
+  setStage(0,true);
+
+  /* journey line draws when seen */
+  const jp=$('#jpath'); if(RM||!IO) jp.style.strokeDashoffset=0; else { const jo=new IntersectionObserver(es=>{ if(es[0].isIntersecting){ jp.style.transition='stroke-dashoffset 2.6s cubic-bezier(.22,1,.36,1)'; jp.style.strokeDashoffset=0; jo.disconnect(); } },{threshold:.4}); jo.observe($('#journey')); }
+
+  /* before / after */
+  const ba=$('#ba'); let bx=50, bd=false;
+  function setBA(x){ bx=clamp(x,0,100); ba.style.setProperty('--x',bx+'%'); ba.setAttribute('aria-valuenow',Math.round(bx)); }
+  ba.addEventListener('pointerdown',e=>{ bd=true; ba.setPointerCapture(e.pointerId); const r=ba.getBoundingClientRect(); setBA((e.clientX-r.left)/r.width*100); });
+  ba.addEventListener('pointermove',e=>{ if(!bd) return; const r=ba.getBoundingClientRect(); setBA((e.clientX-r.left)/r.width*100); });
+  ['pointerup','pointercancel'].forEach(t=>ba.addEventListener(t,()=>bd=false));
+  ba.addEventListener('keydown',e=>{ if(e.key==='ArrowLeft'||e.key==='ArrowRight'){ setBA(bx+(e.key==='ArrowRight'?5:-5)); e.preventDefault(); } });
+  if(IO && !RM){ const bo=new IntersectionObserver(es=>{ if(es[0].isIntersecting){ bo.disconnect(); tween(1400,e=>{ if(!bd) setBA(50+Math.sin(e*Math.PI*2)*22); }); } },{threshold:.6}); bo.observe(ba); }
+
+  /* version tabs */
+  const tabs=$$('#vtabs [role=tab]');
+  function showTab(t){ tabs.forEach(x=>{ const on=x===t; x.setAttribute('aria-selected',String(on)); x.tabIndex=on?0:-1; const p=document.getElementById(x.getAttribute('aria-controls')); p.hidden=!on; if(on){ p.classList.remove('show'); void p.offsetWidth; p.classList.add('show'); } }); }
+  tabs.forEach((t,i)=>{ t.addEventListener('click',()=>showTab(t)); t.addEventListener('keydown',e=>{ if(e.key==='ArrowRight'||e.key==='ArrowLeft'){ const n=tabs[(i+(e.key==='ArrowRight'?1:tabs.length-1))%tabs.length]; showTab(n); n.focus(); e.preventDefault(); } }); });
+
+  /* swatches copy */
+  $$('#swatches .sw').forEach(b=>b.addEventListener('click',async()=>{ try{ await navigator.clipboard.writeText(b.dataset.hex); }catch(e){} b.classList.add('copied'); setTimeout(()=>b.classList.remove('copied'),1400); }));
+
+  /* stamps + locked button */
+  const got=new Set(), pc=$('#pcount'), dots=$$('#passport i'), lock=$('#lockbtn'), tip=$('#tip'), ptext=$('#ptext'), ll=$('#locklabel');
+  function syncStamps(){ const n=got.size; pc.textContent=n+'/7'; dots.forEach((d,i)=>d.classList.toggle('on',i<n)); tip.textContent='Bring me all 7 stamps first to enable me. You have '+n+'.';
+    const open=n===7; lock.classList.toggle('open',open); lock.setAttribute('aria-disabled',String(!open)); if(!open) ll.textContent='✦ Build Your Bangalore ✦';
+    ptext.textContent=open?'All 7 collected. 2037 is unlocked, and the button is yours.':(n?'Keep going. The tooltip counts with you.':'Hover or tap the locked button to hear from the Watchtower.'); }
+  $$('#stamps .stamp[data-i]').forEach(b=>b.addEventListener('click',()=>{ const i=b.dataset.i; got.has(i)?got.delete(i):got.add(i); b.classList.toggle('got',got.has(i)); b.setAttribute('aria-pressed',String(got.has(i))); syncStamps(); }));
+  lock.addEventListener('click',()=>{ if(!lock.classList.contains('open')){ lock.classList.add('tipon'); setTimeout(()=>lock.classList.remove('tipon'),2000); } else { ll.textContent='✦ Your Bangalore is being built ✦'; } });
+  syncStamps();
+
+  /* cursor replica */
+  const cd=$('#cdemo'), ring=cd.querySelector('.cring'), dot=cd.querySelector('.cdot'), hot=$('#hot');
+  cd.addEventListener('pointermove',e=>{ if(e.pointerType==='touch') return; const r=cd.getBoundingClientRect(); const x=e.clientX-r.left, y=e.clientY-r.top; ring.style.transform=dot.style.transform='translate('+x+'px,'+y+'px)'; cd.classList.remove('out'); const h=hot.getBoundingClientRect(); cd.classList.toggle('drag', e.clientX>h.left&&e.clientX<h.right&&e.clientY>h.top&&e.clientY<h.bottom); });
+  cd.addEventListener('pointerleave',()=>{ cd.classList.add('out'); cd.classList.remove('drag'); });
+
+  /* pipeline run */
+  const nodes=$$('#pipe .node'), pnow=$('#pnow'); let pt=null;
+  function runPipe(){ clearInterval(pt); let i=0;
+    const tick=()=>{ nodes.forEach((n,k)=>n.classList.toggle('lit',k===i)); pnow.textContent=(i+1)+' of 8 · '+nodes[i].querySelector('h4').textContent; i++;
+      if(i>=nodes.length){ clearInterval(pt); setTimeout(()=>{ nodes.forEach(n=>n.classList.add('lit')); pnow.textContent='Shipped. Then the review loop starts again.'; },900); } };
+    tick(); pt=setInterval(tick,RM?10:950); }
+  $('#pplay').addEventListener('click',runPipe);
+  if(IO && !RM){ const po=new IntersectionObserver(es=>{ if(es[0].isIntersecting){ runPipe(); po.disconnect(); } },{threshold:.5}); po.observe($('#pipe')); }
+
+  /* Mr. Lamp recreation */
+  const KB=[
+    {m:'lalbagh · garden · 1760',src:'Stop 1760 · Garden City',c:.92,a:'Hyder Ali began the garden around 1760, and his son Tipu Sultan expanded it. A sultan planted a garden near my rock, and it never really stopped growing.'},
+    {m:'lights · electricity · 1905',src:'Stop 1905 · City of Lights',c:.9,a:'In 1905 Bengaluru switched on electric street lights, among the first cities in Asia to do so, powered by the Shivanasamudra hydro plant.'},
+    {m:'bullock cart · dish · 1985',src:'Stop 1985 · Silicon Plateau',c:.88,a:'When Texas Instruments set up here in 1985, its satellite dish came down the road on a bullock cart. The most modern machine in India, arriving the old way.'},
+    {m:'cricket · player · no match',src:'No passage found',c:.12,a:'I am not aware of it. I only know the stories on my wall, so I would rather not guess.'}];
+  const qs=$$('#qs button'), trs=$$('#trace .tr'), t1=$('#t1'), t2=$('#t2'), t3=$('#t3'), conf=$('#conf'), ans=$('#ans'); let lt=[];
+  function ask(i){ lt.forEach(clearTimeout); lt=[]; qs.forEach((b,k)=>b.setAttribute('aria-pressed',String(k===i))); const k=KB[i];
+    trs.forEach(t=>t.classList.remove('on')); conf.querySelector('b').style.width='0'; conf.classList.toggle('low',k.c<.5); ans.textContent='…';
+    const d=RM?0:650;
+    lt.push(setTimeout(()=>{ trs[0].classList.add('on'); t1.textContent='Matched: '+k.m; },0));
+    lt.push(setTimeout(()=>{ trs[1].classList.add('on'); t2.textContent='Source: '+k.src; },d));
+    lt.push(setTimeout(()=>{ trs[2].classList.add('on'); conf.querySelector('b').style.width=Math.round(k.c*100)+'%'; t3.textContent='Confidence '+Math.round(k.c*100)+'% · '+(k.c<.5?'below the threshold, use the fallback':'above the threshold, answer'); },d*2));
+    lt.push(setTimeout(()=>{ trs[3].classList.add('on'); ans.innerHTML=k.a+'<small>'+(k.c<.5?'Guardrail: fallback answer':'Grounded in: '+k.src)+'</small>'; },d*3)); }
+  qs.forEach((b,i)=>b.addEventListener('click',()=>ask(i)));
+
+  /* glossary */
+  $$('#gloss button').forEach(b=>b.addEventListener('click',()=>b.setAttribute('aria-expanded',String(b.getAttribute('aria-expanded')!=='true'))));
+
+  /* clips play only on screen */
+  if(IO){ const vo=new IntersectionObserver(es=>es.forEach(en=>{ const v=en.target; if(en.isIntersecting && !RM){ const p=v.play(); if(p&&p.catch) p.catch(()=>{}); } else v.pause(); }),{threshold:.2}); $$('video').forEach(v=>{ if(RM) v.removeAttribute('autoplay'); vo.observe(v); }); }
+})();
+</script>
 </body>
 </html>
