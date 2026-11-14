@@ -298,12 +298,18 @@ tbody tr:hover{background:var(--card)}
 .tip::after{content:"";position:absolute;left:50%;top:100%;margin-left:-6px;border:6px solid transparent;border-top-color:#fff}
 .lockbtn:hover .tip,.lockbtn:focus-visible .tip,.lockbtn.tipon .tip{opacity:1;transform:translateX(-50%)}
 .lockbtn.open .tip{display:none}
-.voice{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.voice div{border-radius:16px;padding:18px 20px;font-size:16px}
-.voice .do{background:#e8eddc}
-.voice .dont{background:#f3e3df}
-.voice .lab{display:block;margin-bottom:6px;color:#555}
-@media (max-width:900px){.collect{grid-template-columns:1fr}.swatches{grid-template-columns:repeat(2,1fr)}.voice{grid-template-columns:1fr}.type-row{grid-template-columns:1fr}}
+.voice{display:grid;gap:10px}
+.vhead,.vrow{display:grid;grid-template-columns:170px 1fr 28px 1fr;gap:14px;align-items:stretch}
+.vctx,.varr{align-self:center}
+.vctx{font-family:var(--label);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.vrow>div{border-radius:16px;padding:16px 18px 16px 48px;position:relative;line-height:1.45}
+.vrow i{position:absolute;left:16px;top:16px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:12px;color:#fff}
+.vrow .dont{background:#f3e6e2;color:#7a6d6a;font-size:15px}
+.vrow .dont i{background:var(--rust)}
+.vrow .do{background:#e8eddc;font-style:italic;font-size:18px;color:var(--ink)}
+.vrow .do i{background:var(--moss);font-style:normal}
+.varr{color:var(--muted);font-size:20px;text-align:center}
+@media (max-width:900px){.collect{grid-template-columns:1fr}.swatches{grid-template-columns:repeat(2,1fr)}.vhead{display:none}.vrow{grid-template-columns:1fr;gap:8px}.varr{display:none}.type-row{grid-template-columns:1fr}}
 
 /* final product */
 .feat{display:grid;grid-template-columns:1fr 1.4fr;gap:44px;align-items:center;padding:48px 0;border-top:1px solid var(--rule)}
@@ -686,10 +692,10 @@ footer p+p{margin-top:6px}
 
     <div class="sub"><span class="lab">Tone of voice</span><h3>The Watchtower talks like an old friend</h3><p class="small">First person, warm, a little witty. One scene per line, and every line ends with something to do.</p></div>
     <div class="voice">
-      <div class="do rv"><span class="lab">Do</span>“Slide the frame over it and the whole memory comes back.”</div>
-      <div class="dont rv"><span class="lab">Don't</span>“Use the slider control to navigate to the next timeline section.”</div>
-      <div class="do rv"><span class="lab">Do</span>“A sultan plants a garden.”</div>
-      <div class="dont rv"><span class="lab">Don't</span>“Chapter 2: Development of Lalbagh Botanical Garden (1760).”</div>
+      <div class="vhead"><span></span><span class="lab">Instead of a dry instruction</span><span></span><span class="lab">The Watchtower says</span></div>
+      <div class="vrow rv"><span class="vctx">Asking people to slide</span><div class="dont"><i aria-hidden="true">✕</i>“Use the slider control to navigate to the next timeline section.”</div><span class="varr" aria-hidden="true">→</span><div class="do"><i aria-hidden="true">✓</i>“Slide the frame over it and the whole memory comes back.”</div></div>
+      <div class="vrow rv"><span class="vctx">Naming a chapter</span><div class="dont"><i aria-hidden="true">✕</i>“Chapter 2: Development of Lalbagh Botanical Garden (1760).”</div><span class="varr" aria-hidden="true">→</span><div class="do"><i aria-hidden="true">✓</i>“A sultan plants a garden.”</div></div>
+      <div class="vrow rv"><span class="vctx">A locked button</span><div class="dont"><i aria-hidden="true">✕</i>“Feature locked.”</div><span class="varr" aria-hidden="true">→</span><div class="do"><i aria-hidden="true">✓</i>“Bring me all 7 stamps first to enable me.”</div></div>
     </div>
     <div class="quote rv"><img src="img/a-watchtower.png" alt="The Watchtower character"><p>“They built me to mark where Bengaluru would end. I've been wrong ever since.”<small>The Watchtower · opening line</small></p></div>
   </div>
